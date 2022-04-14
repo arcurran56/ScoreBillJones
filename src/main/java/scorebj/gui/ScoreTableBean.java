@@ -1,25 +1,35 @@
 package scorebj.gui;
 
+import scorebj.model.BoardId;
+
 public class ScoreTableBean {
-    private String set;
+    private BoardId boardId = new BoardId(5,16);
+
+    private Integer set;
 
     public String getSet() {
-        return set;
+        return Integer.valueOf(boardId.getSet()).toString();
     }
 
     public void setSet(String set) {
-        this.set = set;
+        this.boardId.setSet(Integer.parseUnsignedInt(set));
     }
 
     public String getBoard() {
-        return board;
+        return Integer.valueOf(boardId.getBoard()).toString();
     }
 
     public void setBoard(String board) {
-        this.board = board;
+        this.boardId.setSet(Integer.parseUnsignedInt(board));
     }
 
-    private String board;
+    private Integer board;
     public ScoreTableBean() {
+    }
+    public void next(){
+        boardId.next();
+    }
+    public void prev(){
+        boardId.prev();
     }
 }

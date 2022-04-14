@@ -22,11 +22,13 @@
               <text resource-bundle="score-bill-jones" key="set"/>
             </properties>
           </component>
-          <component id="bd5a3" class="javax.swing.JTextField" binding="setField">
+          <component id="bd5a3" class="javax.swing.JTextField" binding="setField" custom-create="true">
             <constraints/>
             <properties>
-              <background color="-3938823"/>
+              <background color="-1"/>
               <columns value="4"/>
+              <horizontalAlignment value="4"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="5e8ba" class="javax.swing.JLabel" binding="boardLabel">
@@ -36,9 +38,13 @@
               <text resource-bundle="score-bill-jones" key="board"/>
             </properties>
           </component>
-          <component id="683f" class="javax.swing.JTextField" binding="boardField">
+          <component id="683f" class="javax.swing.JTextField" binding="boardField" custom-create="true">
             <constraints/>
-            <properties/>
+            <properties>
+              <columns value="4"/>
+              <horizontalAlignment value="4"/>
+              <text value=""/>
+            </properties>
           </component>
         </children>
       </grid>

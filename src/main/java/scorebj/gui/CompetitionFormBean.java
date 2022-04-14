@@ -2,6 +2,7 @@ package scorebj.gui;
 
 public class CompetitionFormBean {
     private String noSets;
+    private String noBoards;
     private String competitionName;
     private String date;
 

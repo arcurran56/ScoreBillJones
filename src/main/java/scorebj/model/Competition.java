@@ -4,12 +4,19 @@ import java.util.Date;
 import java.util.List;
 
 public class Competition {
-    private String competitionName;
-    private Date date;
-    private int noOfSets;
-    private int noOfBoards;
+    private final String DEFAULT_COMPETITION_NAME = "Bill Jones";
+    private final int DEFAULT_SETS = 5;
+    private final int DEFAULT_BOARDS_PER_SET = 16;
+
+    private String competitionName= DEFAULT_COMPETITION_NAME;
+    private Date date = new Date();
+    private int noOfSets = DEFAULT_SETS;
+    private int noOfBoards = DEFAULT_BOARDS_PER_SET;
+
     private List<Pairing> pairings;
-    private final BoardScore[][] boards = new BoardScore[noOfSets][noOfBoards];
+    private final BoardScore[] boards = new BoardScore[noOfSets*noOfBoards];
+
+    private BoardId currentBoard;
 
     private int finalScore;
 
@@ -53,7 +60,7 @@ public class Competition {
         this.pairings = pairings;
     }
 
-    public BoardScore[][] getBoards() {
+    public BoardScore[] getBoards() {
         return boards;
     }
 
@@ -61,8 +68,11 @@ public class Competition {
         return finalScore;
     }
 
+
     public void setFinalScore(int finalScore) {
         this.finalScore = finalScore;
     }
-    public void BoardId 
+
+
+
 }
