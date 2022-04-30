@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.Assert.*;
+import scorebj.model.ScoreLine;
+import scorebj.model.Traveller;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -12,7 +14,7 @@ class TravellerTableModelTest {
     @Test
     void getRowCount() {
         TravellerTableModel t = new TravellerTableModel();
-        assertEquals(10,t.getRowCount());
+        assertEquals(5,t.getRowCount());
     }
 
     @Test
@@ -55,15 +57,49 @@ class TravellerTableModelTest {
     @Test
     void getValueAt() {
         TravellerTableModel t = new TravellerTableModel();
-        t.setValueAt(2, 9, 0);
-        t.setValueAt("3H", 3, 3);
-        t.setValueAt("N", 5, 4);
-        t.setValueAt(10, 2, 5);
+        t.setValueAt("2", 3, 0);
+        t.setValueAt("3H", 3, 2);
+        t.setValueAt("N", 4, 3);
+        t.setValueAt("10", 2, 4);
 
         assertNull(t.getValueAt(4,4));
-        assertEquals(2, t.getValueAt(9,0));
-        assertEquals("3H", t.getValueAt(3,3));
-        assertEquals("N",t.getValueAt(5,4));
-        assertEquals(10,t.getValueAt(2,5));
+        assertEquals(2, t.getValueAt(3,0));
+        assertEquals("3H", t.getValueAt(3,2).toString());
+        assertEquals("N",t.getValueAt(4,3).toString());
+        assertEquals(10,t.getValueAt(2,4));
+    }
+
+    @Test
+    void getTraveller() {
+        TravellerTableModel t = new TravellerTableModel();
+        t.setValueAt("2", 3, 0);
+        t.setValueAt("3H", 3, 2);
+        t.setValueAt("N", 3, 3);
+        t.setValueAt("10", 3, 4);
+
+        Traveller traveller = t.getTraveller();
+        ScoreLine scoreLine = traveller.getScoreLine(3);
+        assertEquals(2, scoreLine.getNsPair());
+        assertEquals("3H", scoreLine.getContract().toString());
+        assertEquals("N",scoreLine.getPlayedBy().toString());
+        assertEquals(10,scoreLine.getTricks());
+    }
+
+    @Test
+    void setTraveller() {
+        TravellerTableModel t = new TravellerTableModel();
+        Traveller traveller = new Traveller();
+        ScoreLine scoreLine = traveller.getScoreLines()[2];
+        scoreLine.setNsPair(2);
+        scoreLine.setContract(new Contract("3H"));
+        scoreLine.setPlayedBy(ScoreLine.Direction.N);
+        scoreLine.setTricks(10);
+
+        t.setTraveller(traveller);
+
+        assertEquals(2, t.getValueAt(2,0));
+        assertEquals("3H", t.getValueAt(2,2).toString());
+        assertEquals("N",t.getValueAt(2,3).toString());
+        assertEquals(10,t.getValueAt(2,4));
     }
 }

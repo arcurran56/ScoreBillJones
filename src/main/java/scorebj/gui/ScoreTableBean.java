@@ -3,16 +3,27 @@ package scorebj.gui;
 import scorebj.model.BoardId;
 
 public class ScoreTableBean {
-    private BoardId boardId = new BoardId(5,16);
+    public BoardId getBoardId() {
+        return boardId;
+    }
 
-    private Integer set;
+    public void setBoardId(BoardId boardId) {
+        this.boardId = boardId;
+    }
+
+    private BoardId boardId = new BoardId(5,16);
 
     public String getSet() {
         return Integer.valueOf(boardId.getSet()).toString();
     }
 
     public void setSet(String set) {
-        this.boardId.setSet(Integer.parseUnsignedInt(set));
+        try {
+            int parsedSet = Integer.parseUnsignedInt(set);
+            this.boardId.setSet(parsedSet);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getBoard() {
@@ -20,16 +31,20 @@ public class ScoreTableBean {
     }
 
     public void setBoard(String board) {
-        this.boardId.setSet(Integer.parseUnsignedInt(board));
+        try {
+            int parsedBoard = Integer.parseUnsignedInt(board);
+            this.boardId.setBoard(parsedBoard);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
-    private Integer board;
     public ScoreTableBean() {
     }
-    public void next(){
-        boardId.next();
+    public BoardId next(){
+        return boardId.next();
     }
-    public void prev(){
-        boardId.prev();
+    public BoardId prev(){
+        return boardId.prev();
     }
 }

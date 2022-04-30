@@ -1,5 +1,6 @@
 package scorebj.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,15 +11,22 @@ public class Competition {
 
     private String competitionName= DEFAULT_COMPETITION_NAME;
     private Date date = new Date();
-    private int noOfSets = DEFAULT_SETS;
-    private int noOfBoards = DEFAULT_BOARDS_PER_SET;
+    private int noSets = DEFAULT_SETS;
+    private int noBoardsPerSet = DEFAULT_BOARDS_PER_SET;
 
-    private List<Pairing> pairings;
-    private final BoardScore[] boards = new BoardScore[noOfSets*noOfBoards];
+    private List<Pairing> pairings = new ArrayList<>(10);
+    private final Traveller[] travellers = new Traveller[noSets * noBoardsPerSet];
 
     private BoardId currentBoard;
 
-    private int finalScore;
+    public Competition(){
+
+        Traveller traveller;
+        for (int index=0; index<noSets*noBoardsPerSet; index++){
+            traveller = new Traveller();
+            travellers[index] = traveller;
+        }
+    }
 
     public String getCompetitionName() {
         return competitionName;
@@ -36,20 +44,20 @@ public class Competition {
         this.date = date;
     }
 
-    public int getNoOfSets() {
-        return noOfSets;
+    public int getNoSets() {
+        return noSets;
     }
 
-    public void setNoOfSets(int noOfSets) {
-        this.noOfSets = noOfSets;
+    public void setNoSets(int noSets) {
+        this.noSets = noSets;
     }
 
-    public int getNoOfBoards() {
-        return noOfBoards;
+    public int getNoBoardsPerSet() {
+        return noBoardsPerSet;
     }
 
-    public void setNoOfBoards(int noOfBoards) {
-        this.noOfBoards = noOfBoards;
+    public void setNoBoardsPerSet(int noBoardsPerSet) {
+        this.noBoardsPerSet = noBoardsPerSet;
     }
 
     public List<Pairing> getPairings() {
@@ -60,19 +68,14 @@ public class Competition {
         this.pairings = pairings;
     }
 
-    public BoardScore[] getBoards() {
-        return boards;
+    public Traveller[] getTravellers() {
+        return travellers;
     }
 
-    public int getFinalScore() {
-        return finalScore;
+    public Traveller getTraveller(BoardId boardId){
+        int index = (boardId.getSet()-1)* noBoardsPerSet + boardId.getBoard() -1;
+        return travellers[index];
     }
-
-
-    public void setFinalScore(int finalScore) {
-        this.finalScore = finalScore;
-    }
-
 
 
 }

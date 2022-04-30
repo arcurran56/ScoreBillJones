@@ -1,19 +1,19 @@
 package scorebj.gui;
 
+import scorebj.model.BoardId;
+import scorebj.model.Competition;
+import scorebj.model.ScoreLine;
+import scorebj.model.Traveller;
 import scorebj.traveller.TravellerTableColumnModel;
 import scorebj.traveller.TravellerTableModel;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.InputMethodListener;
 import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
@@ -33,58 +33,49 @@ public class ScoresheetForm {
     private JButton saveButton;
     private JScrollPane tableScrollPane;
     private JPanel tablePanel;
+    private JButton goButton;
 
     private ScoreTableBean scoreTableBean;
+    private TravellerTableModel travellerTableModel;
+    private Competition competition = new Competition();
+    private BoardId currentBoardId;
+
 
     public ScoresheetForm() {
 
         $$$setupUI$$$();
+
 
         scoreTableBean = new ScoreTableBean();
         scoreTableBean.setSet("1");
         scoreTableBean.setBoard("1");
         setData(scoreTableBean);
 
-        setField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changedUpdate(e);
-          }
+        BoardId boardId = scoreTableBean.getBoardId();
+        Traveller traveller = competition.getTraveller(boardId);
+        travellerTableModel.setTraveller(traveller);
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changedUpdate(e);
-            }
 
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                getData(scoreTableBean);
-                System.out.println("Set updated to: " + scoreTableBean.getSet());
-            }
-        });
-        boardField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changedUpdate(e);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changedUpdate(e);
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                getData(scoreTableBean);
-                System.out.println("Board updated to: " + scoreTableBean.getBoard());
-            }
-        });
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("back");
-                scoreTableBean.prev();
+
+                //Save currrent Traveller.
+                scoreTable.clearSelection();
+                BoardId boardId = scoreTableBean.getBoardId();
+                Traveller savedTraveller = competition.getTraveller(boardId);
+                Traveller newTraveller = travellerTableModel.getTraveller();
+                savedTraveller.copy(newTraveller);
+
+                //Fetch previous
+                boardId = scoreTableBean.prev();
+
+                //Update view.
+                savedTraveller = competition.getTraveller(boardId);
+                travellerTableModel.setTraveller(savedTraveller);
                 setData(scoreTableBean);
+                mainPanel.repaint();
             }
         });
         forwardButton.addActionListener(new ActionListener() {
@@ -92,14 +83,53 @@ public class ScoresheetForm {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("fwd");
 
-                scoreTableBean.next();
+                //Save currrent Traveller.
+                scoreTable.clearSelection();
+                BoardId boardId = scoreTableBean.getBoardId();
+                Traveller savedTraveller = competition.getTraveller(boardId);
+                Traveller newTraveller = travellerTableModel.getTraveller();
+                savedTraveller.copy(newTraveller);
+
+                //Fetch previous
+                boardId = scoreTableBean.next();
+
+                //Update view.
+                savedTraveller = competition.getTraveller(boardId);
+                travellerTableModel.setTraveller(savedTraveller);
                 setData(scoreTableBean);
+
+                mainPanel.repaint();
             }
         });
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+            }
+        });
+        goButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getData(scoreTableBean);
+            }
+        });
+        travellerTableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                TravellerTableModel travellerTableModel = (TravellerTableModel) e.getSource();
+                Traveller newTraveller = travellerTableModel.getTraveller();
+
+                ScoreLine scoreLine;
+                for (int row = 0; row < 5; row++) {
+                    scoreLine = newTraveller.getScoreLine(row);
+                    scoreLine.scoreHand(false);
+                }
+
+                BoardId boardId1 = scoreTableBean.getBoardId();
+                Traveller savedTraveller = competition.getTraveller(boardId1);
+                savedTraveller.copy(newTraveller);
+
+                mainPanel.repaint();
             }
         });
     }
@@ -116,7 +146,7 @@ public class ScoresheetForm {
     private void createUIComponents() {
         // TODO: place custom component creation code here
 
-        TableModel travellerTableModel = new TravellerTableModel();
+        travellerTableModel = new TravellerTableModel();
         TableColumnModel columnModel =
                 new TravellerTableColumnModel();
         //new DefaultTableColumnModel();
@@ -125,7 +155,6 @@ public class ScoresheetForm {
 
         setField = new JTextField();
         boardField = new JTextField();
-
 
 
     }
@@ -164,6 +193,9 @@ public class ScoresheetForm {
         boardField.setHorizontalAlignment(4);
         boardField.setText("");
         infoPanel.add(boardField);
+        goButton = new JButton();
+        goButton.setText("Go");
+        infoPanel.add(goButton);
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         gbc = new GridBagConstraints();

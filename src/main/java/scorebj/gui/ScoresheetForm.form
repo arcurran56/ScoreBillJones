@@ -46,6 +46,12 @@
               <text value=""/>
             </properties>
           </component>
+          <component id="67386" class="javax.swing.JButton" binding="goButton">
+            <constraints/>
+            <properties>
+              <text value="Go"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="96fc" binding="buttonPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">

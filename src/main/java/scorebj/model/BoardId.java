@@ -30,14 +30,15 @@ public class BoardId {
         this.serNo = (serNo / noOfBoards) * noOfBoards + (board - 1) ;
     }
 
-    public void next(){
+    public BoardId next(){
         serNo++;
         if (serNo >= noOfBoards*noOfSets) serNo = serNo - noOfBoards*noOfSets;
+        return this;
     }
-    public void prev(){
+    public BoardId prev(){
         serNo--;
         if (serNo < 0) serNo = serNo + noOfBoards*noOfSets;
-
+        return this;
     }
     public void select(Integer set, Integer board){
         serNo = (set - 1) * noOfBoards + board -1;
