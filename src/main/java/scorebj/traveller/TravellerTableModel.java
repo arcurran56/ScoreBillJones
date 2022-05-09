@@ -4,12 +4,14 @@ import scorebj.model.ScoreLine;
 import scorebj.model.Traveller;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TravellerTableModel extends AbstractTableModel {
 
     private final String INTEGER = "java.lang.Integer";
     private final String CONTRACT = "scorebj.traveller.Contract";
-    private final String STRING = "java.lang.String";
+    //private final String STRING = "java.lang.String";
     private final String DIRECTION = "scorebj.model.ScoreLine.Direction";
 
     private final String[] travellerColumnHeaders = new String[]
@@ -39,8 +41,14 @@ public class TravellerTableModel extends AbstractTableModel {
 
 
 
-    private Object[][] travellerTable = new Object[5][9];
+    private List<ScoreLine> travellerTable = new ArrayList<>(5);
 
+    public TravellerTableModel(){
+        ScoreLine scoreLine;
+        for (int i=0; i<5; i++) {
+            travellerTable.add(new ScoreLine());
+        }
+    }
 
     @Override
     public int getRowCount() {
@@ -82,9 +90,9 @@ public class TravellerTableModel extends AbstractTableModel {
                 case INTEGER:
                     convertedValue = Integer.valueOf((String) aValue);
                     break;
-                case STRING:
+/*                case STRING:
                     convertedValue = aValue;
-                    break;
+                    break;*/
                 case CONTRACT:
                     convertedValue = new Contract((String) aValue);
                     break;
@@ -93,53 +101,33 @@ public class TravellerTableModel extends AbstractTableModel {
             }
         } catch (Exception e) {
         }
-        if(convertedValue != travellerTable[rowIndex][columnIndex]) {
-            travellerTable[rowIndex][columnIndex] = convertedValue;
+
+        ScoreLine scoreLine = travellerTable.get(rowIndex);
+        if(convertedValue != (Object) scoreLine.get(columnIndex)) {
+            (travellerTable.get(rowIndex)).set(columnIndex, convertedValue);
             fireTableCellUpdated(rowIndex,columnIndex);
         }
     }
 
     @Override
     public int getColumnCount() {
-        return 9;
+        return travellerColumnHeaders.length;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return travellerTable[rowIndex][columnIndex];
+        return travellerTable.get(rowIndex).get(columnIndex);
     }
 
-    public void setTraveller(Traveller traveller){
-        ScoreLine scoreLine;
-        for (int lineNo = 0; lineNo<traveller.getScoreLines().length; lineNo++) {
-            scoreLine = traveller.getScoreLines()[lineNo];
-                travellerTable[lineNo][0] = scoreLine.getNsPair();
-                travellerTable[lineNo][1] = scoreLine.getEwPair();
-                travellerTable[lineNo][2] = scoreLine.getContract();
-                travellerTable[lineNo][3] = scoreLine.getPlayedBy();
-                travellerTable[lineNo][4] = scoreLine.getTricks();
-                travellerTable[lineNo][5] = scoreLine.getNSScore();
-                travellerTable[lineNo][5] = scoreLine.getEWScore();
-                travellerTable[lineNo][7] = scoreLine.getNsMPs();
-                travellerTable[lineNo][8] = scoreLine.getEwMPs();
-            }
+    public void setTraveller(Traveller traveller) {
+        //ScoreLine scoreLine;
+        travellerTable.clear();
+        travellerTable.addAll(traveller.getScoreLines());
     }
 
     public Traveller getTraveller(){
         Traveller traveller = new Traveller();
-
-        ScoreLine scoreLine;
-        for (int lineNo = 0; lineNo<traveller.getScoreLines().length; lineNo++) {
-            scoreLine = traveller.getScoreLine(lineNo);
-            scoreLine.setNsPair((Integer) travellerTable[lineNo][0]);
-            scoreLine.setEwPair((Integer) travellerTable[lineNo][1]);
-            scoreLine.setContract((Contract) travellerTable[lineNo][2]);
-            scoreLine.setPlayedBy((ScoreLine.Direction) travellerTable[lineNo][3]);
-            scoreLine.setTricks((Integer) travellerTable[lineNo][4]);
-            scoreLine.scoreHand((false));
-            //scoreLine.setNsMPs((Integer) travellerTable[lineNo][7]);
-            //scoreLine.setEwMPs((Integer) travellerTable[lineNo][8]);
-        }
+        traveller.addAll(travellerTable);
         return traveller;
     }
 }

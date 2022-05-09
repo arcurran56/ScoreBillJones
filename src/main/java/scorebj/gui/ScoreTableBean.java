@@ -3,6 +3,8 @@ package scorebj.gui;
 import scorebj.model.BoardId;
 
 public class ScoreTableBean {
+    private String competitionName;
+
     public BoardId getBoardId() {
         return boardId;
     }
@@ -14,7 +16,7 @@ public class ScoreTableBean {
     private BoardId boardId = new BoardId(5,16);
 
     public String getSet() {
-        return Integer.valueOf(boardId.getSet()).toString();
+        return boardId.getSet().toString();
     }
 
     public void setSet(String set) {
@@ -27,7 +29,7 @@ public class ScoreTableBean {
     }
 
     public String getBoard() {
-        return Integer.valueOf(boardId.getBoard()).toString();
+        return boardId.getBoard().toString();
     }
 
     public void setBoard(String board) {
@@ -46,5 +48,13 @@ public class ScoreTableBean {
     }
     public BoardId prev(){
         return boardId.prev();
+    }
+
+    public String getCompetitionName() {
+        return competitionName;
+    }
+
+    public void setCompetitionName(final String competitionName) {
+        this.competitionName = competitionName;
     }
 }

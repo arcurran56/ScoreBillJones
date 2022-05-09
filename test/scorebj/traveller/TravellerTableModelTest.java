@@ -88,8 +88,8 @@ class TravellerTableModelTest {
     @Test
     void setTraveller() {
         TravellerTableModel t = new TravellerTableModel();
-        Traveller traveller = new Traveller();
-        ScoreLine scoreLine = traveller.getScoreLines()[2];
+        Traveller traveller = new Traveller(5);
+        ScoreLine scoreLine = traveller.getScoreLines().get(2);
         scoreLine.setNsPair(2);
         scoreLine.setContract(new Contract("3H"));
         scoreLine.setPlayedBy(ScoreLine.Direction.N);

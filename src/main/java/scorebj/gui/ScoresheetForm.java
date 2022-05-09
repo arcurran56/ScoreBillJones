@@ -1,9 +1,8 @@
 package scorebj.gui;
 
-import scorebj.model.BoardId;
-import scorebj.model.Competition;
-import scorebj.model.ScoreLine;
-import scorebj.model.Traveller;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import scorebj.model.*;
 import scorebj.traveller.TravellerTableColumnModel;
 import scorebj.traveller.TravellerTableModel;
 
@@ -34,10 +33,13 @@ public class ScoresheetForm {
     private JScrollPane tableScrollPane;
     private JPanel tablePanel;
     private JButton goButton;
+    private JPanel compPanel;
+    private JTextField compField;
 
+    private static DataStore dataStore;
     private ScoreTableBean scoreTableBean;
     private TravellerTableModel travellerTableModel;
-    private Competition competition = new Competition();
+    private Competition competition;
     private BoardId currentBoardId;
 
 
@@ -45,10 +47,11 @@ public class ScoresheetForm {
 
         $$$setupUI$$$();
 
-
+        competition = dataStore.getCompetition(0);
         scoreTableBean = new ScoreTableBean();
         scoreTableBean.setSet("1");
         scoreTableBean.setBoard("1");
+        scoreTableBean.setCompetitionName(competition.getCompetitionName());
         setData(scoreTableBean);
 
         BoardId boardId = scoreTableBean.getBoardId();
@@ -110,7 +113,25 @@ public class ScoresheetForm {
         goButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("go");
+
+
+                //Save current Traveller.
+                scoreTable.clearSelection();
+                BoardId boardId = scoreTableBean.getBoardId();
+                Traveller savedTraveller = competition.getTraveller(boardId);
+                Traveller newTraveller = travellerTableModel.getTraveller();
+                savedTraveller.copy(newTraveller);
+
+                //Go to specified traveller.
                 getData(scoreTableBean);
+
+                //Update view.
+                savedTraveller = competition.getTraveller(boardId);
+                travellerTableModel.setTraveller(savedTraveller);
+                setData(scoreTableBean);
+
+                mainPanel.repaint();
             }
         });
         travellerTableModel.addTableModelListener(new TableModelListener() {
@@ -118,29 +139,36 @@ public class ScoresheetForm {
             public void tableChanged(TableModelEvent e) {
                 TravellerTableModel travellerTableModel = (TravellerTableModel) e.getSource();
                 Traveller newTraveller = travellerTableModel.getTraveller();
+                newTraveller.scoreHand(e.getFirstRow(), true);
 
-                ScoreLine scoreLine;
-                for (int row = 0; row < 5; row++) {
-                    scoreLine = newTraveller.getScoreLine(row);
-                    scoreLine.scoreHand(false);
-                }
 
                 BoardId boardId1 = scoreTableBean.getBoardId();
                 Traveller savedTraveller = competition.getTraveller(boardId1);
                 savedTraveller.copy(newTraveller);
 
+                dataStore.persist(competition);
+
                 mainPanel.repaint();
+            }
+        });
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                competition.saveResults();
             }
         });
     }
 
     public static void main(String[] args) {
 
+        dataStore = DataStore.create();
+
         JFrame frame = new JFrame("ScoresheetForm");
         frame.setContentPane(new ScoresheetForm().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+
     }
 
     private void createUIComponents() {
@@ -175,7 +203,7 @@ public class ScoresheetForm {
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(infoPanel, gbc);
         setLabel = new JLabel();
@@ -200,7 +228,7 @@ public class ScoresheetForm {
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(buttonPanel, gbc);
         backButton = new JButton();
@@ -217,7 +245,7 @@ public class ScoresheetForm {
         tablePanel.setBackground(new Color(-4787514));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(tablePanel, gbc);
         tableScrollPane = new JScrollPane();
@@ -229,12 +257,22 @@ public class ScoresheetForm {
         tablePanel.add(tableScrollPane, gbc);
         scoreTable.setAutoCreateRowSorter(false);
         scoreTable.setAutoResizeMode(0);
-        scoreTable.setBackground(new Color(-65680));
+        scoreTable.setBackground(new Color(-1));
         scoreTable.setFillsViewportHeight(false);
         scoreTable.setGridColor(new Color(-13486862));
         scoreTable.setPreferredScrollableViewportSize(new Dimension(1500, 400));
         scoreTable.setRowHeight(40);
         tableScrollPane.setViewportView(scoreTable);
+        compPanel = new JPanel();
+        compPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        mainPanel.add(compPanel, gbc);
+        compField = new JTextField();
+        compField.setText("comp");
+        compPanel.add(compField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         setLabel.setLabelFor(tableScrollPane);
         boardLabel.setLabelFor(boardField);
     }
@@ -320,16 +358,20 @@ public class ScoresheetForm {
     public void setData(ScoreTableBean data) {
         setField.setText(data.getSet());
         boardField.setText(data.getBoard());
+        compField.setText(data.getCompetitionName());
     }
 
     public void getData(ScoreTableBean data) {
         data.setSet(setField.getText());
         data.setBoard(boardField.getText());
+        data.setCompetitionName(compField.getText());
     }
 
     public boolean isModified(ScoreTableBean data) {
         if (setField.getText() != null ? !setField.getText().equals(data.getSet()) : data.getSet() != null) return true;
         if (boardField.getText() != null ? !boardField.getText().equals(data.getBoard()) : data.getBoard() != null)
+            return true;
+        if (compField.getText() != null ? !compField.getText().equals(data.getCompetitionName()) : data.getCompetitionName() != null)
             return true;
         return false;
     }
