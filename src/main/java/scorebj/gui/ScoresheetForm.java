@@ -104,12 +104,6 @@ public class ScoresheetForm {
                 mainPanel.repaint();
             }
         });
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
         goButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -154,6 +148,8 @@ public class ScoresheetForm {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                dataStore.persist(competition);
                 competition.saveResults();
             }
         });
@@ -242,14 +238,14 @@ public class ScoresheetForm {
         buttonPanel.add(saveButton);
         tablePanel = new JPanel();
         tablePanel.setLayout(new GridBagLayout());
-        tablePanel.setBackground(new Color(-4787514));
+        tablePanel.setBackground(new Color(-855310));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(tablePanel, gbc);
         tableScrollPane = new JScrollPane();
-        tableScrollPane.setBackground(new Color(-866604));
+        tableScrollPane.setBackground(new Color(-1));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;

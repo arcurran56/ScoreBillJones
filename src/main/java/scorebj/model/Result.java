@@ -114,9 +114,12 @@ public class Result {
         File outputFile = new File(persistenceLocation, "summary.csv");
         PrintWriter output = new PrintWriter(outputFile);
 
-        StringBuilder outputLine1 = new StringBuilder(",");
+        StringBuilder outputLine1 = new StringBuilder("Pair No,Names");
         for(int set=1;set<noSets+1;set++){
-            outputLine1.append(",").append(set);
+            outputLine1
+                    .append(",")
+                    .append("Set ")
+                    .append(set);
         }
         outputLine1.append(",TOTAL");
         output.println(outputLine1);
@@ -125,14 +128,15 @@ public class Result {
             outputLine1 = new StringBuilder(Integer.toString(pair));
             outputLine1.append(",").append(pairings.get(pair-1));
             for (int set = 1; set < noSets + 1; set++) {
-                outputLine1.append(",")
+                outputLine1.append(",\"")
+                        .append(pairings.get(opponents[pair - 1][set - 1] - 1))
+                        .append("\n")
                         .append(summaryBySet[pair - 1][set - 1])
-                        .append(" (v")
-                        .append(opponents[pair - 1][set - 1])
-                        .append(")");
+                        .append("\"");
             }
-            outputLine1.append(",").append(grandTotals[pair - 1]);
-            output.println(outputLine1);
+            outputLine1.append(",")
+                    .append(grandTotals[pair - 1]);
+           output.println(outputLine1);
 
         }
         output.close();
@@ -154,7 +158,6 @@ public class Result {
             for (int pair2 = 1; pair2 < noPairs + 1; pair2++) {
                 outputLine1.append(",")
                         .append(pairingsMatrix[pair1 - 1][pair2 - 1]);
-
             }
             outputLine1.append(",").append(grandTotals[pair1 - 1]);
             output.println(outputLine1);

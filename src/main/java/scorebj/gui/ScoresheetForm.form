@@ -88,7 +88,7 @@
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
-          <background color="-4787514"/>
+          <background color="-855310"/>
         </properties>
         <border type="none"/>
         <children>
@@ -98,7 +98,7 @@
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <background color="-866604"/>
+              <background color="-1"/>
             </properties>
             <border type="none"/>
             <children>

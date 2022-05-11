@@ -15,16 +15,16 @@ public class Competition {
     private int noBoardsPerSet = DEFAULT_BOARDS_PER_SET;
     private int noPairs = DEFAULT_NO_PAIRS;
 
-    private final String[] DEFAULT_PAIRINGS = {"David Sherry & Salette Avison",
-            "Liz Buckland & Jane Edge",
-            "Jill Ryan & Ron Eyre-Brook",
-            "Jill Hogge & Jane Durgan",
-            "Wendy Goddin & Diane Jemmett",
-            "Diane Curran & Alan Curran",
-            "Julia Ellis & Sue Whitfield",
-            "Clare Baker & Jill Aspinall",
-            "Lisbeth Mousell & Vicky Wheeler",
-            "Caroline Jones & Andrew Goodwin"};
+    private final String[] DEFAULT_PAIRINGS = {"David & Salette",
+            "Liz B & Jane E",
+            "Jill R & Rob",
+            "Jill H & Jane D",
+            "Wendy & Diana",
+            "Diane & Alan",
+            "Julia & Sue",
+            "Clare & Jill A",
+            "Lisbeth & Vicky",
+            "Caroline & Andrew"};
 
     private List<String> pairings = new ArrayList<>(10);
     private final Traveller[] travellers = new Traveller[noSets * noBoardsPerSet];

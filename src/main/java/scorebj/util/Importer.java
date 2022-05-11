@@ -25,7 +25,7 @@ public class Importer {
         DataStore dataStore = DataStore.create();
         Competition competition = new Competition();
         BoardId boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
-        File dataFolder = new File(System.getProperty("user.home"), "bjscore");
+        File dataFolder = new File(System.getProperty("user.home"), "scorebj");
         File importFile = new File(dataFolder, "import-file.csv");
         BufferedReader reader = new BufferedReader(new FileReader(importFile));
         String importLine;
