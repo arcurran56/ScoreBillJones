@@ -1,20 +1,22 @@
 package scorebj.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.util.*;
 
 public class Competition {
-    private final String DEFAULT_COMPETITION_NAME = "Bill Jones";
-    private final int DEFAULT_SETS = 5;
-    private final int DEFAULT_BOARDS_PER_SET = 16;
-    private final int DEFAULT_NO_PAIRS = 10;
-
+    private final String DEFAULT_COMPETITION_NAME = "Default";
+    private Logger logger = LogManager.getLogger();
     private String competitionName = DEFAULT_COMPETITION_NAME;
     private Date date = new Date();
-    private int noSets = DEFAULT_SETS;
-    private int noBoardsPerSet = DEFAULT_BOARDS_PER_SET;
-    private int noPairs = DEFAULT_NO_PAIRS;
+    private int noSets;
+    private int noBoardsPerSet;
+    private int noPairs;
+    private List<String> pairings;
 
+/*
     private final String[] DEFAULT_PAIRINGS = {"David & Salette",
             "Liz B & Jane E",
             "Jill R & Rob",
@@ -25,22 +27,12 @@ public class Competition {
             "Clare & Jill A",
             "Lisbeth & Vicky",
             "Caroline & Andrew"};
-
-    private List<String> pairings = new ArrayList<>(10);
-    private final Traveller[] travellers = new Traveller[noSets * noBoardsPerSet];
-
-    private final Map<Integer, Integer[]> resultsMap = new TreeMap<>();
-
+*/
+    private List<Traveller> travellers = new ArrayList(50);
     private BoardId currentBoard;
 
     public Competition() {
 
-        pairings = Arrays.asList(DEFAULT_PAIRINGS);
-        Traveller traveller;
-        for (int index = 0; index < noSets * noBoardsPerSet; index++) {
-            traveller = new Traveller(noPairs / 2);
-            travellers[index] = traveller;
-        }
     }
 
     public String getCompetitionName() {
@@ -64,7 +56,11 @@ public class Competition {
     }
 
     public void setNoSets(int noSets) {
+        int oldVal = this.noSets;
         this.noSets = noSets;
+        if(noSets != oldVal) {
+            initialise();
+        }
     }
 
     public int getNoBoardsPerSet() {
@@ -72,7 +68,12 @@ public class Competition {
     }
 
     public void setNoBoardsPerSet(int noBoardsPerSet) {
+        int oldVal = this.noBoardsPerSet;
         this.noBoardsPerSet = noBoardsPerSet;
+
+        if (noBoardsPerSet != oldVal) {
+            initialise();
+        }
     }
 
     public List<String> getPairings() {
@@ -83,13 +84,17 @@ public class Competition {
         this.pairings = pairings;
     }
 
-    public Traveller[] getTravellers() {
+    public List<Traveller> getTravellers() {
         return travellers;
     }
 
     public Traveller getTraveller(BoardId boardId) {
         int index = (boardId.getSet() - 1) * noBoardsPerSet + boardId.getBoard() - 1;
-        return travellers[index];
+        Traveller traveller = null;
+        if (index>=0) {
+            traveller = travellers.get(index);
+        }
+        return traveller;
     }
 
     public void saveResults() {
@@ -118,5 +123,38 @@ public class Competition {
             boardId.next();
         }
         return strings;
+    }
+
+    public int getNoPairs() {
+        return noPairs;
+    }
+
+    public void setNoPairs(int noPairs) {
+        int oldVal = this.noPairs;
+        this.noPairs = noPairs;
+        if (noPairs != oldVal) {
+            initialise();
+        }
+    }
+    public void initialise() {
+        if( noSets>0 && noBoardsPerSet>0 && noPairs>0) {
+            travellers.clear();
+            Traveller traveller;
+            for (int i = 0; i < noSets*noBoardsPerSet; i++) {
+                traveller = new Traveller(noPairs / 2);
+                travellers.add(traveller);
+            }
+            pairings = new ArrayList<>(noPairs);
+            for (int i = 0; i < noPairs; i++) {
+                pairings.add("");
+            }
+        }
+    }
+    public int getCompletionStatus(){
+        int completionStatus = 0;
+        for (Traveller t: travellers) {
+            if (t.isComplete()) completionStatus++;
+        }
+        return completionStatus;
     }
 }

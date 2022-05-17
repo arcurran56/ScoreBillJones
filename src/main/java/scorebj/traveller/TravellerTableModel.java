@@ -1,5 +1,7 @@
 package scorebj.traveller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import scorebj.model.ScoreLine;
 import scorebj.model.Traveller;
 
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TravellerTableModel extends AbstractTableModel {
+    private static Logger logger = LogManager.getLogger();
 
     private final String INTEGER = "java.lang.Integer";
     private final String CONTRACT = "scorebj.traveller.Contract";
@@ -40,19 +43,21 @@ public class TravellerTableModel extends AbstractTableModel {
                     INTEGER};
 
 
+    private int noPairs;
+    private List<ScoreLine> travellerTable;
 
-    private List<ScoreLine> travellerTable = new ArrayList<>(5);
+    public TravellerTableModel(int noPairs){
+        this.noPairs = noPairs;
+        travellerTable = new ArrayList<ScoreLine>(noPairs/2);
 
-    public TravellerTableModel(){
-        ScoreLine scoreLine;
-        for (int i=0; i<5; i++) {
+        for (int i=0; i<noPairs/2; i++) {
             travellerTable.add(new ScoreLine());
         }
     }
 
     @Override
     public int getRowCount() {
-        return 5;
+        return noPairs/2;
     }
 
     @Override
@@ -123,11 +128,20 @@ public class TravellerTableModel extends AbstractTableModel {
         //ScoreLine scoreLine;
         travellerTable.clear();
         travellerTable.addAll(traveller.getScoreLines());
+
+        StringBuilder logLine = new StringBuilder()
+                .append("Traveller size: ")
+                .append(travellerTable.size());
+        logger.debug(logLine);
     }
 
     public Traveller getTraveller(){
         Traveller traveller = new Traveller();
         traveller.addAll(travellerTable);
         return traveller;
+    }
+
+    public void setNoPairs(int noPairs) {
+        this.noPairs = noPairs;
     }
 }

@@ -25,6 +25,9 @@ class ResultTest {
     void collate() throws IOException {
         DataStore dataStore = DataStore.create();
         Competition competition = dataStore.getCompetition(0);
+       // competition.setCompetitionName("Test");
+       // competition.setNoSets(5);
+        //competition.setNoBoardsPerSet(16);
         List<String> pairings = Arrays.asList(DEFAULT_PAIRINGS);
 
         Result result = new Result(10, 5, 16);

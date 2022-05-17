@@ -1,5 +1,8 @@
 package scorebj.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -7,16 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Result {
+    private final Logger logger = LogManager.getLogger();
     private final File persistenceLocation;
     private int noPairs;
-    private int noSets;
-    private int noBoardsPerSet;
-    private final int[][] detailedResults;
-    private final int[][] summaryBySet;
-    private final int[] grandTotals;
-    private final int[][] opponents;
+    private final int noSets;
+    private final int noBoardsPerSet;
+    private int[][] detailedResults;
+    private int[][] summaryBySet;
+    private int[] grandTotals;
+    private int[][] opponents;
     private List<String> pairings;
-    private final int[][] pairingsMatrix;
+    private int[][] pairingsMatrix;
 
     public Result(int noPairs, int noSets, int noBoardsPerSet) {
         this.persistenceLocation = DataStore.getPersistenceLocation();
@@ -24,16 +28,19 @@ public class Result {
         this.noSets = noSets;
         this.noBoardsPerSet = noBoardsPerSet;
 
+
+    }
+
+    public void collate(List<String> pairings, List<Traveller> travellers) {
+
+        this.pairings = pairings;
+        //noPairs = pairings.size();
+
         detailedResults = new int[this.noPairs][this.noSets * this.noBoardsPerSet];
         summaryBySet = new int[this.noPairs][this.noSets];
         grandTotals = new int[this.noPairs];
         opponents = new int[this.noPairs][this.noSets];
-        pairingsMatrix = new int[noPairs][noPairs];
-    }
-
-    public void collate(List<String> pairings, Traveller[] travellers) {
-
-        this.pairings = pairings;
+        pairingsMatrix = new int[this.noPairs][this.noPairs];
 
         Traveller traveller;
         int nsPair;
@@ -42,8 +49,16 @@ public class Result {
         int ewMPs;
         BoardId boardId = new BoardId(noSets, noBoardsPerSet);
 
+        StringBuilder logBuilder = new StringBuilder()
+                .append(noPairs)
+                .append(", ")
+                .append(noSets)
+                .append(", ")
+                .append(noBoardsPerSet);
+        logger.debug(logBuilder.toString());
+
         for (int index = 0; index < noSets * noBoardsPerSet; index++) {
-            traveller = travellers[index];
+            traveller = travellers.get(index);
             for (ScoreLine scoreLine : traveller.getScoreLines()) {
                 if (scoreLine != null) {
                     if (scoreLine.getNsPair() != null
@@ -55,6 +70,18 @@ public class Result {
                         nsMPs = scoreLine.getNsMPs();
                         ewMPs = scoreLine.getEwMPs();
 
+                        logBuilder = new StringBuilder()
+                                .append(index)
+                                .append(": NS ")
+                                .append(nsPair)
+                                .append("-")
+                                .append(nsMPs)
+                                .append("pts ")
+                                .append(ewPair)
+                                .append("-")
+                                .append(ewMPs)
+                                .append("pts.");
+                        logger.debug(logBuilder.toString());
                         detailedResults[nsPair - 1][index] = nsMPs;
                         detailedResults[ewPair - 1][index] = ewMPs;
 
@@ -85,6 +112,14 @@ public class Result {
         File outputFile = new File(persistenceLocation, "details.csv");
         PrintWriter output = new PrintWriter(outputFile);
 
+        StringBuilder logLine = new StringBuilder()
+                .append(noPairs)
+                .append(",")
+                .append(noSets)
+                .append(",")
+                .append(noBoardsPerSet);
+        logger.debug(logLine.toString());
+
         StringBuilder outputLine1 = new StringBuilder(",");
         StringBuilder outputLine2 = new StringBuilder(",");
         BoardId boardId = new BoardId(noSets, noBoardsPerSet);
@@ -114,6 +149,14 @@ public class Result {
         File outputFile = new File(persistenceLocation, "summary.csv");
         PrintWriter output = new PrintWriter(outputFile);
 
+        StringBuilder logLine = new StringBuilder()
+                .append(noPairs)
+                .append(",")
+                .append(noSets)
+                .append(",")
+                .append(noBoardsPerSet);
+        logger.debug(logLine.toString());
+
         StringBuilder outputLine1 = new StringBuilder("Pair No,Names");
         for(int set=1;set<noSets+1;set++){
             outputLine1
@@ -121,10 +164,16 @@ public class Result {
                     .append("Set ")
                     .append(set);
         }
+
         outputLine1.append(",TOTAL");
+        logger.debug(outputLine1);
         output.println(outputLine1);
 
         for (int pair = 1; pair < noPairs + 1; pair++) {
+            logLine = new StringBuilder()
+                    .append(pair);
+            logger.debug(logLine.toString());
+
             outputLine1 = new StringBuilder(Integer.toString(pair));
             outputLine1.append(",").append(pairings.get(pair-1));
             for (int set = 1; set < noSets + 1; set++) {
@@ -144,6 +193,14 @@ public class Result {
     public void printMatrix() throws IOException {
         File outputFile = new File(persistenceLocation, "matrix.csv");
         PrintWriter output = new PrintWriter(outputFile);
+
+        StringBuilder logLine = new StringBuilder()
+                .append(noPairs)
+                .append(",")
+                .append(noSets)
+                .append(",")
+                .append(noBoardsPerSet);
+        logger.debug(logLine.toString());
 
         StringBuilder outputLine1 = new StringBuilder(",");
         for(int pair=1;pair<noPairs+1;pair++){

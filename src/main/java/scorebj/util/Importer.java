@@ -1,5 +1,7 @@
 package scorebj.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import scorebj.model.*;
 import scorebj.traveller.Contract;
 
@@ -9,6 +11,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Importer {
+    private final static Logger logger = LogManager.getLogger();
+
     enum ReadingState {LINE_COUNT, SCORE_LINE}
 
     private final static int NS_PAIR = 1;
@@ -22,12 +26,33 @@ public class Importer {
     }
 
     public static void main(String[] args) throws IOException {
+        String competitionName = args[0];
+        int noSets = Integer.parseUnsignedInt(args[1]);
+        int noBoardsPerSet = Integer.parseUnsignedInt(args[2]);
+        int noPairs = Integer.parseUnsignedInt(args[3]);
+
         DataStore dataStore = DataStore.create();
         Competition competition = new Competition();
+        competition.setCompetitionName(competitionName);
+        competition.setNoSets(noSets);
+        competition.setNoBoardsPerSet(noBoardsPerSet);
+        competition.setNoPairs(noPairs);
+
+        StringBuilder builder = (new StringBuilder())
+                .append(competitionName)
+                .append(", ")
+                .append(noSets)
+                .append(", ")
+                .append(noBoardsPerSet)
+                .append(", ")
+                .append(noPairs);
+        logger.info(builder.toString());
+
         BoardId boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
         File dataFolder = new File(System.getProperty("user.home"), "scorebj");
         File importFile = new File(dataFolder, "import-file.csv");
         BufferedReader reader = new BufferedReader(new FileReader(importFile));
+
         String importLine;
         int lineIndex = 0;
         int lineCount = 0;
@@ -56,7 +81,7 @@ public class Importer {
                     scoreLine = traveller.getScoreLine(lineIndex);
                     scoreLine.setNsPair(Integer.parseInt(importLineValues[NS_PAIR]));
                     scoreLine.setEwPair(Integer.parseInt(importLineValues[EW_PAIR]));
-                    scoreLine.setContract(new Contract(importLineValues[CONTRACT].replace("\"","")));
+                    scoreLine.setContract(new Contract(importLineValues[CONTRACT].replace("\"", "")));
                     scoreLine.setPlayedBy(ScoreLine.Direction.valueOf(importLineValues[PLAYED_BY].replace("\"", "")));
                     scoreLine.setTricks(Integer.parseInt(importLineValues[TRICKS]));
 
