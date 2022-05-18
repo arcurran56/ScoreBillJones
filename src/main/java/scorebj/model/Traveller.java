@@ -42,6 +42,9 @@ public class Traveller {
 
     public void clear() {
         scoreLines.clear();
+        for (int i = 0; i < size; i++) {
+            scoreLines.add(new ScoreLine());
+        }
     }
 
     public void scoreHand(int line, boolean vulnerable) {
