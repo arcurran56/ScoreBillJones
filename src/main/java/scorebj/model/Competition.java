@@ -146,7 +146,7 @@ public class Competition {
             }
             pairings = new ArrayList<>(noPairs);
             for (int i = 0; i < noPairs; i++) {
-                pairings.add("");
+                pairings.add("&");
             }
         }
     }

@@ -14,6 +14,7 @@ import scorebj.traveller.TravellerTableModel;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Vector;
+import java.util.List;
 
 public class ScoringForm {
     private static final Logger logger = LogManager.getLogger();
@@ -66,6 +68,8 @@ public class ScoringForm {
     private Competition competition;
     private BoardId currentBoardId;
     private Vector nameList;
+    private PairingTableModel pairingTableModel;
+    private TableColumnModel pairingTableColumnModel;
 
 
     public ScoringForm() {
@@ -79,10 +83,29 @@ public class ScoringForm {
         scoringBean.setCurrentCompetition(competition);
         setData(scoringBean);
 
+        int noPairs = competition.getNoPairs();
+        String name = competition.getCompetitionName();
+
         BoardId boardId = scoringBean.getBoardId();
         Traveller traveller = competition.getTraveller(boardId);
-        travellerTableModel.setNoPairs(competition.getNoPairs());
+        travellerTableModel.setNoPairs(noPairs);
         travellerTableModel.setTraveller(traveller);
+
+
+        List<String> pairings = competition.getPairings();
+        pairingTableModel.setNoPairs(noPairs);
+        pairingTableModel.setPairings(pairings);
+
+        StringBuilder logLine = new StringBuilder()
+                .append("Competition:")
+                .append(name)
+                .append(", pairs: ")
+                .append(noPairs)
+                .append("(")
+                .append(pairings.size())
+                .append(")");
+
+        logger.debug(logLine);
         mainPanel.repaint();
 
         backButton.addActionListener(new ActionListener() {
@@ -162,10 +185,22 @@ public class ScoringForm {
                 Traveller newTraveller = travellerTableModel.getTraveller();
                 newTraveller.scoreHand(e.getFirstRow(), true);
 
-
                 BoardId boardId1 = scoringBean.getBoardId();
                 Traveller savedTraveller = competition.getTraveller(boardId1);
                 savedTraveller.copy(newTraveller);
+
+                dataStore.persist(competition);
+
+                mainPanel.repaint();
+            }
+        });
+        pairingTableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                PairingTableModel pairingTableModel = (PairingTableModel) e.getSource();
+                logger.debug("Pairing table changed from " + e.getSource());
+                List<String> pairings = pairingTableModel.getPairings();
+                competition.setPairings(pairings);
 
                 dataStore.persist(competition);
 
@@ -185,7 +220,7 @@ public class ScoringForm {
             public void actionPerformed(ActionEvent e) {
                 logger.debug(e.getActionCommand());
 
-                //Get selected Competition.
+                //Get selected Competition and save key for later...
                 String key = (String) compComboBox.getSelectedItem();
 
                 //Save current Traveller in old Competition.
@@ -194,13 +229,36 @@ public class ScoringForm {
                 Traveller savedTraveller = competition.getTraveller(boardId);
                 Traveller newTraveller = travellerTableModel.getTraveller();
                 savedTraveller.copy(newTraveller);
+
+                //...and pairings
+                competition.setPairings(pairingTableModel.getPairings());
+
+                //...and persist.
                 dataStore.persist(competition);
 
                 //Fetch newly chosen Competition.
                 competition = dataStore.getCompetition(key);
+                String name = competition.getCompetitionName();
+                int noPairs = competition.getNoPairs();
+                List<String> pairings = competition.getPairings();
+
                 boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
                 scoringBean.setCurrentCompetition(competition);
                 scoringBean.setBoardId(boardId);
+
+                pairingTableModel.setNoPairs(noPairs);
+                pairingTableModel.setPairings(pairings);
+
+                StringBuilder logLine = new StringBuilder()
+                        .append("Competition:")
+                        .append(name)
+                        .append(", pairs: ")
+                        .append(noPairs)
+                        .append("(")
+                        .append(pairings.size())
+                        .append(")");
+
+                logger.debug(logLine);
 
                 //Update view.
                 savedTraveller = competition.getTraveller(boardId);
@@ -274,8 +332,20 @@ public class ScoringForm {
 
         scoreTable = new JTable(travellerTableModel, columnModel);
 
-        PairingTableModel pairingTableModel = new PairingTableModel(new ArrayList<String>());
-        if (competition != null) pairingTableModel = new PairingTableModel(competition.getPairings());
+        pairingTableModel = new PairingTableModel();
+        pairingTableColumnModel = new DefaultTableColumnModel();
+        if (competition != null) {
+            int noPairs = competition.getNoPairs();
+            List<String> pairings = competition.getPairings();
+            StringBuilder logLine = new StringBuilder()
+                    .append("Pairs: ")
+                    .append(noPairs)
+                    .append(" ")
+                    .append(pairings.size());
+            logger.debug(logLine);
+            pairingTableModel.setNoPairs(noPairs);
+            pairingTableModel.setPairings(pairings);
+        }
         pairingTable = new JTable(pairingTableModel);
 
         setField = new JTextField();
@@ -396,7 +466,7 @@ public class ScoringForm {
         label4.setText("Sets");
         compPanel.add(label4, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        mainPanel.add(spacer1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, new Dimension(164, 11), null, 20, false));
+        mainPanel.add(spacer1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, new Dimension(318, 11), null, 10, false));
         final Spacer spacer2 = new Spacer();
         mainPanel.add(spacer2, new GridConstraints(3, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 20, false));
         final Spacer spacer3 = new Spacer();
@@ -408,7 +478,8 @@ public class ScoringForm {
         mainPanel.add(pairPanel, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pairingScrollPane = new JScrollPane();
         pairPanel.add(pairingScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        pairingTable = new JTable();
+        pairingTable.setAutoResizeMode(4);
+        pairingTable.setFillsViewportHeight(true);
         pairingScrollPane.setViewportView(pairingTable);
         final Spacer spacer5 = new Spacer();
         pairPanel.add(spacer5, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
