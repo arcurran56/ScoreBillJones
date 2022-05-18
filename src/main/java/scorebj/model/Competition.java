@@ -94,6 +94,9 @@ public class Competition {
         if (index>=0) {
             traveller = travellers.get(index);
         }
+        if (traveller == null) {
+            traveller = new Traveller(noPairs/2);
+        }
         return traveller;
     }
 
@@ -146,7 +149,7 @@ public class Competition {
             }
             pairings = new ArrayList<>(noPairs);
             for (int i = 0; i < noPairs; i++) {
-                pairings.add("&");
+                pairings.add("");
             }
         }
     }

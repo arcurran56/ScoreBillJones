@@ -113,14 +113,14 @@ public class ScoringForm {
             public void actionPerformed(ActionEvent e) {
                 logger.debug("back");
 
-                //Save currrent Traveller.
+                //Save current Traveller.
                 scoreTable.clearSelection();
                 BoardId boardId = scoringBean.getBoardId();
                 Traveller savedTraveller = competition.getTraveller(boardId);
                 Traveller newTraveller = travellerTableModel.getTraveller();
-                if (savedTraveller != null) {
-                    savedTraveller.copy(newTraveller);
-                }
+
+                savedTraveller.copy(newTraveller);
+
                 //Fetch previous
                 boardId = scoringBean.prev();
 
@@ -128,6 +128,7 @@ public class ScoringForm {
                 savedTraveller = competition.getTraveller(boardId);
                 travellerTableModel.setTraveller(savedTraveller);
                 setData(scoringBean);
+
                 mainPanel.repaint();
             }
         });
@@ -141,6 +142,7 @@ public class ScoringForm {
                 BoardId boardId = scoringBean.getBoardId();
                 Traveller savedTraveller = competition.getTraveller(boardId);
                 Traveller newTraveller = travellerTableModel.getTraveller();
+
                 savedTraveller.copy(newTraveller);
 
                 //Fetch previous
