@@ -1,12 +1,14 @@
 package scorebj.gui;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import scorebj.model.*;
+import scorebj.model.BoardId;
+import scorebj.model.Competition;
+import scorebj.model.DataStore;
+import scorebj.model.Traveller;
 import scorebj.pairing.PairingTableModel;
 import scorebj.traveller.TravellerTableColumnModel;
 import scorebj.traveller.TravellerTableModel;
@@ -20,15 +22,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 
 public class ScoringForm {
     private static final Logger logger = LogManager.getLogger();
 
-    private JFrame frame = new JFrame("Scoring Bill Jones");
+    private final JFrame frame = new JFrame("Scoring Bill Jones");
 
     private JPanel mainPanel;
     private JPanel buttonPanel;
@@ -63,7 +64,7 @@ public class ScoringForm {
     private JButton clearButton;
 
     private static DataStore dataStore;
-    private ScoringBean scoringBean;
+    private final ScoringBean scoringBean;
     private TravellerTableModel travellerTableModel;
     private Competition competition;
     private BoardId currentBoardId;
@@ -76,29 +77,37 @@ public class ScoringForm {
 
         $$$setupUI$$$();
 
-        competition = dataStore.getCompetition(0);
         scoringBean = new ScoringBean();
-        scoringBean.setSet("1");
-        scoringBean.setBoard("1");
-        scoringBean.setCurrentCompetition(competition);
+        competition = dataStore.getCompetition(0);
+
+        int noSets = 0;
+        int noPairs = 0;
+        int noBoardsPerSet = 0;
+        String competitionName = null;
+        List<String> pairings = null;
+
+        if (competition != null) {
+
+            noSets = competition.getNoSets();
+            noPairs = competition.getNoPairs();
+            noBoardsPerSet = competition.getNoBoardsPerSet();
+            competitionName = competition.getCompetitionName();
+
+            BoardId boardId = new BoardId(noSets, noBoardsPerSet);
+
+            Traveller traveller = competition.getTraveller(boardId);
+            //travellerTableModel.setNoPairs(noPairs);
+            travellerTableModel.setTraveller(traveller);
+
+            pairings = competition.getPairings();
+            pairingTableModel.setNoPairs(noPairs);
+            pairingTableModel.setPairings(pairings);
+        }
         setData(scoringBean);
 
-        int noPairs = competition.getNoPairs();
-        String name = competition.getCompetitionName();
-
-        BoardId boardId = scoringBean.getBoardId();
-        Traveller traveller = competition.getTraveller(boardId);
-        travellerTableModel.setNoPairs(noPairs);
-        travellerTableModel.setTraveller(traveller);
-
-
-        List<String> pairings = competition.getPairings();
-        pairingTableModel.setNoPairs(noPairs);
-        pairingTableModel.setPairings(pairings);
-
         StringBuilder logLine = new StringBuilder()
-                .append("Competition:")
-                .append(name)
+                .append("Initialisation:  Selected Competition:")
+                .append(competitionName)
                 .append(", pairs: ")
                 .append(noPairs)
                 .append("(")
@@ -112,46 +121,21 @@ public class ScoringForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logger.debug("back");
-
-                //Save current Traveller.
-                scoreTable.clearSelection();
-                BoardId boardId = scoringBean.getBoardId();
-                Traveller savedTraveller = competition.getTraveller(boardId);
-                Traveller newTraveller = travellerTableModel.getTraveller();
-
-                savedTraveller.copy(newTraveller);
-
-                //Fetch previous
-                boardId = scoringBean.prev();
-
-                //Update view.
-                savedTraveller = competition.getTraveller(boardId);
-                travellerTableModel.setTraveller(savedTraveller);
-                setData(scoringBean);
+                navigateTraveller((bd) -> {
+                    return bd.prev();
+                });
 
                 mainPanel.repaint();
             }
+
         });
         forwardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logger.debug("fwd");
-
-                //Save currrent Traveller.
-                scoreTable.clearSelection();
-                BoardId boardId = scoringBean.getBoardId();
-                Traveller savedTraveller = competition.getTraveller(boardId);
-                Traveller newTraveller = travellerTableModel.getTraveller();
-
-                savedTraveller.copy(newTraveller);
-
-                //Fetch previous
-                boardId = scoringBean.next();
-
-                //Update view.
-                savedTraveller = competition.getTraveller(boardId);
-                travellerTableModel.setTraveller(savedTraveller);
-                setData(scoringBean);
+                navigateTraveller((bd) -> {
+                    return bd.next();
+                });
 
                 mainPanel.repaint();
             }
@@ -161,8 +145,12 @@ public class ScoringForm {
             public void actionPerformed(ActionEvent e) {
                 logger.debug("go");
 
+                navigateTraveller((bd) -> bd.select(
+                        Integer.parseUnsignedInt(scoringBean.getNewSet()),
+                        Integer.parseUnsignedInt(scoringBean.getNewBoard())));
 
-                //Save current Traveller.
+
+/*                //Save current Traveller.
                 scoreTable.clearSelection();
                 BoardId boardId = scoringBean.getBoardId();
                 Traveller savedTraveller = competition.getTraveller(boardId);
@@ -177,20 +165,35 @@ public class ScoringForm {
                 travellerTableModel.setTraveller(savedTraveller);
                 setData(scoringBean);
 
+                dataStore.persist(competition);*/
                 mainPanel.repaint();
             }
         });
         travellerTableModel.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
+                logger.debug("Traveller table changed: " + e.getSource());
+
+                ScoringBean scoringBean = new ScoringBean();
+                getData(scoringBean);
                 TravellerTableModel travellerTableModel = (TravellerTableModel) e.getSource();
                 Traveller newTraveller = travellerTableModel.getTraveller();
                 newTraveller.scoreHand(e.getFirstRow(), true);
+                BoardId currentBoardId = newTraveller.getBoardId();
 
-                BoardId boardId1 = scoringBean.getBoardId();
-                Traveller savedTraveller = competition.getTraveller(boardId1);
+ /*
+                int noSets = competition.getNoSets();
+                int noBoardsPerSet = competition.getNoBoardsPerSet();
+                int noPairs = competition.getNoPairs();
+
+                BoardId boardId1 = new BoardId(noSets, noBoardsPerSet);
+                boardId1.setSet();
+                scoringBean.setNewBoard();
+*/
+                Traveller savedTraveller = competition.getTraveller(currentBoardId);
                 savedTraveller.copy(newTraveller);
 
+                setData(scoringBean);
                 dataStore.persist(competition);
 
                 mainPanel.repaint();
@@ -212,7 +215,7 @@ public class ScoringForm {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                logger.debug("Save...");
                 dataStore.persist(competition);
                 competition.saveResults();
             }
@@ -220,17 +223,29 @@ public class ScoringForm {
         compComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug(e.getActionCommand());
+                logger.debug("compComboBox: " + e.getActionCommand());
 
                 //Get selected Competition and save key for later...
                 String key = (String) compComboBox.getSelectedItem();
+                logger.debug(key + "selected...");
+
+                ScoringBean scoringBean = new ScoringBean();
+                getData(scoringBean);
 
                 //Save current Traveller in old Competition.
-                scoreTable.clearSelection();
-                BoardId boardId = scoringBean.getBoardId();
-                Traveller savedTraveller = competition.getTraveller(boardId);
+                Traveller savedTraveller;
                 Traveller newTraveller = travellerTableModel.getTraveller();
-                savedTraveller.copy(newTraveller);
+
+                BoardId boardId = newTraveller.getBoardId();
+                ;
+                if (competition != null && scoreTable != null && boardId != null) {
+                    scoreTable.clearSelection();
+                    savedTraveller = competition.getTraveller(boardId);
+                    savedTraveller.copy(newTraveller);
+                } else {
+                    logger.debug("...traveller not saved.");
+                }
+                ;
 
                 //...and pairings
                 competition.setPairings(pairingTableModel.getPairings());
@@ -245,8 +260,9 @@ public class ScoringForm {
                 List<String> pairings = competition.getPairings();
 
                 boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
-                scoringBean.setCurrentCompetition(competition);
-                scoringBean.setBoardId(boardId);
+
+                scoringBean.setNewSet(Integer.toString(boardId.getSet()));
+                scoringBean.setNewBoard(Integer.toString(boardId.getBoard()));
 
                 pairingTableModel.setNoPairs(noPairs);
                 pairingTableModel.setPairings(pairings);
@@ -265,6 +281,7 @@ public class ScoringForm {
                 //Update view.
                 savedTraveller = competition.getTraveller(boardId);
                 travellerTableModel.setTraveller(savedTraveller);
+                //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
                 setData(scoringBean);
 
 
@@ -274,24 +291,54 @@ public class ScoringForm {
         addComp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                logger.debug("Add...");
                 getData(scoringBean);
                 competition = new Competition();
                 competition.setCompetitionName(scoringBean.getNewCompetitionName());
+                int noPairs = Integer.parseUnsignedInt(scoringBean.getNewNoPairs());
+                List<String> pairings = null;
                 try {
                     competition.setNoSets(Integer.parseUnsignedInt(scoringBean.getNewSets()));
                     competition.setNoBoardsPerSet(Integer.parseUnsignedInt(scoringBean.getNewBoardsPerSet()));
                     competition.setNoPairs(Integer.parseUnsignedInt(scoringBean.getNewNoPairs()));
                     competition.initialise();
+
+                    pairings = competition.getPairings();
                     dataStore.persist(competition);
 
                 } catch (NumberFormatException ex) {
-                    logger.warn(ex.toString());
+                    logger.warn("Exception caught in Add listener: " + ex.toString());
                 }
+                BoardId boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
+                scoringBean.setCurrentSets(scoringBean.getNewSets());
+                scoringBean.setCurrentBoardsPerSet(scoringBean.getNewBoardsPerSet());
+                scoringBean.setCurrentNoPairs(scoringBean.getNewBoardsPerSet());
 
+                pairingTableModel.setNoPairs(noPairs);
+                pairingTableModel.setPairings(pairings);
 
+                StringBuilder logLine = new StringBuilder()
+                        .append("Competition:")
+                        .append(scoringBean.getNewCompetitionName())
+                        .append(", pairs: ")
+                        .append(noPairs)
+                        .append("(")
+                        .append(pairings.size())
+                        .append(")");
+
+                logger.debug(logLine);
+
+                //Update view.
+                Traveller traveller = competition.getTraveller(boardId);
+                travellerTableModel.setTraveller(traveller);
+                //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
+                setData(scoringBean);
+
+                //Update comboBox with latest list of Competition names.
                 Set names = dataStore.getCompetitionNames();
                 nameList.clear();
                 nameList.addAll(names);
+                compComboBox.setSelectedItem(scoringBean.getNewCompetitionName());
 
                 mainPanel.repaint();
 
@@ -300,12 +347,16 @@ public class ScoringForm {
         deleteComp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                logger.debug("Delete...");
                 String key = (String) compComboBox.getSelectedItem();
                 dataStore.delete(key);
 
                 Set names = dataStore.getCompetitionNames();
                 nameList.clear();
                 nameList.addAll(names);
+
+                String newSelection = (String) compComboBox.getSelectedItem();
+                competition = dataStore.getCompetition(newSelection);
 
                 mainPanel.repaint();
             }
@@ -314,10 +365,16 @@ public class ScoringForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logger.debug("Clear");
-                BoardId boardId = scoringBean.getBoardId();
-                Traveller traveller = competition.getTraveller(boardId);
-                traveller.clear();
-                travellerTableModel.setTraveller(traveller);
+
+                Traveller displayedTraveller = travellerTableModel.getTraveller();
+                displayedTraveller.clear();
+                BoardId board = displayedTraveller.getBoardId();
+
+                if (competition != null) {
+                    competition.getTraveller(board).copy(displayedTraveller);
+                    dataStore.persist(competition);
+                }
+                //travellerTableModel.setTraveller(traveller);
 
                 mainPanel.repaint();
             }
@@ -369,6 +426,30 @@ public class ScoringForm {
         compComboBox = new JComboBox(nameList);
 
 
+    }
+
+    private void navigateTraveller(Function<BoardId, BoardId> navigateTo) {
+        //Save current Traveller.
+        scoreTable.clearSelection();
+        Traveller formTraveller = travellerTableModel.getTraveller();
+        BoardId boardId = formTraveller.getBoardId();
+        Traveller savedTraveller = competition.getTraveller(boardId);
+        formTraveller.setBoardId(boardId.clone());
+        savedTraveller.copy(formTraveller);
+
+        //Fetch specified traveller
+        BoardId newBoardId = navigateTo.apply(boardId);
+
+        //Update view.
+        Traveller newTraveller = competition.getTraveller(newBoardId);
+        if (newTraveller.isEmpty() && boardId.getSet() == newBoardId.getSet()) {
+            logger.debug("Traveller " + newBoardId.getSet() + "-" + newBoardId.getBoard() + " is blank.");
+            newTraveller = formTraveller.generatePrefilled(newBoardId);
+        }
+        travellerTableModel.setTraveller(newTraveller);
+        setData(scoringBean);
+
+        dataStore.persist(competition);
     }
 
     /**
@@ -587,8 +668,8 @@ public class ScoringForm {
     }
 
     public void setData(ScoringBean data) {
-        setField.setText(data.getSet());
-        boardField.setText(data.getBoard());
+        setField.setText(data.getNewSet());
+        boardField.setText(data.getNewBoard());
         newCompField.setText(data.getNewCompetitionName());
         currentNoPairsField.setText(data.getCurrentNoPairs());
         currentSetsField.setText(data.getCurrentSets());
@@ -599,8 +680,8 @@ public class ScoringForm {
     }
 
     public void getData(ScoringBean data) {
-        data.setSet(setField.getText());
-        data.setBoard(boardField.getText());
+        data.setNewSet(setField.getText());
+        data.setNewBoard(boardField.getText());
         data.setNewCompetitionName(newCompField.getText());
         data.setCurrentNoPairs(currentNoPairsField.getText());
         data.setCurrentSets(currentSetsField.getText());
@@ -611,8 +692,9 @@ public class ScoringForm {
     }
 
     public boolean isModified(ScoringBean data) {
-        if (setField.getText() != null ? !setField.getText().equals(data.getSet()) : data.getSet() != null) return true;
-        if (boardField.getText() != null ? !boardField.getText().equals(data.getBoard()) : data.getBoard() != null)
+        if (setField.getText() != null ? !setField.getText().equals(data.getNewSet()) : data.getNewSet() != null)
+            return true;
+        if (boardField.getText() != null ? !boardField.getText().equals(data.getNewBoard()) : data.getNewBoard() != null)
             return true;
         if (newCompField.getText() != null ? !newCompField.getText().equals(data.getNewCompetitionName()) : data.getNewCompetitionName() != null)
             return true;

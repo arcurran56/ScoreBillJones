@@ -2,6 +2,7 @@ package scorebj.traveller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scorebj.model.BoardId;
 import scorebj.model.ScoreLine;
 import scorebj.model.Traveller;
 
@@ -45,10 +46,12 @@ public class TravellerTableModel extends AbstractTableModel {
 
     private int noPairs;
     private List<ScoreLine> travellerTable;
+    private int rowCount;
+    private BoardId boardId;
 
     public TravellerTableModel(int noPairs){
-        this.noPairs = noPairs;
-        travellerTable = new ArrayList<ScoreLine>(noPairs/2);
+        this.rowCount = noPairs/2;
+        travellerTable = new ArrayList<ScoreLine>(rowCount);
 
         for (int i=0; i<noPairs/2; i++) {
             travellerTable.add(new ScoreLine());
@@ -57,7 +60,7 @@ public class TravellerTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return noPairs/2;
+        return rowCount;
     }
 
     @Override
@@ -128,16 +131,27 @@ public class TravellerTableModel extends AbstractTableModel {
         //ScoreLine scoreLine;
         travellerTable.clear();
         travellerTable.addAll(traveller.getScoreLines());
+        rowCount = travellerTable.size();
+        boardId = traveller.getBoardId();
 
         StringBuilder logLine = new StringBuilder()
-                .append("Traveller size: ")
-                .append(travellerTable.size());
+                .append("Displaying traveller: Set ")
+                .append(boardId.getSet())
+                .append(", Board ")
+                .append(boardId.getBoard())
+                .append(" with ")
+                .append(rowCount)
+                .append(" rows.");
         logger.debug(logLine);
     }
 
     public Traveller getTraveller(){
-        Traveller traveller = new Traveller();
-        traveller.addAll(travellerTable);
+        Traveller traveller = new Traveller(rowCount);
+        List<ScoreLine> lines = traveller.getScoreLines();
+        for (int i=0; i<rowCount; i++) {
+            lines.set(i,travellerTable.get(i));
+        }
+        traveller.setBoardId(this.boardId);
         return traveller;
     }
 

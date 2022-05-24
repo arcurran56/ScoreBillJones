@@ -4,10 +4,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.Assert.*;
+import scorebj.model.BoardId;
 import scorebj.model.ScoreLine;
 import scorebj.model.Traveller;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.List;
 
 class TravellerTableModelTest {
 
@@ -93,6 +95,10 @@ class TravellerTableModelTest {
     void setTraveller() {
         TravellerTableModel t = new TravellerTableModel(12);
         Traveller traveller = new Traveller(5);
+        BoardId boardId = new BoardId(3,4);
+        boardId.setSet(2);
+        boardId.setBoard(3);
+        traveller.setBoardId(boardId);
         ScoreLine scoreLine = traveller.getScoreLines().get(2);
         scoreLine.setNsPair(2);
         scoreLine.setContract(new Contract("3H"));
@@ -105,5 +111,30 @@ class TravellerTableModelTest {
         assertEquals("3H", t.getValueAt(2,2).toString());
         assertEquals("N",t.getValueAt(2,3).toString());
         assertEquals(10,t.getValueAt(2,4));
+    }
+
+    @Test
+    void testGetTraveller() {
+        TravellerTableModel model = new TravellerTableModel(6);
+        Traveller blank = new Traveller(3);
+        BoardId boardId = new BoardId(5, 3);
+        boardId.setSet(3);
+        boardId.setBoard(2);
+        blank.setBoardId(boardId);
+
+        model.setTraveller(blank);
+        model.setValueAt("4",0,1);
+        model.setValueAt("5",2,0);
+
+        Traveller res = model.getTraveller();
+        List<ScoreLine> table = res.getScoreLines();
+        assertAll( "testTraveller", () -> {
+            assertEquals(3,table.size());
+            assertEquals(3, model.getRowCount());
+            assertEquals(4, table.get(0).getEwPair());
+            assertEquals(5, table.get(2).getNsPair());
+            assertNull(table.get(1).getNsPair());
+            assertEquals(3,res.getBoardId().getSet());
+        });
     }
 }

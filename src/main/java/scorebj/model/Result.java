@@ -102,7 +102,7 @@ public class Result {
                 }
 
             }
-            boardId.next();
+            boardId = boardId.next();
 
         }
 
@@ -127,7 +127,7 @@ public class Result {
         while (loopCount<noSets*noBoardsPerSet) {
             outputLine1.append(",").append(boardId.getSet());
             outputLine2.append(",").append(boardId.getBoard());
-            boardId.next();
+            boardId = boardId.next();
             loopCount++;
         }
         output.println(outputLine1);

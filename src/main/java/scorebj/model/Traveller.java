@@ -1,13 +1,26 @@
 package scorebj.model;
 
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Traveller {
 
-    private int size;
+    private final Logger logger = LogManager.getLogger();
+    private final int size;
 
-    public Traveller() {
+    private BoardId boardId;
+
+    public BoardId getBoardId() {
+        return boardId;
+    }
+
+    public void setBoardId(BoardId boardId) {
+        this.boardId = boardId;
     }
 
     public Traveller(int size) {
@@ -21,10 +34,6 @@ public class Traveller {
         return scoreLines;
     }
 
-    public void setScoreLines(List<ScoreLine> scoreLines) {
-        this.scoreLines = scoreLines;
-    }
-
     public ScoreLine getScoreLine(int line) {
         return scoreLines.get(line);
     }
@@ -33,11 +42,41 @@ public class Traveller {
 
     public void copy(Traveller traveller) {
         this.scoreLines = traveller.getScoreLines();
+    }
 
+    /**
+     * Generate a new traveller pre-filled with pairings from this Traveller.
+     * @param newBoardId
+     * @return
+     */
+    public Traveller generatePrefilled(BoardId newBoardId) {
+        Traveller newTraveller = new Traveller(size);
+        newTraveller.setBoardId(newBoardId);
+
+        List<ScoreLine> newScoreLines = newTraveller.getScoreLines();
+        int nsPair;
+        int ewPair;
+        int newSet = newBoardId.getSet();
+        int oldSet = boardId.getSet();
+        boolean complete = isComplete();
+        if (newSet == oldSet && complete) {
+            for (int i=0; i<size; i++) {
+                nsPair = scoreLines.get(i).getNsPair();
+                ewPair = scoreLines.get(i).getEwPair();
+                newScoreLines.get(i).setNsPair(nsPair);
+                newScoreLines.get(i).setEwPair(ewPair);
+            }
+        }
+        return  newTraveller;
     }
 
     public void addAll(List<ScoreLine> scoreLines) {
         this.scoreLines.addAll(scoreLines);
+        int newSize = scoreLines.size();
+        if ( newSize != size) {
+            logger.warn("Size mismatch: " + newSize + " vs " + size);
+        }
+
     }
 
     public void clear() {
@@ -96,6 +135,17 @@ public class Traveller {
         }
 
     }
+    public boolean isEmpty() {
+        int emptyLines = 0;
+        boolean empty;
+        for (ScoreLine scoreLine: scoreLines){
+            if (scoreLine.getNsPair() == null && scoreLine.getEwPair() == null){
+                emptyLines++;
+            }
+        }
+        empty = emptyLines == size;
+        return empty;
+    }
     public boolean isComplete(){
         int completedLines = 0;
         boolean complete;
@@ -136,4 +186,5 @@ public class Traveller {
         stringList.add("");
         return stringList;
     }
+
 }

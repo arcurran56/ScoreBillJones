@@ -10,7 +10,7 @@ public class ScoringBean {
 
     private static final Logger logger = LogManager.getLogger();
     private Competition currentCompetition;
-    //private Competition newCompetition;
+
     private String currentCompetitionName;
     private String currentSets;
     private String currentBoardsPerSet;
@@ -20,6 +20,26 @@ public class ScoringBean {
     private String newSets;
     private String newBoardsPerSet;
     private String newNoPairs;
+
+    private String newSet = "1";
+
+    public String getNewSet() {
+        return newSet;
+    }
+
+    public void setNewSet(String newSet) {
+        this.newSet = newSet;
+    }
+
+    public String getNewBoard() {
+        return newBoard;
+    }
+
+    public void setNewBoard(String newBoard) {
+        this.newBoard = newBoard;
+    }
+
+    private String newBoard = "1";
 
     public String getCurrentNoPairs() {
         return Integer.toString(currentCompetition.getNoPairs());
@@ -43,16 +63,8 @@ public class ScoringBean {
         this.newNoPairs = newNoPairs;
     }
 
-    private BoardId boardId = new BoardId(5, 16);
+    private BoardId boardId;
     public ScoringBean() {
-    }
-
-    public String getCurrentCompetitionName() {
-        return currentCompetition.getCompetitionName();
-    }
-
-    public void setCurrentCompetitionName(String currentCompetitionName) {
-        currentCompetition.setCompetitionName(currentCompetitionName);
     }
 
     public String getCurrentSets() {
@@ -68,6 +80,7 @@ public class ScoringBean {
             logger.warn(e.toString());
         }
     }
+/*
 
     public Competition getCurrentCompetition() {
         return currentCompetition;
@@ -76,6 +89,7 @@ public class ScoringBean {
     public void setCurrentCompetition(Competition currentCompetition) {
         this.currentCompetition = currentCompetition;
     }
+*/
 
     public String getCurrentBoardsPerSet() {
         return Integer.toString(currentCompetition.getNoBoardsPerSet());
@@ -113,14 +127,15 @@ public class ScoringBean {
     public void setNewBoardsPerSet(String newBoardsPerSet) {
         this.newBoardsPerSet = newBoardsPerSet;
     }
-
+/*
     public BoardId getBoardId() {
         return boardId;
     }
 
     public void setBoardId(BoardId boardId) {
         this.boardId = boardId;
-    }
+    }*/
+/*
 
     public String getSet() {
         return boardId.getSet().toString();
@@ -155,5 +170,6 @@ public class ScoringBean {
     public BoardId prev() {
         return boardId.prev();
     }
+*/
 
 }

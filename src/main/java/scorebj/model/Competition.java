@@ -123,7 +123,7 @@ public class Competition {
                     .append(boardId.getBoard());
             strings.add(header.toString());
             strings.addAll(traveller.toStringList());
-            boardId.next();
+            boardId = boardId.next();
         }
         return strings;
     }
@@ -140,12 +140,15 @@ public class Competition {
         }
     }
     public void initialise() {
+        BoardId boardId = new BoardId(noSets, noBoardsPerSet);
         if( noSets>0 && noBoardsPerSet>0 && noPairs>0) {
             travellers.clear();
             Traveller traveller;
             for (int i = 0; i < noSets*noBoardsPerSet; i++) {
                 traveller = new Traveller(noPairs / 2);
+                traveller.setBoardId(boardId.clone());
                 travellers.add(traveller);
+                boardId = boardId.next();
             }
             pairings = new ArrayList<>(noPairs);
             for (int i = 0; i < noPairs; i++) {

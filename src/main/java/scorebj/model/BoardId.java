@@ -1,14 +1,12 @@
 package scorebj.model;
 
-import java.util.Enumeration;
-
-public class BoardId {
+public class BoardId implements Cloneable{
     enum Vulnerability{NONE, NS, EW, ALL}
     private Vulnerability vulnerabilityStatus = Vulnerability.NONE;
     private final int noOfBoards;
     private final int noOfSets;
 
-    private int serNo = 0;
+    private int serNo;
 
     public BoardId(int noOfSets, int noOfBoards) {
         this.noOfSets = noOfSets;
@@ -30,8 +28,15 @@ public class BoardId {
         return serNo % noOfBoards + 1;
     }
 
-    public int getSerNo() {
+    private int getSerNo() {
         return serNo;
+    }
+
+    private void setSerNo(int serNo) {
+        if (serNo < 0) serNo = serNo + noOfBoards*noOfSets;
+        if ( serNo >= noOfBoards*noOfSets) serNo = serNo - noOfBoards*noOfSets;
+        this.serNo = serNo;
+        determineVulnerability();
     }
 
     public void setBoard(int board) {
@@ -40,20 +45,22 @@ public class BoardId {
     }
 
     public BoardId next(){
-        serNo++;
-        if (serNo >= noOfBoards*noOfSets) serNo = serNo - noOfBoards*noOfSets;
-        determineVulnerability();
-        return this;
+        BoardId nextBoardId = this.clone();
+        int newSerNo = this.serNo + 1;
+        nextBoardId.setSerNo(newSerNo);
+        return nextBoardId;
     }
     public BoardId prev(){
-        serNo--;
-        if (serNo < 0) serNo = serNo + noOfBoards*noOfSets;
-        determineVulnerability();
-        return this;
+        BoardId prevBoardId = this.clone();
+        int newSerNo = this.serNo - 1;
+        prevBoardId.setSerNo(newSerNo);
+        return prevBoardId;
     }
-    public void select(Integer set, Integer board){
-        serNo = (set - 1) * noOfBoards + board -1;
-        determineVulnerability();
+    public BoardId select(Integer set, Integer board){
+        BoardId newBoardId = this.clone();
+        newBoardId.setSet(set);
+        newBoardId.setBoard(board);
+        return newBoardId;
     }
     public boolean getVulnerability(ScoreLine.Direction direction) {
         boolean vulnerability = false;
@@ -72,11 +79,21 @@ public class BoardId {
         }
         return vulnerability;
     }
-
+    @Override
+    public BoardId clone() {
+        BoardId clone = null;
+        try {
+            clone = (BoardId) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return clone;
+    }
      private void determineVulnerability(){
         int board = serNo % noOfBoards;
         int vulnerabilityOrd = ( (board % 4) + (board / 4) ) % 4;
         vulnerabilityStatus = Vulnerability.values()[vulnerabilityOrd];
 
     }
+
 }

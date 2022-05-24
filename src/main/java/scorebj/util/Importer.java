@@ -37,6 +37,7 @@ public class Importer {
         competition.setNoSets(noSets);
         competition.setNoBoardsPerSet(noBoardsPerSet);
         competition.setNoPairs(noPairs);
+        competition.initialise();
 
         StringBuilder builder = (new StringBuilder())
                 .append(competitionName)
@@ -90,7 +91,7 @@ public class Importer {
                     lineIndex++;
                     if (lineIndex == lineCount) {
                         readingState = ReadingState.LINE_COUNT;
-                        boardId.next();
+                        boardId = boardId.next();
                     }
                     break;
             }
