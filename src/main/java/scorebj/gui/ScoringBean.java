@@ -23,6 +23,8 @@ public class ScoringBean {
 
     private String newSet = "1";
 
+    private String travellerComplete;
+
     public String getNewSet() {
         return newSet;
     }
@@ -101,4 +103,11 @@ public class ScoringBean {
     }
 
 
+    public String getTravellerComplete() {
+        return travellerComplete;
+    }
+
+    public void setTravellerComplete(String travellerComplete) {
+        this.travellerComplete = travellerComplete;
+    }
 }
