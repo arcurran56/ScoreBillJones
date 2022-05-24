@@ -188,4 +188,8 @@ public class Traveller {
         return stringList;
     }
 
+    public String getCompetionStatus() {
+        String completionStatus = isComplete()?"":"Unfinished";
+        return completionStatus;
+    }
 }
