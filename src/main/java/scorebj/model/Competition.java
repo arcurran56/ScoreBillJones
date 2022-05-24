@@ -7,14 +7,14 @@ import java.io.IOException;
 import java.util.*;
 
 public class Competition {
-    private final String DEFAULT_COMPETITION_NAME = "Default";
+    private final String DEFAULT_COMPETITION_NAME = "";
     private Logger logger = LogManager.getLogger();
     private String competitionName = DEFAULT_COMPETITION_NAME;
     private Date date = new Date();
     private int noSets;
     private int noBoardsPerSet;
     private int noPairs;
-    private List<String> pairings;
+    private List<String> pairings = new ArrayList<>(20);
 
 /*
     private final String[] DEFAULT_PAIRINGS = {"David & Salette",
@@ -28,11 +28,12 @@ public class Competition {
             "Lisbeth & Vicky",
             "Caroline & Andrew"};
 */
-    private List<Traveller> travellers = new ArrayList(50);
-    private BoardId currentBoard;
+    private List<Traveller> travellers = new ArrayList(100);
 
     public Competition() {
-
+        Traveller defaultTraveller = new Traveller(0);
+        defaultTraveller.setBoardId(new BoardId(1,1));
+        travellers.add(0,defaultTraveller);
     }
 
     public String getCompetitionName() {
@@ -96,6 +97,7 @@ public class Competition {
         }
         if (traveller == null) {
             traveller = new Traveller(noPairs/2);
+            traveller.setBoardId(boardId.clone());
         }
         return traveller;
     }

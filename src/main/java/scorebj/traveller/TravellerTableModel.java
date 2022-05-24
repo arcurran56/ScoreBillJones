@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TravellerTableModel extends AbstractTableModel {
-    private static Logger logger = LogManager.getLogger();
+    private static final int INITIAL_CAPACITY = 10;
+    private static final Logger logger = LogManager.getLogger();
 
     private final String INTEGER = "java.lang.Integer";
     private final String CONTRACT = "scorebj.traveller.Contract";
@@ -44,18 +45,14 @@ public class TravellerTableModel extends AbstractTableModel {
                     INTEGER};
 
 
-    private int noPairs;
-    private List<ScoreLine> travellerTable;
-    private int rowCount;
+    private int noPairs =0;
+    private final List<ScoreLine> travellerTable;
+    private int rowCount = 0;
     private BoardId boardId;
 
-    public TravellerTableModel(int noPairs){
-        this.rowCount = noPairs/2;
-        travellerTable = new ArrayList<ScoreLine>(rowCount);
+    public TravellerTableModel(){
+        travellerTable = new ArrayList<ScoreLine>(INITIAL_CAPACITY);
 
-        for (int i=0; i<noPairs/2; i++) {
-            travellerTable.add(new ScoreLine());
-        }
     }
 
     @Override
@@ -108,6 +105,7 @@ public class TravellerTableModel extends AbstractTableModel {
                     convertedValue = ScoreLine.Direction.valueOf((String) aValue);
             }
         } catch (Exception e) {
+            logger.warn(e.toString());
         }
 
         ScoreLine scoreLine = travellerTable.get(rowIndex);
@@ -129,16 +127,26 @@ public class TravellerTableModel extends AbstractTableModel {
 
     public void setTraveller(Traveller traveller) {
         //ScoreLine scoreLine;
+        boardId  = traveller.getBoardId();
         travellerTable.clear();
         travellerTable.addAll(traveller.getScoreLines());
         rowCount = travellerTable.size();
-        boardId = traveller.getBoardId();
 
         StringBuilder logLine = new StringBuilder()
-                .append("Displaying traveller: Set ")
-                .append(boardId.getSet())
-                .append(", Board ")
-                .append(boardId.getBoard())
+                .append("Displaying traveller: ") ;
+
+        if (boardId != null) {
+            traveller = new Traveller(0);
+            logLine
+                .append("Set ")
+                    .append(boardId.getSet())
+                    .append(", Board ")
+                    .append(boardId.getBoard())    ;
+        }
+        else {
+            logLine.append(" null board ");
+        }
+        logLine
                 .append(" with ")
                 .append(rowCount)
                 .append(" rows.");
@@ -155,7 +163,4 @@ public class TravellerTableModel extends AbstractTableModel {
         return traveller;
     }
 
-    public void setNoPairs(int noPairs) {
-        this.noPairs = noPairs;
-    }
 }

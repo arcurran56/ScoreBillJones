@@ -12,14 +12,14 @@ public class ScoringBean {
     private Competition currentCompetition;
 
     private String currentCompetitionName;
-    private String currentSets;
-    private String currentBoardsPerSet;
-    private String currentNoPairs;
+    private String currentSets = "0";
+    private String currentBoardsPerSet = "0";
+    private String currentNoPairs = "0";
 
-    private String newCompetitionName;
-    private String newSets;
-    private String newBoardsPerSet;
-    private String newNoPairs;
+    private String newCompetitionName = "";
+    private String newSets = "";
+    private String newBoardsPerSet = "";
+    private String newNoPairs = "";
 
     private String newSet = "1";
 
@@ -42,18 +42,12 @@ public class ScoringBean {
     private String newBoard = "1";
 
     public String getCurrentNoPairs() {
-        return Integer.toString(currentCompetition.getNoPairs());
+        return currentNoPairs;
     }
 
     public void setCurrentNoPairs(String noPairs) {
-
-        try {
-            int noPairsVal = Integer.parseUnsignedInt(noPairs);
-            currentCompetition.setNoPairs(noPairsVal);
-        } catch (NumberFormatException e) {
-            logger.warn(e.toString());
-        }
-    }
+        this.currentNoPairs = noPairs;
+     }
 
     public String getNewNoPairs() {
         return newNoPairs;
@@ -63,45 +57,23 @@ public class ScoringBean {
         this.newNoPairs = newNoPairs;
     }
 
-    private BoardId boardId;
     public ScoringBean() {
     }
 
     public String getCurrentSets() {
-        return Integer.toString(currentCompetition.getNoSets());
+        return currentSets;
     }
 
     public void setCurrentSets(String currentSets) {
-        try {
-            int currentSetsValue = Integer.parseUnsignedInt(currentSets);
-            this.currentCompetition.setNoSets(currentSetsValue);
-
-        } catch (NumberFormatException e) {
-            logger.warn(e.toString());
-        }
+        this.currentSets = currentSets;
     }
-/*
-
-    public Competition getCurrentCompetition() {
-        return currentCompetition;
-    }
-
-    public void setCurrentCompetition(Competition currentCompetition) {
-        this.currentCompetition = currentCompetition;
-    }
-*/
 
     public String getCurrentBoardsPerSet() {
-        return Integer.toString(currentCompetition.getNoBoardsPerSet());
+        return currentBoardsPerSet;
     }
 
     public void setCurrentBoardsPerSet(String currentBoardsPerSet) {
-        int currentBoardsPerSetVal = Integer.parseUnsignedInt(currentBoardsPerSet);
-        try {
-            this.currentCompetition.setNoBoardsPerSet(currentBoardsPerSetVal);
-        } catch (Exception e) {
-            logger.warn(e.toString());
-        }
+        this.currentBoardsPerSet = currentBoardsPerSet;
     }
 
     public String getNewCompetitionName() {
@@ -127,49 +99,6 @@ public class ScoringBean {
     public void setNewBoardsPerSet(String newBoardsPerSet) {
         this.newBoardsPerSet = newBoardsPerSet;
     }
-/*
-    public BoardId getBoardId() {
-        return boardId;
-    }
 
-    public void setBoardId(BoardId boardId) {
-        this.boardId = boardId;
-    }*/
-/*
-
-    public String getSet() {
-        return boardId.getSet().toString();
-    }
-
-    public void setSet(String set) {
-        try {
-            int parsedSet = Integer.parseUnsignedInt(set);
-            this.boardId.setSet(parsedSet);
-        } catch (NumberFormatException e) {
-            logger.warn(e.toString())  ;
-        }
-    }
-
-    public String getBoard() {
-        return boardId.getBoard().toString();
-    }
-
-    public void setBoard(String board) {
-        try {
-            int parsedBoard = Integer.parseUnsignedInt(board);
-            this.boardId.setBoard(parsedBoard);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public BoardId next() {
-        return boardId.next();
-    }
-
-    public BoardId prev() {
-        return boardId.prev();
-    }
-*/
 
 }

@@ -140,7 +140,8 @@ import java.util.*;
                     .append(competition.getNoBoardsPerSet());
             logger.debug(logMessage);
 
-            if (competition.getCompetitionName() != null
+            if ( competition.getCompetitionName() != null
+                && !"".equals(competition.getCompetitionName())
                 && competition.getNoPairs() > 0
                 && competition.getNoSets() > 0
                 && competition.getNoBoardsPerSet() > 0) {

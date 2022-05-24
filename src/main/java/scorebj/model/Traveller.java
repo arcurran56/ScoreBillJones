@@ -28,6 +28,7 @@ public class Traveller {
         for (int i = 0; i < size; i++) {
             scoreLines.add(new ScoreLine());
         }
+        boardId = new BoardId(1,1);
     }
 
     public List<ScoreLine> getScoreLines() {
