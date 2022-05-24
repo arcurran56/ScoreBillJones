@@ -158,11 +158,16 @@ public class Competition {
             }
         }
     }
-    public int getCompletionStatus(){
-        int completionStatus = 0;
+    public String getProgress(){
+        int completionCount = 0;
         for (Traveller t: travellers) {
-            if (t.isComplete()) completionStatus++;
+            if (t.isComplete()) completionCount++;
         }
-        return completionStatus;
+        StringBuilder progress = new StringBuilder(" ");
+        progress.append(completionCount)
+                .append("/")
+                .append(travellers.size())
+                .append(" complete");
+        return progress.toString();
     }
 }

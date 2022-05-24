@@ -113,6 +113,8 @@ public class ScoringForm {
 
             String completionStatus = traveller.getCompetionStatus();
             scoringBean.setTravellerComplete(completionStatus);
+            scoringBean.setProgress(competition.getProgress());
+
 
         }
         setData(scoringBean);
@@ -203,6 +205,7 @@ public class ScoringForm {
                 savedTraveller.copy(newTraveller);
 
                 scoringBean.setTravellerComplete(newTraveller.getCompetionStatus());
+                scoringBean.setProgress(competition.getProgress());
 
                 setData(scoringBean);
                 dataStore.persist(competition);
@@ -301,6 +304,7 @@ public class ScoringForm {
                 travellerTableModel.setTraveller(savedTraveller);
 
                 scoringBean.setTravellerComplete(savedTraveller.getCompetionStatus());
+                scoringBean.setProgress(competition.getProgress());
 
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
                 setData(scoringBean);
@@ -352,6 +356,7 @@ public class ScoringForm {
                 Traveller traveller = competition.getTraveller(boardId);
                 travellerTableModel.setTraveller(traveller);
 
+                scoringBean.setProgress(competition.getProgress());
                 scoringBean.setTravellerComplete(traveller.getCompetionStatus());
 
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
@@ -411,6 +416,7 @@ public class ScoringForm {
                 travellerTableModel.setTraveller(traveller);
 
                 scoringBean.setTravellerComplete(traveller.getCompetionStatus());
+                scoringBean.setProgress(competition.getProgress());
 
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
                 setData(scoringBean);
@@ -437,6 +443,7 @@ public class ScoringForm {
                 }
                 //travellerTableModel.setTraveller(traveller);
                 scoringBean.setTravellerComplete(displayedTraveller.getCompetionStatus());
+                scoringBean.setProgress(competition.getProgress());
                 mainPanel.repaint();
             }
         });
@@ -502,6 +509,7 @@ public class ScoringForm {
         travellerTableModel.setTraveller(newTraveller);
 
         scoringBean.setTravellerComplete(newTraveller.getCompetionStatus());
+        scoringBean.setProgress(competition.getProgress());
 
         setData(scoringBean);
 
@@ -520,7 +528,7 @@ public class ScoringForm {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayoutManager(6, 4, new Insets(0, 0, 0, 0), -1, -1));
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayoutManager(1, 10, new Insets(0, 0, 0, 0), -1, -1));
+        buttonPanel.setLayout(new GridLayoutManager(1, 11, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(buttonPanel, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(529, 34), null, 0, false));
         backButton = new JButton();
         backButton.setText("<");
@@ -556,6 +564,10 @@ public class ScoringForm {
         completionStatusField.setEditable(false);
         completionStatusField.setText("completionStatusField");
         buttonPanel.add(completionStatusField, new GridConstraints(0, 9, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        progressField = new JTextField();
+        progressField.setEditable(false);
+        progressField.setText("");
+        buttonPanel.add(progressField, new GridConstraints(0, 10, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         tablePanel = new JPanel();
         tablePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tablePanel.setBackground(new Color(-855310));
@@ -728,6 +740,7 @@ public class ScoringForm {
         setField.setText(data.getNewSet());
         boardField.setText(data.getNewBoard());
         completionStatusField.setText(data.getTravellerComplete());
+        progressField.setText(data.getProgress());
         newCompField.setText(data.getNewCompetitionName());
         currentNoPairsField.setText(data.getCurrentNoPairs());
         currentSetsField.setText(data.getCurrentSets());
@@ -741,6 +754,7 @@ public class ScoringForm {
         data.setNewSet(setField.getText());
         data.setNewBoard(boardField.getText());
         data.setTravellerComplete(completionStatusField.getText());
+        data.setProgress(progressField.getText());
         data.setNewCompetitionName(newCompField.getText());
         data.setCurrentNoPairs(currentNoPairsField.getText());
         data.setCurrentSets(currentSetsField.getText());
@@ -756,6 +770,8 @@ public class ScoringForm {
         if (boardField.getText() != null ? !boardField.getText().equals(data.getNewBoard()) : data.getNewBoard() != null)
             return true;
         if (completionStatusField.getText() != null ? !completionStatusField.getText().equals(data.getTravellerComplete()) : data.getTravellerComplete() != null)
+            return true;
+        if (progressField.getText() != null ? !progressField.getText().equals(data.getProgress()) : data.getProgress() != null)
             return true;
         if (newCompField.getText() != null ? !newCompField.getText().equals(data.getNewCompetitionName()) : data.getNewCompetitionName() != null)
             return true;

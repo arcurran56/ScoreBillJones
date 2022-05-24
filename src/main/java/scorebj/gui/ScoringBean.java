@@ -24,6 +24,7 @@ public class ScoringBean {
     private String newSet = "1";
 
     private String travellerComplete;
+    private String progress;
 
     public String getNewSet() {
         return newSet;
@@ -109,5 +110,13 @@ public class ScoringBean {
 
     public void setTravellerComplete(String travellerComplete) {
         this.travellerComplete = travellerComplete;
+    }
+
+    public String getProgress() {
+        return progress;
+    }
+
+    public void setProgress(final String progress) {
+        this.progress = progress;
     }
 }
