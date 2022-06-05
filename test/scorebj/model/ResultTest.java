@@ -42,7 +42,7 @@ class ResultTest {
         DataStore dataStore = DataStore.create();
         Competition competition = dataStore.getCompetition(0);
         List<String> strings = competition.travellersToText();
-        File persistenceLocation = DataStore.getPersistenceLocation();
+        File persistenceLocation = dataStore.getPersistenceLocation();
         File outputFile = new File(persistenceLocation, "travellers.csv");
         PrintWriter output = new PrintWriter(outputFile);
 
@@ -50,5 +50,21 @@ class ResultTest {
             output.println(line);
         }
         output.close();
+    }
+
+    @Test
+    void createSummaryTable() {
+        DataStore dataStore = DataStore.create();
+        Competition competition = dataStore.getCompetition(0);
+        // competition.setCompetitionName("Test");
+        // competition.setNoSets(5);
+        //competition.setNoBoardsPerSet(16);
+        List<String> pairings = Arrays.asList(DEFAULT_PAIRINGS);
+
+        Result result = new Result((competition.getNoPairs()),
+                competition.getNoSets(),
+                competition.getNoBoardsPerSet());
+        result.collate(pairings, competition.getTravellers());
+        result.createSummaryTable();
     }
 }

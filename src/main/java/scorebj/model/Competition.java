@@ -2,7 +2,10 @@ package scorebj.model;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scorebj.output.ResultSS;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -103,12 +106,16 @@ public class Competition {
     }
 
     public void saveResults() {
+        File outputXlsxFile = new File( DataStore.getPersistenceLocation(), "summary.xlsx");
+
         Result result = new Result(noPairs, noSets, noBoardsPerSet);
         result.collate(pairings, travellers);
         try {
             result.printDetails();
             result.printSummary();
             result.printMatrix();
+            ResultSS ss = result.createSummaryTable();
+            ss.createSpreadsheet(new FileOutputStream(outputXlsxFile));
         } catch (IOException e) {
             e.printStackTrace();
         }
