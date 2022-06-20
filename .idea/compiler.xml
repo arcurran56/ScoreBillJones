@@ -6,11 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ScoreBillJones" />
+        <module name="xstream" />
+        <module name="scorebj" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ScoreBillJones" target="12" />
+      <module name="scorebj" target="8" />
+      <module name="xstream" target="12" />
     </bytecodeTargetLevel>
   </component>
 </project>

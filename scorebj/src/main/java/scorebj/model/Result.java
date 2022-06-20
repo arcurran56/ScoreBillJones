@@ -8,10 +8,7 @@ import scorebj.output.SSRow;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
 import java.util.List;
-
-import static java.util.Collections.*;
 
 public class Result {
     private final Logger logger = LogManager.getLogger();

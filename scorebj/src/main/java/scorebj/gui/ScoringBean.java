@@ -3,7 +3,6 @@ package scorebj.gui;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import scorebj.model.BoardId;
 import scorebj.model.Competition;
 
 public class ScoringBean {

@@ -55,7 +55,7 @@ class ResultSSTest {
     @Test
     void createSpreadsheet() {
 
-        File folder = dataStore.getPersistenceLocation();
+        File folder = DataStore.getPersistenceLocation();
         String filename = "test-ss.xlsx";
         File outputFile = new File(folder, filename);
         try {

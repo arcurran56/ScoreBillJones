@@ -3,12 +3,11 @@ package scorebj.traveller;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.Assert.*;
+
 import scorebj.model.BoardId;
 import scorebj.model.ScoreLine;
 import scorebj.model.Traveller;
 
-import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 class TravellerTableModelTest {

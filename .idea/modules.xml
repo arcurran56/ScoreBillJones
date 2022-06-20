@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ScoreBillJones.iml" filepath="$PROJECT_DIR$/ScoreBillJones.iml" />
       <module fileurl="file://$PROJECT_DIR$/scorebj/scorebj.iml" filepath="$PROJECT_DIR$/scorebj/scorebj.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xstream/xstream.iml" filepath="$PROJECT_DIR$/xstream/xstream.iml" />
     </modules>
   </component>
 </project>

@@ -2,7 +2,6 @@ package scorebj.traveller;
 
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
 public class TravellerTableColumnModel extends DefaultTableColumnModel {
     private final String[] travellerColumnHeaders = new String[]
