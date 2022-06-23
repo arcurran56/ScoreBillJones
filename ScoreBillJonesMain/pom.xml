@@ -46,17 +46,6 @@
                 <groupId>com.thoughtworks.xstream</groupId>
                 <artifactId>xstream</artifactId>
             </dependency>
-        <!--dependency>
-            <groupId>score-bill-jones</groupId>
-            <artifactId>ScoreBillJonesXStream</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency-->
-        <!--dependency>
-            <groupId>score-bill-jones</groupId>
-            <artifactId>xstream</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency-->
     </dependencies>
 
     <build>

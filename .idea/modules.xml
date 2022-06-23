@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ScoreBillJones.iml" filepath="$PROJECT_DIR$/ScoreBillJones.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ScoreBillJonesMain/ScoreBillJonesMain.iml" filepath="$PROJECT_DIR$/ScoreBillJonesMain/ScoreBillJonesMain.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ScoreBillJonesXStream/ScoreBillJonesXStream.iml" filepath="$PROJECT_DIR$/ScoreBillJonesXStream/ScoreBillJonesXStream.iml" />
     </modules>
   </component>
 </project>
