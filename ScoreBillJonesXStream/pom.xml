@@ -9,9 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>xstream</artifactId>
+    <artifactId>ScoreBillJonesXStream</artifactId>
 
-    <name>xstream</name>
+    <name>ScoreBillJonesXStream</name>
     <!-- FIXME change it to the project's website -->
     <url>http://www.example.com</url>
 
@@ -22,10 +22,15 @@
     </properties>
 
     <dependencies>
-         <dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.4.11.1</version>
         </dependency>
     </dependencies>
 
