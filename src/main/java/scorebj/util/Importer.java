@@ -3,7 +3,7 @@ package scorebj.util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scorebj.model.*;
-import scorebj.traveller.Contract;
+import scorebj.model.Contract;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,7 +25,7 @@ public class Importer {
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, DataStoreException {
         String competitionName = args[0];
         int noSets = Integer.parseUnsignedInt(args[1]);
         int noBoardsPerSet = Integer.parseUnsignedInt(args[2]);

@@ -1,4 +1,4 @@
-package scorebj.traveller;
+package scorebj.model;
 
 public class Contract {
     enum Suit {CLUBS("C",20,20),

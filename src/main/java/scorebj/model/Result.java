@@ -23,7 +23,7 @@ public class Result {
     private List<String> pairings;
     private int[][] pairingsMatrix;
 
-    public Result(int noPairs, int noSets, int noBoardsPerSet) {
+    public Result(int noPairs, int noSets, int noBoardsPerSet) throws DataStoreException {
         DataStore dataStore = DataStore.create();
         this.persistenceLocation = dataStore.getPersistenceLocation();
         this.noPairs = noPairs;

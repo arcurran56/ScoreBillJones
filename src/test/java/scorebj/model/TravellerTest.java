@@ -3,7 +3,6 @@ package scorebj.model;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import scorebj.traveller.Contract;
 
 import java.util.List;
 

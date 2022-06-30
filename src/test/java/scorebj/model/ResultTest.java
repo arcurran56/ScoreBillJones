@@ -22,7 +22,7 @@ class ResultTest {
             "Caroline Jones & Andrew Goodwin"};
 
     @Test
-    void collate() throws IOException {
+    void collate() throws IOException, DataStoreException {
         DataStore dataStore = DataStore.create();
         Competition competition = dataStore.getCompetition(0);
        // competition.setCompetitionName("Test");
@@ -38,7 +38,7 @@ class ResultTest {
     }
 
     @Test
-    void printTravellers() throws FileNotFoundException {
+    void printTravellers() throws FileNotFoundException, DataStoreException {
         DataStore dataStore = DataStore.create();
         Competition competition = dataStore.getCompetition(0);
         List<String> strings = competition.travellersToText();
@@ -53,7 +53,7 @@ class ResultTest {
     }
 
     @Test
-    void createSummaryTable() {
+    void createSummaryTable() throws DataStoreException {
         DataStore dataStore = DataStore.create();
         Competition competition = dataStore.getCompetition(0);
         // competition.setCompetitionName("Test");

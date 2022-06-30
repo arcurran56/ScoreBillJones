@@ -5,10 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scorebj.model.BoardId;
-import scorebj.model.Competition;
-import scorebj.model.DataStore;
-import scorebj.model.Traveller;
+import scorebj.model.*;
 import scorebj.pairing.PairingTableModel;
 import scorebj.traveller.TravellerTableColumnModel;
 import scorebj.traveller.TravellerTableModel;
@@ -231,7 +228,11 @@ public class ScoringForm {
             public void actionPerformed(ActionEvent e) {
                 logger.debug("Save...");
                 dataStore.persist(competition);
-                competition.saveResults();
+                try {
+                    competition.saveResults();
+                } catch (DataStoreException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         compComboBox.addActionListener(new ActionListener() {
@@ -449,7 +450,7 @@ public class ScoringForm {
         });
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DataStoreException {
 
         dataStore = DataStore.create();
 

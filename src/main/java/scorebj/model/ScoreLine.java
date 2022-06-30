@@ -1,7 +1,5 @@
 package scorebj.model;
 
-import scorebj.traveller.Contract;
-
 public class ScoreLine {
 
     enum Columns {NS_PAIR, EW_PAIR, CONTRACT, PLAYED_BY, TRICKS, NS_SCORE, EW_SCORE, NS_MPS, EW_MPS}

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import scorebj.model.DataStore;
+import scorebj.model.DataStoreException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,7 +28,7 @@ class ResultSSTest {
     private final ResultSS resultSS = new ResultSS();
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws DataStoreException {
         List<String> headerList = resultSS.getSsHeaderRow();
         headerList.addAll(Arrays.asList(HEADERS));
 

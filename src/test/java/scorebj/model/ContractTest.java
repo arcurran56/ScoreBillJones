@@ -1,7 +1,8 @@
-package scorebj.traveller;
+package scorebj.model;
 
 import org.junit.Assert;
 import org.junit.Test;
+import scorebj.model.Contract;
 
 public class ContractTest {
     @Test

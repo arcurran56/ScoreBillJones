@@ -9,6 +9,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.persistence.FilePersistenceStrategy;
 import com.thoughtworks.xstream.persistence.PersistenceStrategy;
 import com.thoughtworks.xstream.persistence.XmlMap;
+import com.thoughtworks.xstream.security.AnyTypePermission;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,13 +35,14 @@ import java.util.*;
         private final Map<String,Competition> competitions = new Hashtable<>();
         private static Map<String, Competition> persistentCompetitions;
 
-        //private static int selectedCompetitionId = TEST;
-
+        //private final static Class[] ALLOWED_TYPES = {scorebj.model.Competition.class,
+        //        org.apache.logging.log4j.core.Logger.class,
+        //        org.apache.logging.log4j.core.Logger$LoggerProxy.class};
         /**
          * Create a new Datastore if it does not already exist and return it.  Alternatively return the existing one.
          * @return the Datastore singleton.
          */
-        public static DataStore create() {
+        public static DataStore create() throws DataStoreException {
             logger.debug("...creating...");
             try {
                 if (dataStore==null) {
@@ -48,9 +50,9 @@ import java.util.*;
                     dataStore = new DataStore();
                     dataStore.initialise();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.exit(-1);
+            } catch (Exception e) {
+                logger.error(e.getStackTrace());
+                throw new DataStoreException();
             }
             return dataStore;
         }
@@ -60,6 +62,10 @@ import java.util.*;
          */
         private void initialise() throws IOException {
             logger.debug("...initialising...");
+
+            xStream.addPermission(AnyTypePermission.ANY);
+            //xStream.allowTypes(ALLOWED_TYPES);
+
             persistenceLocation = new File(System.getProperty("user.home"), "scorebj");
             File dataLocation = new File(persistenceLocation,"data");
             logger.debug("...writing to " + dataLocation.getAbsolutePath());

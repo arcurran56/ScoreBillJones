@@ -1,7 +1,6 @@
 package scorebj.model;
 
 import org.junit.jupiter.api.Test;
-import scorebj.traveller.Contract;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,5 +1,6 @@
 package scorebj.model;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scorebj.output.ResultSS;
@@ -11,7 +12,9 @@ import java.util.*;
 
 public class Competition {
     private final String DEFAULT_COMPETITION_NAME = "";
-    private Logger logger = LogManager.getLogger();
+
+//    @XStreamOmitField
+//    private Logger logger = LogManager.getLogger();
     private String competitionName = DEFAULT_COMPETITION_NAME;
     private Date date = new Date();
     private int noSets;
@@ -105,7 +108,7 @@ public class Competition {
         return traveller;
     }
 
-    public void saveResults() {
+    public void saveResults() throws DataStoreException {
         File outputXlsxFile = new File( DataStore.getPersistenceLocation(), "summary.xlsx");
 
         Result result = new Result(noPairs, noSets, noBoardsPerSet);
@@ -170,11 +173,9 @@ public class Competition {
         for (Traveller t: travellers) {
             if (t.isComplete()) completionCount++;
         }
-        StringBuilder progress = new StringBuilder(" ");
-        progress.append(completionCount)
-                .append("/")
-                .append(travellers.size())
-                .append(" complete");
-        return progress.toString();
+        return " " + completionCount +
+                "/" +
+                travellers.size() +
+                " complete";
     }
 }

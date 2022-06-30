@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import scorebj.model.BoardId;
+import scorebj.model.Contract;
 import scorebj.model.ScoreLine;
 import scorebj.model.Traveller;
 

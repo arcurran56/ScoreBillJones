@@ -3,6 +3,7 @@ package scorebj.traveller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scorebj.model.BoardId;
+import scorebj.model.Contract;
 import scorebj.model.ScoreLine;
 import scorebj.model.Traveller;
 
@@ -15,7 +16,7 @@ public class TravellerTableModel extends AbstractTableModel {
     private static final Logger logger = LogManager.getLogger();
 
     private final String INTEGER = "java.lang.Integer";
-    private final String CONTRACT = "scorebj.traveller.Contract";
+    private final String CONTRACT = "scorebj.model.Contract";
     //private final String STRING = "java.lang.String";
     private final String DIRECTION = "scorebj.model.ScoreLine.Direction";
 
