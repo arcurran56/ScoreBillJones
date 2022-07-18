@@ -9,11 +9,8 @@
         <module name="ScoreBillJones" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="12">
       <module name="ScoreBillJones" target="12" />
-      <module name="ScoreBillJonesMain" target="12" />
-      <module name="ScoreBillJonesXStream" target="12" />
-      <module name="xstream" target="12" />
     </bytecodeTargetLevel>
   </component>
 </project>

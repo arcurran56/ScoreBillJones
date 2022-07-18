@@ -4,8 +4,9 @@ module ScoreBillJones {
     requires org.apache.poi.poi;
     requires xstream;
     requires java.desktop;
-    //requires javac2;
     requires org.apache.poi.ooxml;
+    //requires javac2;
+    //requires javac2;
     opens scorebj.model to xstream;
 
 }

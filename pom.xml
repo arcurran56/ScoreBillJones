@@ -43,10 +43,10 @@
             <artifactId>log4j-core</artifactId>
             <version>2.17.2</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.intellij</groupId>
             <artifactId>javac2</artifactId>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
@@ -92,11 +92,11 @@
                 <artifactId>log4j-core</artifactId>
                 <version>2.13.3</version>
             </dependency>
-            <dependency>
+            <!--dependency>
                 <groupId>com.intellij</groupId>
                 <artifactId>javac2</artifactId>
                 <version>7.0.3</version>
-            </dependency>
+            </dependency-->
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
@@ -151,6 +151,22 @@
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>3.0.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jlink-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <!--dependencies>
+                    <dependency>
+                        <groupId>com.intellij</groupId>
+                        <artifactId>javac2</artifactId>
+                        <version>7.0.3</version>
+                    </dependency></dependencies-->
+            </plugin>
         </plugins>
     </pluginManagement>
     <plugins>
@@ -200,6 +216,73 @@
                     </manifestEntries>
                 </archive>
             </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jlink-plugin</artifactId>
+            <extensions>true</extensions>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>jlink</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <classifier>image</classifier>
+                <launcher>ScoreBillJones-launch=ScoreBillJones/ScoringForm</launcher>
+                <verbose>true</verbose>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+                <execution>
+                    <phase>process-sources</phase>
+                    <configuration>
+                        <target name="compile-gui">
+                            <property name="idea.home"
+                                      value="C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2019.2"/>
+                            <property name="compile.classpath" refid="maven.compile.classpath"/>
+                            <path id="javac2.classpath">
+                                <!--pathelement location="${idea.home}/plugins/java/lib/*"/-->
+                                <fileset dir="${idea.home}/lib">
+                                    <include name="*.jar"/>
+                                </fileset>
+                                <fileset dir="${idea.home}/plugins/java/lib">
+                                    <include name="*.jar"/>
+                                </fileset>
+                            </path>
+                            <path id="javac2.compile.classpath">
+                                <pathelement path="${compile.classpath}"/>
+                                <pathelement location="${idea.home}/plugins/java/lib/javac2.jar"/>
+                                <pathelement location="${idea.home}/lib/"/>
+                            </path>
+                            <property name="javac2.classpath.text" refid="javac2.classpath"/>
+                            <property name="javac2.compile.classpath.text" refid="javac2.compile.classpath"/>
+                            <echo>Javac2 task classpath: ${javac2.classpath.text}</echo>
+                            <echo>Javac2 compile classpath: ${javac2.compile.classpath.text}</echo>
+                            <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+                            <!--taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/-->
+                            <mkdir dir="${project.build.outputDirectory}"/>
+                            <javac2 srcdir="${project.build.sourceDirectory}"
+                                    destdir="${project.build.outputDirectory}"
+                                    source="12"
+                                    target="12"
+                                    includes="**/*.form"
+                                    classpathref="javac2.compile.classpath"
+                                    includeAntRuntime="false"
+                                    verbose="true"
+                                    fork="true"/>
+                        </target>
+                     </configuration>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                </execution>
+            </executions>
         </plugin>
     </plugins>
 </build>
