@@ -23,6 +23,9 @@ public class Traveller {
         this.boardId = boardId;
     }
 
+    public Traveller(){
+        this(0);
+    }
     public Traveller(int size) {
         this.size = size;
         for (int i = 0; i < size; i++) {

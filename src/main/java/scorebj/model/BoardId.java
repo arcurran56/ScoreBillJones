@@ -8,6 +8,10 @@ public class BoardId implements Cloneable{
 
     private int serNo;
 
+    public BoardId(){
+        this(0, 0);
+    }
+
     public BoardId(int noOfSets, int noOfBoards) {
         this.noOfSets = noOfSets;
         this.noOfBoards = noOfBoards;

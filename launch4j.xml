@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>target\ScoreBillJones-1.0-SNAPSHOT-jar-with-dependencies.jar</jar>
+  <outfile>D:\Users\arcur\IntelliJProjects\ScoreBillJones\out\exe\ScoreBillJones.exe</outfile>
+  <errTitle>ScoreBillJones - Error</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>true</stayAlive>
+  <restartOnCrash>true</restartOnCrash>
+  <manifest>D:\Users\arcur\IntelliJProjects\ScoreBillJones\ScoreBillJones.exe.manifest</manifest>
+  <icon>D:\Users\arcur\IntelliJProjects\ScoreBillJones\Google-Noto-Emoji-Activities-52775-club-suit.ico</icon>
+  <jre>
+    <path>target\jre</path>
+    <bundledJre64Bit>true</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>12</minVersion>
+    <maxVersion>13</maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+    <initialHeapPercent>10</initialHeapPercent>
+    <maxHeapPercent>50</maxHeapPercent>
+    <opt>-Dlaunch4j.exedir=%EXEDIR%</opt>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0.0.0</txtFileVersion>
+    <fileDescription>Score Bill Jones</fileDescription>
+    <copyright>Alan Curran</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0.0.0</txtProductVersion>
+    <productName>ScoreBillJones</productName>
+    <companyName></companyName>
+    <internalName>ScoreBillJones</internalName>
+    <originalFilename>ScoreBillJones.exe</originalFilename>
+    <trademarks></trademarks>
+    <language>ENGLISH_UK</language>
+  </versionInfo>
+</launch4jConfig>

@@ -14,6 +14,8 @@
         <maven.compiler.source>12</maven.compiler.source>
         <maven.compiler.target>12</maven.compiler.target>
         <maven.compiler.release>12</maven.compiler.release>
+        <jdk.home>C:\Program Files\Java\jdk-12.0.2</jdk.home>
+        <idea.home>C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2019.2</idea.home>
     </properties>
     <!-- ... -->
     <dependencies>
@@ -59,6 +61,10 @@
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>forms_rt</artifactId>
         </dependency>
       </dependencies>
     <dependencyManagement>
@@ -107,7 +113,11 @@
                 <artifactId>xstream</artifactId>
                 <version>1.4.19</version>
             </dependency>
-        </dependencies>
+            <dependency>
+                <groupId>com.intellij</groupId>
+                <artifactId>forms_rt</artifactId>
+                <version>2022.1.3</version>
+            </dependency>        </dependencies>
     </dependencyManagement>
     <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
@@ -202,6 +212,7 @@
                 </execution>
             </executions>
             <configuration>
+                <!--descriptor>.\uber-jar.xml</descriptor-->
                 <descriptorRefs>
                     <descriptorRef>jar-with-dependencies</descriptorRef>
                 </descriptorRefs>
@@ -215,24 +226,6 @@
                         <Multi-Release>true</Multi-Release>
                     </manifestEntries>
                 </archive>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jlink-plugin</artifactId>
-            <extensions>true</extensions>
-            <executions>
-                <execution>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>jlink</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <classifier>image</classifier>
-                <launcher>ScoreBillJones-launch=ScoreBillJones/ScoringForm</launcher>
-                <verbose>true</verbose>
             </configuration>
         </plugin>
         <plugin>
@@ -281,6 +274,67 @@
                     <goals>
                         <goal>run</goal>
                     </goals>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>com.akathist.maven.plugins.launch4j</groupId>
+            <artifactId>launch4j-maven-plugin</artifactId>
+            <version>2.1.2</version>
+            <executions>
+                <execution>
+                    <id>l4j-gui</id>
+                    <phase>package</phase>
+                    <goals><goal>launch4j</goal></goals>
+                    <configuration>
+                        <headerType>gui</headerType>
+                        <outfile>target/ScoreBillJones.exe</outfile>
+                        <jar>target/ScoreBillJones-1.0-SNAPSHOT-jar-with-dependencies.jar</jar>
+                        <errTitle>ScoreBillJones - Error</errTitle>
+                        <classPath>
+                            <mainClass>scorebj.gui.ScoringForm</mainClass>
+                            <addDependencies>true</addDependencies>
+                            <preCp>lib/</preCp>
+                        </classPath>
+                        <dontWrapJar>false</dontWrapJar>
+                        <cmdLine/>
+                        <chdir>.</chdir>
+                        <priority>normal</priority>
+                        <downloadUrl>http://java.com/download</downloadUrl>
+                        <supportUrl/>
+                        <stayAlive>true</stayAlive>
+                        <restartOnCrash>true</restartOnCrash>
+                        <manifest>D:\Users\arcur\IntelliJProjects\ScoreBillJones\ScoreBillJones.exe.manifest</manifest>
+                        <icon>D:\Users\arcur\IntelliJProjects\ScoreBillJones\Google-Noto-Emoji-Activities-52775-club-suit.ico</icon>
+                        <jre>
+                            <path>jre</path>
+                            <bundledJre64Bit>true</bundledJre64Bit>
+                            <bundledJreAsFallback>false</bundledJreAsFallback>
+                            <minVersion>12</minVersion>
+                            <maxVersion>13</maxVersion>
+                            <jdkPreference>preferJre</jdkPreference>
+                            <runtimeBits>64/32</runtimeBits>
+                            <initialHeapPercent>10</initialHeapPercent>
+                            <maxHeapPercent>50</maxHeapPercent>
+                            <opts>
+                                <opt>-Dlaunch4j.exedir=%EXEDIR%</opt>
+                            </opts>
+                        </jre>
+                        <versionInfo>
+                            <fileVersion>1.0.0.0</fileVersion>
+                            <txtFileVersion>1.0.0.0</txtFileVersion>
+                            <fileDescription>Score Bill Jones</fileDescription>
+                            <copyright>Alan Curran</copyright>
+                            <productVersion>1.0.0.0</productVersion>
+                            <txtProductVersion>1.0.0.0</txtProductVersion>
+                            <productName>ScoreBillJones</productName>
+                            <companyName/>
+                            <internalName>ScoreBillJones</internalName>
+                            <originalFilename>ScoreBillJones.exe</originalFilename>
+                            <trademarks/>
+                            <language>ENGLISH_UK</language>
+                        </versionInfo>
+                    </configuration>
                 </execution>
             </executions>
         </plugin>

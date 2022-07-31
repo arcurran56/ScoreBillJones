@@ -45,18 +45,28 @@ public class Contract {
     private final Suit trumpSuit;
     private DoubledStatus doubledStatus;
 
+    public Contract(){
+        this("");
+    }
     public Contract(String contractString) {
         this.contractString = contractString;
         int length = contractString.length();
-        contractedTricks = Integer.parseUnsignedInt(String.valueOf(contractString.charAt(0))) + 6;
-        trumpSuit = Suit.lookUp(String.valueOf(contractString.charAt(1)));
+        if (length<2) {
+            contractedTricks = 0;
+            trumpSuit = null;
+            doubledStatus = DoubledStatus.UNDOUBLED;
+        }
+        else {
+            contractedTricks = Integer.parseUnsignedInt(String.valueOf(contractString.charAt(0))) + 6;
+            trumpSuit = Suit.lookUp(String.valueOf(contractString.charAt(1)));
 
-        doubledStatus = DoubledStatus.UNDOUBLED;
-        if (length == 3 && "*".equals(String.valueOf(contractString.charAt(2)))) doubledStatus = DoubledStatus.DOUBLED;
-        if (length == 4 && "*".equals(String.valueOf(contractString.charAt(2)))
-                && "*".equals(String.valueOf(contractString.charAt(3)))) doubledStatus = DoubledStatus.REDOUBLED;
+            doubledStatus = DoubledStatus.UNDOUBLED;
+            if (length == 3 && "*".equals(String.valueOf(contractString.charAt(2))))
+                doubledStatus = DoubledStatus.DOUBLED;
+            if (length == 4 && "*".equals(String.valueOf(contractString.charAt(2)))
+                    && "*".equals(String.valueOf(contractString.charAt(3)))) doubledStatus = DoubledStatus.REDOUBLED;
 
-
+        }
     }
 
     public int getScore(int tricksWon, boolean vulnerable){
