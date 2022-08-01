@@ -292,7 +292,7 @@
                     <configuration>
                         <headerType>gui</headerType>
                         <outfile>target/ScoreBillJones.exe</outfile>
-                        <jar>target/ScoreBillJones-2.0-SNAPSHOT-jar-with-dependencies.jar</jar>
+                        <jar>target/ScoreBillJones-${project.version}-jar-with-dependencies.jar</jar>
                         <errTitle>ScoreBillJones - Error</errTitle>
                         <classPath>
                             <mainClass>scorebj.gui.ScoringForm</mainClass>
