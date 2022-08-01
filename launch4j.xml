@@ -2,14 +2,14 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>target\ScoreBillJones-1.0-SNAPSHOT-jar-with-dependencies.jar</jar>
+  <jar>target\ScoreBillJones-2.0-SNAPSHOT-jar-with-dependencies.jar</jar>
   <outfile>D:\Users\arcur\IntelliJProjects\ScoreBillJones\out\exe\ScoreBillJones.exe</outfile>
   <errTitle>ScoreBillJones - Error</errTitle>
-  <cmdLine></cmdLine>
+  <cmdLine/>
   <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
-  <supportUrl></supportUrl>
+  <supportUrl/>
   <stayAlive>true</stayAlive>
   <restartOnCrash>true</restartOnCrash>
   <manifest>D:\Users\arcur\IntelliJProjects\ScoreBillJones\ScoreBillJones.exe.manifest</manifest>
@@ -27,17 +27,17 @@
     <opt>-Dlaunch4j.exedir=%EXEDIR%</opt>
   </jre>
   <versionInfo>
-    <fileVersion>1.0.0.0</fileVersion>
-    <txtFileVersion>1.0.0.0</txtFileVersion>
+    <fileVersion>2.0.0.0</fileVersion>
+    <txtFileVersion>2.0.0.0</txtFileVersion>
     <fileDescription>Score Bill Jones</fileDescription>
     <copyright>Alan Curran</copyright>
-    <productVersion>1.0.0.0</productVersion>
-    <txtProductVersion>1.0.0.0</txtProductVersion>
+    <productVersion>2.0.0.0</productVersion>
+    <txtProductVersion>2.0.0.0</txtProductVersion>
     <productName>ScoreBillJones</productName>
-    <companyName></companyName>
+    <companyName/>
     <internalName>ScoreBillJones</internalName>
     <originalFilename>ScoreBillJones.exe</originalFilename>
-    <trademarks></trademarks>
+    <trademarks/>
     <language>ENGLISH_UK</language>
   </versionInfo>
 </launch4jConfig>

@@ -7,7 +7,7 @@
     <groupId>score-bill-jones</groupId>
     <artifactId>ScoreBillJones</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -249,13 +249,16 @@
                                 </fileset>
                             </path>
                             <path id="javac2.compile.classpath">
+                                <!--suppress UnresolvedMavenProperty -->
                                 <pathelement path="${compile.classpath}"/>
                                 <pathelement location="${idea.home}/plugins/java/lib/javac2.jar"/>
                                 <pathelement location="${idea.home}/lib/"/>
                             </path>
                             <property name="javac2.classpath.text" refid="javac2.classpath"/>
                             <property name="javac2.compile.classpath.text" refid="javac2.compile.classpath"/>
+                            <!--suppress UnresolvedMavenProperty -->
                             <echo>Javac2 task classpath: ${javac2.classpath.text}</echo>
+                            <!--suppress UnresolvedMavenProperty -->
                             <echo>Javac2 compile classpath: ${javac2.compile.classpath.text}</echo>
                             <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
                             <!--taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/-->
@@ -289,7 +292,7 @@
                     <configuration>
                         <headerType>gui</headerType>
                         <outfile>target/ScoreBillJones.exe</outfile>
-                        <jar>target/ScoreBillJones-1.0-SNAPSHOT-jar-with-dependencies.jar</jar>
+                        <jar>target/ScoreBillJones-2.0-SNAPSHOT-jar-with-dependencies.jar</jar>
                         <errTitle>ScoreBillJones - Error</errTitle>
                         <classPath>
                             <mainClass>scorebj.gui.ScoringForm</mainClass>
