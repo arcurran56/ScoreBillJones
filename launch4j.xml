@@ -2,7 +2,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>target\ScoreBillJones-2.0-SNAPSHOT-jar-with-dependencies.jar</jar>
+  <jar>target\ScoreBillJones-2.1-SNAPSHOT-jar-with-dependencies.jar</jar>
   <outfile>D:\Users\arcur\IntelliJProjects\ScoreBillJones\out\exe\ScoreBillJones.exe</outfile>
   <errTitle>ScoreBillJones - Error</errTitle>
   <cmdLine/>
@@ -27,12 +27,12 @@
     <opt>-Dlaunch4j.exedir=%EXEDIR%</opt>
   </jre>
   <versionInfo>
-    <fileVersion>2.0.0.0</fileVersion>
-    <txtFileVersion>2.0.0.0</txtFileVersion>
+    <fileVersion>2.1.0.0</fileVersion>
+    <txtFileVersion>2.1.0.0</txtFileVersion>
     <fileDescription>Score Bill Jones</fileDescription>
     <copyright>Alan Curran</copyright>
-    <productVersion>2.0.0.0</productVersion>
-    <txtProductVersion>2.0.0.0</txtProductVersion>
+    <productVersion>2.1.0.0</productVersion>
+    <txtProductVersion>2.1.0.0</txtProductVersion>
     <productName>ScoreBillJones</productName>
     <companyName/>
     <internalName>ScoreBillJones</internalName>
