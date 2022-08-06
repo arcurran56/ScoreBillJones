@@ -20,7 +20,7 @@ public class Contract {
             for (Suit s: Suit.values()){
                if( abbreviation.equals(s.abbreviation) ) {
                    result = s;
-               };
+               }
             }
         return result;
     }
@@ -176,11 +176,7 @@ public class Contract {
                     break;
                 }
                 case REDOUBLED: {
-                    if (!vulnerable) {
-                        score = -2 * (100 + Math.min(underTricks - 1, 2)*200 + Math.max(underTricks - 3, 0)*300 ) ;
-                    } else {
-                        score = -2 * (100 + Math.min(underTricks - 1, 2)*200 + Math.max(underTricks - 3, 0)*300 ) ;
-                    }
+                    score = -2 * (100 + Math.min(underTricks - 1, 2)*200 + Math.max(underTricks - 3, 0)*300 ) ;
                     break;
                 }
             }

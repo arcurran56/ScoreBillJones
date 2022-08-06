@@ -96,9 +96,6 @@ public class TravellerTableModel extends AbstractTableModel {
                 case INTEGER:
                     convertedValue = Integer.valueOf((String) aValue);
                     break;
-/*                case STRING:
-                    convertedValue = aValue;
-                    break;*/
                 case CONTRACT:
                     convertedValue = new Contract((String) aValue);
                     break;

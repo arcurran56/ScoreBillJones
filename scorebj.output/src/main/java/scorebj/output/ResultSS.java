@@ -94,7 +94,7 @@ public class ResultSS {
             bodyCell.setCellStyle(highlightStyle);
             colIndex++;
 
-            logger.debug("Spreadsheet line:" + Integer.toString(rowIndex));
+            logger.debug("Spreadsheet line:" + rowIndex);
 
             for (String contents: ssRow.getSetResult() ) {
                 bodyCell = row.createCell(colIndex);
@@ -127,14 +127,14 @@ public class ResultSS {
 
         int rowNo = 1;
         int lastRank = 0;
-        String rank = "";
+        String rank;
         int lastTotal = -1;
         for (SSRow row: ssRows) {
             if (row.getTotal()==lastTotal) {
-                rank = Integer.toString(lastRank) + "=";
+                rank = lastRank + "=";
             }
             else {
-                rank = Integer.toString(rowNo) + ")";
+                rank = rowNo + ")";
                 lastTotal = row.getTotal();
                 lastRank = rowNo;
             }

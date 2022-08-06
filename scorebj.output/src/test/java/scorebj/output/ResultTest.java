@@ -28,9 +28,6 @@ class ResultTest {
     void collate() throws IOException, DataStoreException {
         DataStore dataStore = DataStore.create(true);
         Competition competition = dataStore.getCompetition(0);
-       // competition.setCompetitionName("Test");
-       // competition.setNoSets(5);
-        //competition.setNoBoardsPerSet(16);
         List<String> pairings = Arrays.asList(DEFAULT_PAIRINGS);
 
         Result result = new Result(10, 5, 16);
@@ -59,9 +56,6 @@ class ResultTest {
     void createSummaryTable() throws DataStoreException {
         DataStore dataStore = DataStore.create(true);
         Competition competition = dataStore.getCompetition(0);
-        // competition.setCompetitionName("Test");
-        // competition.setNoSets(5);
-        //competition.setNoBoardsPerSet(16);
         List<String> pairings = Arrays.asList(DEFAULT_PAIRINGS);
 
         Result result = new Result((competition.getNoPairs()),

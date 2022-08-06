@@ -194,7 +194,6 @@ public class Traveller {
     }
 
     public String getCompetionStatus() {
-        String completionStatus = isComplete()?"":"Unfinished";
-        return completionStatus;
+        return isComplete()?"":"Unfinished";
     }
 }

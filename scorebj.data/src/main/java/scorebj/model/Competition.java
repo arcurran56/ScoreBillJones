@@ -4,36 +4,19 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.*;
 
 public class Competition {
     private final String DEFAULT_COMPETITION_NAME = "";
 
-//    @XStreamOmitField
-//    private Logger logger = LogManager.getLogger();
-    private String competitionName = DEFAULT_COMPETITION_NAME;
+private String competitionName = DEFAULT_COMPETITION_NAME;
     private Date date = new Date();
     private int noSets;
     private int noBoardsPerSet;
     private int noPairs;
     private List<String> pairings = new ArrayList<>(20);
 
-/*
-    private final String[] DEFAULT_PAIRINGS = {"David & Salette",
-            "Liz B & Jane E",
-            "Jill R & Rob",
-            "Jill H & Jane D",
-            "Wendy & Diana",
-            "Diane & Alan",
-            "Julia & Sue",
-            "Clare & Jill A",
-            "Lisbeth & Vicky",
-            "Caroline & Andrew"};
-*/
-    private List<Traveller> travellers = new ArrayList(100);
+private List<Traveller> travellers = new ArrayList<>(100);
 
     public Competition() {
         Traveller defaultTraveller = new Traveller(0);

@@ -43,42 +43,15 @@ class TravellerTest {
     void isComplete() {
         //List<ScoreLine> list = completeTraveller.getScoreLines();
 
-/*        list.get(0).setNsPair(7);
-        list.get(0).setEwPair(8);
-        list.get(0).setContract(new Contract("3H*"));
-        list.get(0).setPlayedBy(ScoreLine.Direction.E);
-        list.get(0).setTricks(8);
- */
         completeTraveller.scoreHand(0,true);//NS 200; MP 5-1
 
-/*        list.get(1).setNsPair(1);
-        list.get(1).setEwPair(2);
-        list.get(1).setContract(new Contract("3H*"));
-        list.get(1).setPlayedBy(ScoreLine.Direction.E);
-        list.get(1).setTricks(8);
- */
         completeTraveller.scoreHand(1, true);//NS 200; MP 5-1
 
 
-/*        list.get(2).setNsPair(3);
-        list.get(2).setEwPair(4);
-        list.get(2).setContract(new Contract("3H"));
-        list.get(2).setPlayedBy(ScoreLine.Direction.E);
-        list.get(2).setTricks(8);*/
         completeTraveller.scoreHand(2, true);//NS 100; 2-4
 
-/*        list.get(3).setNsPair(5);
-        list.get(3).setEwPair(6);
-        list.get(3).setContract(new Contract("3H*"));
-        list.get(3).setPlayedBy(ScoreLine.Direction.E);
-        list.get(3).setTricks(9);*/
         completeTraveller.scoreHand(3, true);//EW 730; MP 0-6
 
-/*        list.get(4).setNsPair(3);
-        list.get(4).setEwPair(4);
-        list.get(4).setContract(new Contract("3H"));
-        list.get(4).setPlayedBy(ScoreLine.Direction.E);
-        list.get(4).setTricks(8);*/
         completeTraveller.scoreHand(4, true);//NS 100; 2-4
         assertTrue(completeTraveller.isComplete());
 

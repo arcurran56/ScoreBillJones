@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Results {
 
-    public Results(){};
+    public Results(){}
 
     public void save(Competition competition) throws DataStoreException {
             File outputXlsxFile = new File( DataStore.getPersistenceLocation(), "summary.xlsx");

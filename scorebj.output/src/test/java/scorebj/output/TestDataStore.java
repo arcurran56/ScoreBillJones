@@ -3,12 +3,14 @@ package scorebj.output;
 import com.thoughtworks.xstream.persistence.FilePersistenceStrategy;
 import com.thoughtworks.xstream.persistence.XmlMap;
 import com.thoughtworks.xstream.security.AnyTypePermission;
+import scorebj.model.Competition;
 import scorebj.model.DataStore;
 import scorebj.model.DataStoreException;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.Map;
 
 public class TestDataStore extends DataStore {
     private static TestDataStore dataStore;
@@ -46,7 +48,7 @@ public class TestDataStore extends DataStore {
 
         persistenceStrategy =
                 new FilePersistenceStrategy(dataLocation, xStream);
-        persistentCompetitions = Collections.synchronizedMap(new XmlMap(persistenceStrategy));
+        persistentCompetitions = (Map<String, Competition>) Collections.synchronizedMap( (Map<String,Competition>) new XmlMap(persistenceStrategy));
 
         logger.debug("...exiting initialise");
     }

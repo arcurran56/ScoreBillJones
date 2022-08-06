@@ -241,8 +241,6 @@ public class Result {
      * Creates a table of results
      */
     public ResultSS createSummaryTable() {
-        //File outputFile = new File(persistenceLocation, "summary.csv");
-        //PrintWriter output = new PrintWriter(outputFile);
 
         StringBuilder logLine = new StringBuilder("Creating summary table for spreadsheet...")
                 .append(noPairs)
@@ -260,7 +258,7 @@ public class Result {
 
         String colHeader;
         for (int set = 1; set < noSets + 1; set++) {
-            colHeader = "Set " + Integer.toString(set);
+            colHeader = "Set " + set;
             ssHeader.add(colHeader);
         }
         ssHeader.add("TOTAL");

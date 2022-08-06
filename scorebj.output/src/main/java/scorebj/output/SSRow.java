@@ -40,16 +40,7 @@ public class SSRow implements Comparable<SSRow> {
 
     @Override
     public int compareTo(SSRow ssRow) {
-        int result = 0;
-        if (ssRow.total < this.total) {
-            result = -1;
-        } else {
-            if (ssRow.total == this.total) {
-                result = 0;
-            } else {
-                result = 1;
-            }
-        }
+        int result = Integer.compare(ssRow.total, this.total);
         return result;
     }
 

@@ -163,22 +163,6 @@ public class ScoringForm {
                         Integer.parseUnsignedInt(scoringBean.getNewBoard())));
 
 
-/*                //Save current Traveller.
-                scoreTable.clearSelection();
-                BoardId boardId = scoringBean.getBoardId();
-                Traveller savedTraveller = competition.getTraveller(boardId);
-                Traveller newTraveller = travellerTableModel.getTraveller();
-                savedTraveller.copy(newTraveller);
-
-                //Go to specified traveller.
-                getData(scoringBean);
-
-                //Update view.
-                savedTraveller = competition.getTraveller(boardId);
-                travellerTableModel.setTraveller(savedTraveller);
-                setData(scoringBean);
-
-                dataStore.persist(competition);*/
                 mainPanel.repaint();
             }
         });
@@ -194,15 +178,6 @@ public class ScoringForm {
                 newTraveller.scoreHand(e.getFirstRow(), true);
                 BoardId currentBoardId = newTraveller.getBoardId();
 
- /*
-                int noSets = competition.getNoSets();
-                int noBoardsPerSet = competition.getNoBoardsPerSet();
-                int noPairs = competition.getNoPairs();
-
-                BoardId boardId1 = new BoardId(noSets, noBoardsPerSet);
-                boardId1.setSet();
-                scoringBean.setNewBoard();
-*/
                 Traveller savedTraveller = competition.getTraveller(currentBoardId);
                 savedTraveller.copy(newTraveller);
 
@@ -259,7 +234,6 @@ public class ScoringForm {
                 Traveller newTraveller = travellerTableModel.getTraveller();
 
                 BoardId boardId = newTraveller.getBoardId();
-                ;
                 if (competition != null && scoreTable != null && boardId != null) {
                     scoreTable.clearSelection();
                     savedTraveller = competition.getTraveller(boardId);
@@ -273,7 +247,6 @@ public class ScoringForm {
                 } else {
                     logger.debug("...traveller not saved.");
                 }
-                ;
 
                 //Fetch newly chosen Competition.
                 competition = dataStore.getCompetition(key);
@@ -339,7 +312,7 @@ public class ScoringForm {
                     dataStore.persist(competition);
 
                 } catch (NumberFormatException ex) {
-                    logger.warn("Exception caught in Add listener: " + ex.toString());
+                    logger.warn("Exception caught in Add listener: " + ex);
                 }
                 BoardId boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
                 scoringBean.setCurrentSets(scoringBean.getNewSets());
@@ -793,9 +766,7 @@ public class ScoringForm {
             return true;
         if (newBpSField.getText() != null ? !newBpSField.getText().equals(data.getNewBoardsPerSet()) : data.getNewBoardsPerSet() != null)
             return true;
-        if (newSetsField.getText() != null ? !newSetsField.getText().equals(data.getNewSets()) : data.getNewSets() != null)
-            return true;
-        return false;
+        return newSetsField.getText() != null ? !newSetsField.getText().equals(data.getNewSets()) : data.getNewSets() != null;
     }
 }
 

@@ -2,9 +2,7 @@ package scorebj.model;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Map;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.persistence.FilePersistenceStrategy;
 import com.thoughtworks.xstream.persistence.PersistenceStrategy;
@@ -37,9 +35,6 @@ import java.util.*;
         private static boolean testMode = false;
         private static Competition testCompetition;
 
-        //private final static Class[] ALLOWED_TYPES = {scorebj.model.Competition.class,
-        //        org.apache.logging.log4j.core.Logger.class,
-        //        org.apache.logging.log4j.core.Logger$LoggerProxy.class};
         /**
          * Create a new Datastore if it does not already exist and return it.  Alternatively return the existing one.
          * @return the Datastore singleton.
@@ -101,7 +96,7 @@ import java.util.*;
                 throw new IOException(String.format("Can't create persistence directory, %s", dataLocation.getAbsolutePath()));
             persistenceStrategy =
                     new FilePersistenceStrategy(dataLocation, xStream);
-            persistentCompetitions = Collections.synchronizedMap(new XmlMap(persistenceStrategy));
+            persistentCompetitions = (Map<String,Competition>) Collections.synchronizedMap((Map<String,Competition>) new XmlMap(persistenceStrategy));
 
             Competition competition;
             if(persistentCompetitions.isEmpty()) {
@@ -138,29 +133,8 @@ import java.util.*;
 
         public Competition getCompetition(String name) {
 
-            Competition competition = persistentCompetitions.get(name);
-            return competition;
+            return persistentCompetitions.get(name);
         }
-        public void setCompetition(int competitionId, Competition competition) {
-            //persistentCompetitions.(competitionId, competition);
-            //persist();
-        }
-
- /*       public Map<Integer,Competition> getCompetitions() {
-            logger.debug("...getting competitions...");
-            int lastId = 0;
-            for (Integer id: persistentCompetitions.keySet()) {
-                competitions.put(id, persistentCompetitions.get(id));
-                lastId = Math.max(lastId,id);
-            }
-            Competition.setNextCompetitionId(lastId+1);
-            logger.debug("...exit getCompetitions.");
-            return competitions;
-        }*/
-
- /*       public void setCompetitions(Map<Integer, Competition> competitions) {
-            this.competitions = competitions;
-        }*/
 
         /**
          * Persist competitions data.  Replace existing entry with updated one.
