@@ -6,12 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ScoreBillJones" />
+        <module name="scorebj.jre" />
+        <module name="scorebj.data" />
+        <module name="scorebj.app" />
+        <module name="scorebj.util" />
+        <module name="scorebj.gui" />
+        <module name="scorebj.output" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="12">
-      <module name="ScoreBillJones" target="12" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="12" />
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

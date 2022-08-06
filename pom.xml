@@ -6,83 +6,51 @@
 
     <groupId>score-bill-jones</groupId>
     <artifactId>ScoreBillJones</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>2.1-SNAPSHOT</version>
+    <modules>
+        <module>scorebj.gui</module>
+        <module>scorebj.data</module>
+        <module>scorebj.output</module>
+        <module>scorebj.app</module>
+        <module>scorebj.util</module>
+        <module>scorebj.jre</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>12</maven.compiler.source>
-        <maven.compiler.target>12</maven.compiler.target>
-        <maven.compiler.release>12</maven.compiler.release>
-        <jdk.home>C:\Program Files\Java\jdk-12.0.2</jdk.home>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
+        <jdk.home>C:\Program Files\Java\jdk-17.0.2</jdk.home>
         <idea.home>C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2019.2</idea.home>
     </properties>
     <!-- ... -->
-    <dependencies>
-        <!-- Only needed to run tests in a version of IntelliJ IDEA that bundles older versions -->
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <scope>compile</scope>
-        </dependency>
+    <!--dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.17.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.17.2</version>
         </dependency>
-        <!--dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>javac2</artifactId>
-        </dependency-->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion></exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>forms_rt</artifactId>
-        </dependency>
-      </dependencies>
+     </dependencies-->
     <dependencyManagement>
-        <!-- Only needed to run tests in a version of IntelliJ IDEA that bundles older versions -->
         <dependencies>
-            <dependency>
-                <groupId>org.junit.platform</groupId>
-                <artifactId>junit-platform-launcher</artifactId>
-                <version>1.8.2</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.8.2</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
+             <dependency>
                 <groupId>org.junit.vintage</groupId>
                 <artifactId>junit-vintage-engine</artifactId>
                 <version>5.8.2</version>
@@ -91,19 +59,14 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
-                <version>2.13.3</version>
+                <version>2.17.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
-                <version>2.13.3</version>
+                <version>2.17.2</version>
             </dependency>
-            <!--dependency>
-                <groupId>com.intellij</groupId>
-                <artifactId>javac2</artifactId>
-                <version>7.0.3</version>
-            </dependency-->
-            <dependency>
+             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>5.2.2</version>
@@ -117,7 +80,32 @@
                 <groupId>com.intellij</groupId>
                 <artifactId>forms_rt</artifactId>
                 <version>2022.1.3</version>
-            </dependency>        </dependencies>
+            </dependency>
+            <dependency>
+                <groupId>score-bill-jones</groupId>
+                <artifactId>scorebj.data</artifactId>
+                <version>2.1-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>score-bill-jones</groupId>
+                <artifactId>scorebj.output</artifactId>
+                <version>2.1-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>score-bill-jones</groupId>
+                <artifactId>scorebj.gui</artifactId>
+                <version>2.1-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>score-bill-jones</groupId>
+                <artifactId>scorebj.util</artifactId>
+                <version>2.1-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+         </dependencies>
     </dependencyManagement>
     <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
@@ -184,162 +172,9 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-                <source>12</source>
-                <target>12</target>
+                <source>17</source>
+                <target>17</target>
             </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-                <archive>
-                    <manifest>
-                        <main-class>
-                            scorebj.gui.ScoringForm
-                        </main-class>
-                    </manifest>
-                </archive>
-            </configuration>
-        </plugin>
-        <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-                <execution>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>single</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <!--descriptor>.\uber-jar.xml</descriptor-->
-                <descriptorRefs>
-                    <descriptorRef>jar-with-dependencies</descriptorRef>
-                </descriptorRefs>
-                <archive>
-                    <manifest>
-                        <main-class>
-                            scorebj.gui.ScoringForm
-                        </main-class>
-                    </manifest>
-                    <manifestEntries>
-                        <Multi-Release>true</Multi-Release>
-                    </manifestEntries>
-                </archive>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-                <execution>
-                    <phase>process-sources</phase>
-                    <configuration>
-                        <target name="compile-gui">
-                            <property name="idea.home"
-                                      value="C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2019.2"/>
-                            <property name="compile.classpath" refid="maven.compile.classpath"/>
-                            <path id="javac2.classpath">
-                                <!--pathelement location="${idea.home}/plugins/java/lib/*"/-->
-                                <fileset dir="${idea.home}/lib">
-                                    <include name="*.jar"/>
-                                </fileset>
-                                <fileset dir="${idea.home}/plugins/java/lib">
-                                    <include name="*.jar"/>
-                                </fileset>
-                            </path>
-                            <path id="javac2.compile.classpath">
-                                <!--suppress UnresolvedMavenProperty -->
-                                <pathelement path="${compile.classpath}"/>
-                                <pathelement location="${idea.home}/plugins/java/lib/javac2.jar"/>
-                                <pathelement location="${idea.home}/lib/"/>
-                            </path>
-                            <property name="javac2.classpath.text" refid="javac2.classpath"/>
-                            <property name="javac2.compile.classpath.text" refid="javac2.compile.classpath"/>
-                            <!--suppress UnresolvedMavenProperty -->
-                            <echo>Javac2 task classpath: ${javac2.classpath.text}</echo>
-                            <!--suppress UnresolvedMavenProperty -->
-                            <echo>Javac2 compile classpath: ${javac2.compile.classpath.text}</echo>
-                            <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
-                            <!--taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/-->
-                            <mkdir dir="${project.build.outputDirectory}"/>
-                            <javac2 srcdir="${project.build.sourceDirectory}"
-                                    destdir="${project.build.outputDirectory}"
-                                    source="12"
-                                    target="12"
-                                    includes="**/*.form"
-                                    classpathref="javac2.compile.classpath"
-                                    includeAntRuntime="false"
-                                    verbose="true"
-                                    fork="true"/>
-                        </target>
-                     </configuration>
-                    <goals>
-                        <goal>run</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-        <plugin>
-            <groupId>com.akathist.maven.plugins.launch4j</groupId>
-            <artifactId>launch4j-maven-plugin</artifactId>
-            <version>2.1.2</version>
-            <executions>
-                <execution>
-                    <id>l4j-gui</id>
-                    <phase>package</phase>
-                    <goals><goal>launch4j</goal></goals>
-                    <configuration>
-                        <headerType>gui</headerType>
-                        <outfile>target/ScoreBillJones.exe</outfile>
-                        <jar>target/ScoreBillJones-${project.version}-jar-with-dependencies.jar</jar>
-                        <errTitle>ScoreBillJones - Error</errTitle>
-                        <classPath>
-                            <mainClass>scorebj.gui.ScoringForm</mainClass>
-                            <addDependencies>true</addDependencies>
-                            <preCp>lib/</preCp>
-                        </classPath>
-                        <dontWrapJar>false</dontWrapJar>
-                        <cmdLine/>
-                        <chdir>.</chdir>
-                        <priority>normal</priority>
-                        <downloadUrl>http://java.com/download</downloadUrl>
-                        <supportUrl/>
-                        <stayAlive>true</stayAlive>
-                        <restartOnCrash>true</restartOnCrash>
-                        <manifest>D:\Users\arcur\IntelliJProjects\ScoreBillJones\ScoreBillJones.exe.manifest</manifest>
-                        <icon>D:\Users\arcur\IntelliJProjects\ScoreBillJones\Google-Noto-Emoji-Activities-52775-club-suit.ico</icon>
-                        <jre>
-                            <path>jre</path>
-                            <bundledJre64Bit>true</bundledJre64Bit>
-                            <bundledJreAsFallback>false</bundledJreAsFallback>
-                            <minVersion>12</minVersion>
-                            <maxVersion>13</maxVersion>
-                            <jdkPreference>preferJre</jdkPreference>
-                            <runtimeBits>64/32</runtimeBits>
-                            <initialHeapPercent>10</initialHeapPercent>
-                            <maxHeapPercent>50</maxHeapPercent>
-                            <opts>
-                                <opt>-Dlaunch4j.exedir=%EXEDIR%</opt>
-                            </opts>
-                        </jre>
-                        <versionInfo>
-                            <fileVersion>2.1.0.0</fileVersion>
-                            <txtFileVersion>2.1.0.0</txtFileVersion>
-                            <fileDescription>Score Bill Jones</fileDescription>
-                            <copyright>Alan Curran</copyright>
-                            <productVersion>2.1.0.0</productVersion>
-                            <txtProductVersion>2.1.0.0</txtProductVersion>
-                            <productName>ScoreBillJones</productName>
-                            <companyName/>
-                            <internalName>ScoreBillJones</internalName>
-                            <originalFilename>ScoreBillJones.exe</originalFilename>
-                            <trademarks/>
-                            <language>ENGLISH_UK</language>
-                        </versionInfo>
-                    </configuration>
-                </execution>
-            </executions>
         </plugin>
     </plugins>
 </build>

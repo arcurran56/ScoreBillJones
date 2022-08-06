@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ScoreBillJones</artifactId>
+        <groupId>score-bill-jones</groupId>
+        <version>2.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>scorebj.gui</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>forms_rt</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>score-bill-jones</groupId>
+            <artifactId>scorebj.data</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>score-bill-jones</groupId>
+            <artifactId>scorebj.output</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-commons</artifactId>
+            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <target name="compile-gui">
+                                <property name="idea.home"
+                                          value="C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2019.2"/>
+                                <property name="compile.classpath" refid="maven.compile.classpath"/>
+                                <path id="javac2.classpath">
+                                    <!--pathelement location="${idea.home}/plugins/java/lib/*"/-->
+                                    <fileset dir="${idea.home}/lib">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                    <fileset dir="${idea.home}/plugins/java/lib">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                </path>
+                                <path id="javac2.compile.classpath">
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <pathelement path="${compile.classpath}"/>
+                                    <pathelement location="${idea.home}/plugins/java/lib/javac2.jar"/>
+                                    <pathelement location="${idea.home}/lib/"/>
+                                </path>
+                                <property name="javac2.classpath.text" refid="javac2.classpath"/>
+                                <property name="javac2.compile.classpath.text" refid="javac2.compile.classpath"/>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <echo>Javac2 task classpath: ${javac2.classpath.text}</echo>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <echo>Javac2 compile classpath: ${javac2.compile.classpath.text}</echo>
+                                <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+                                <!--taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/-->
+                                <mkdir dir="${project.build.outputDirectory}"/>
+                                <javac2 srcdir="${project.build.sourceDirectory}"
+                                        destdir="${project.build.outputDirectory}"
+                                        source="17"
+                                        target="17"
+                                        includes="**/*.form"
+                                        classpathref="javac2.compile.classpath"
+                                        includeAntRuntime="false"
+                                        verbose="true"
+                                        fork="true"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
