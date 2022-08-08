@@ -32,9 +32,15 @@ class ResultTest {
 
         Result result = new Result(10, 5, 16);
         result.collate(pairings, competition.getTravellers());
-        result.printDetails();
-        result.printSummary();
-        result.printMatrix();
+
+        File detailsFile = new File(DataStore.getPersistenceLocation(), "TEST-details.csv");
+        File summaryFile = new File(DataStore.getPersistenceLocation(), "TEST-summary.csv");
+        File matrixFile = new File(DataStore.getPersistenceLocation(), "TEST-matrix.csv");
+        File outputXlsxFile = new File( DataStore.getPersistenceLocation(), "TEST-results.xlsx");
+
+        result.printDetails(detailsFile);
+        result.printSummary(summaryFile);
+        result.printMatrix(matrixFile);
     }
 
     @Test
@@ -43,7 +49,7 @@ class ResultTest {
         Competition competition = dataStore.getCompetition(0);
         List<String> strings = competition.travellersToText();
         File persistenceLocation = DataStore.getPersistenceLocation();
-        File outputFile = new File(persistenceLocation, "travellers.csv");
+        File outputFile = new File(persistenceLocation, "TEST-travellers.csv");
         PrintWriter output = new PrintWriter(outputFile);
 
         for (String line: strings){

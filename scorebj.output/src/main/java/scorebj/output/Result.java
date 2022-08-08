@@ -6,14 +6,11 @@ import scorebj.model.*;
 import scorebj.output.ResultSS;
 import scorebj.output.SSRow;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 
 public class Result {
     private final Logger logger = LogManager.getLogger();
-    private final File persistenceLocation;
     private final int noPairs;
     private final int noSets;
     private final int noBoardsPerSet;
@@ -25,12 +22,14 @@ public class Result {
     private int[][] pairingsMatrix;
 
     public Result(int noPairs, int noSets, int noBoardsPerSet) throws DataStoreException {
-        DataStore dataStore = DataStore.create();
-        this.persistenceLocation = dataStore.getPersistenceLocation();
+
         this.noPairs = noPairs;
         this.noSets = noSets;
         this.noBoardsPerSet = noBoardsPerSet;
 
+        logger.debug("New Result created for " + noPairs + " pairs, "
+                + noSets + " sets of "
+                + noBoardsPerSet + " each.");
 
     }
 
@@ -111,9 +110,8 @@ public class Result {
 
     }
 
-    public void printDetails() throws IOException {
-        File outputFile = new File(persistenceLocation, "details.csv");
-        PrintWriter output = new PrintWriter(outputFile);
+    public void printDetails(File detailsFile) throws IOException {
+        PrintWriter output = new PrintWriter(detailsFile);
 
         StringBuilder logLine = new StringBuilder()
                 .append(noPairs)
@@ -156,9 +154,8 @@ public class Result {
      *
      * @throws IOException
      */
-    public void printSummary() throws IOException {
-        File outputFile = new File(persistenceLocation, "summary.csv");
-        PrintWriter output = new PrintWriter(outputFile);
+    public void printSummary(File summaryFile) throws IOException {
+        PrintWriter output = new PrintWriter(summaryFile);
 
         StringBuilder logLine = new StringBuilder()
                 .append(noPairs)
@@ -202,9 +199,8 @@ public class Result {
         output.close();
     }
 
-    public void printMatrix() throws IOException {
-        File outputFile = new File(persistenceLocation, "matrix.csv");
-        PrintWriter output = new PrintWriter(outputFile);
+    public void printMatrix(File matrixFile) throws IOException {
+        PrintWriter output = new PrintWriter(matrixFile);
 
         StringBuilder logLine = new StringBuilder()
                 .append(noPairs)
@@ -240,7 +236,7 @@ public class Result {
      *
      * Creates a table of results
      */
-    public ResultSS createSummaryTable() {
+    ResultSS createSummaryTable() {
 
         StringBuilder logLine = new StringBuilder("Creating summary table for spreadsheet...")
                 .append(noPairs)
@@ -279,8 +275,7 @@ public class Result {
                 cellContent = new StringBuilder();
                 cellContent.append(pairings.get(opponents[pair - 1][set - 1] - 1))
                         .append("\n")
-                        .append(summaryBySet[pair - 1][set - 1])
-                        .append("\"");
+                        .append(summaryBySet[pair - 1][set - 1]);
                 setResult.add(cellContent.toString());
             }
             ssRow.setTotal(grandTotals[pair - 1]);
@@ -302,5 +297,9 @@ public class Result {
         }
         return resultSS;
     }
+public void createResultsSpreadsheet(File spreadsheetFile) throws IOException {
+        ResultSS ss = createSummaryTable();
+        ss.createSpreadsheet(new FileOutputStream(spreadsheetFile));
+}
 
 }
