@@ -1,5 +1,14 @@
 *.class
 /target/**/*.*
-
-/jre/
 /out/
+/scorebj.jre/target/
+/scorebj.output/details.csv
+/scorebj.output/matrix.csv
+/scorebj.output/summary.csv
+/scorebj.output/travellers.csv
+/scorebj.app/target/
+/scorebj.data/target/
+/scorebj.gui/target/
+/scorebj.output/target/
+/scorebj.util/target/
+/**/*.log
