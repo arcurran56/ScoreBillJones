@@ -12,7 +12,7 @@ import java.util.List;
 public class Traveller {
 
     @XStreamOmitField
-    private final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
     private final int size;
 
     private BoardId boardId;
