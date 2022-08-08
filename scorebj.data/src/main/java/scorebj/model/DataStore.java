@@ -86,6 +86,7 @@ import java.util.*;
         protected void initialise() throws IOException {
             logger.debug("...initialising...");
 
+            xStream.autodetectAnnotations(true);
             xStream.addPermission(AnyTypePermission.ANY);
             //xStream.allowTypes(ALLOWED_TYPES);
 
