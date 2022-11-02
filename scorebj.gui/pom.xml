@@ -79,7 +79,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>process-sources</phase>
+                        <phase>compile</phase>
                         <configuration>
                             <target name="compile-gui">
                                 <property name="idea.home"
@@ -113,7 +113,7 @@
                                         destdir="${project.build.outputDirectory}"
                                         source="17"
                                         target="17"
-                                        includes="**/*.form"
+                                        includes="**/*.form,**/*Form.java"
                                         classpathref="javac2.compile.classpath"
                                         includeAntRuntime="false"
                                         verbose="true"
