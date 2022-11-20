@@ -247,7 +247,7 @@ public class ScoringForm {
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
                 setData(scoringBean);
 
-                compComboBox.setSelectedItem(0);
+                compComboBox.setSelectedIndex(0);
 
                 logger.debug("...repaint after competition deleted");
 
