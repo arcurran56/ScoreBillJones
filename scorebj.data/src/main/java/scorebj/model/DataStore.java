@@ -11,6 +11,8 @@ import com.thoughtworks.xstream.security.AnyTypePermission;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
     /**
@@ -39,6 +41,41 @@ import java.util.*;
         private static boolean testMode = false;
         private static Competition testCompetition;
 
+        private static class CustomFilePersistenceStrategy extends FilePersistenceStrategy{
+            private final File baseDirectory;
+            public CustomFilePersistenceStrategy(File baseDirectory) {
+                super(baseDirectory);
+                this.baseDirectory = baseDirectory;
+            }
+
+            public CustomFilePersistenceStrategy(File baseDirectory, XStream xstream) {
+                super(baseDirectory, xstream);
+                this.baseDirectory = baseDirectory;
+            }
+
+            public CustomFilePersistenceStrategy(File baseDirectory, XStream xstream, String encoding, String illegalChars) {
+                super(baseDirectory, xstream, encoding, illegalChars);
+                this.baseDirectory = baseDirectory;
+            }
+
+            @Override
+            public Object remove(Object key) {
+                super.remove(key);
+                logger.debug("Deleting file...");
+                System.exit(0);
+                File dataFile = new File(baseDirectory,getName(key));
+                logger.debug("..." + dataFile.getAbsolutePath());
+                try {
+                    Files.delete(Path.of(dataFile.getAbsolutePath()));
+                    assert !dataFile.exists();
+                    System.exit(0);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                Object obj = super.remove(key);
+                return obj;
+            }
+        }
         /**
          * Create a new Datastore if it does not already exist and return it.  Alternatively return the existing one.
          * @return the Datastore singleton.
@@ -156,6 +193,7 @@ import java.util.*;
             logger.debug("...exit persist.");
         }
         public void delete(String key){
+            logger.info("Deleting " + key);
             persistentCompetitions.remove(key);
         }
 
