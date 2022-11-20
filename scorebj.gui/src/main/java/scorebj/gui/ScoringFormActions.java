@@ -16,8 +16,13 @@ import java.util.function.Function;
 public class ScoringFormActions {
 
     private static final Logger logger = LogManager.getLogger();
+    private static boolean testMode;
     static DataStore dataStore;
     private DefaultComboBoxModel<String> compComboBoxModel;
+
+    public static void setTestMode(boolean mode) {
+        testMode = mode;
+    }
 
     public final PairingTableModel getPairingTableModel() {
         return pairingTableModel;
@@ -61,6 +66,7 @@ public class ScoringFormActions {
 
     void createDataStore() {
         try {
+            DataStore.setTestMode(testMode);
             dataStore = DataStore.create();
         } catch (DataStoreException e) {
             throw new RuntimeException(e);

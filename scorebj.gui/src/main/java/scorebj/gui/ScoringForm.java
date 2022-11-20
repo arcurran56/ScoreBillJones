@@ -273,7 +273,8 @@ public class ScoringForm {
     }
 
     public static void main(String[] args) throws DataStoreException {
-
+        boolean testMode = "test".equals(args[0]);
+        ScoringFormActions.setTestMode(testMode);
         JFrame frame = new JFrame("ScoresheetForm");
         frame.setContentPane(new ScoringForm().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
