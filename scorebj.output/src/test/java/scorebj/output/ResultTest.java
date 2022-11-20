@@ -2,6 +2,8 @@ package scorebj.output;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import scorebj.model.Competition;
 import scorebj.model.DataStore;
@@ -28,6 +30,7 @@ class ResultTest {
             "Caroline Jones & Andrew Goodwin"};
 
     @Test
+    @Disabled
     void collate() throws IOException, DataStoreException {
         logger.debug("Collatimg...");
         DataStore.setTestMode(true);
@@ -49,6 +52,7 @@ class ResultTest {
     }
 
     @Test
+    @Disabled
     void printTravellers() throws FileNotFoundException, DataStoreException {
         logger.debug("Writing travellers...");
         DataStore.setTestMode(true);
@@ -66,6 +70,7 @@ class ResultTest {
     }
 
     @Test
+    @Disabled
     void createSummaryTable() throws DataStoreException {
         logger.debug("Creating summary table...");
         DataStore.setTestMode(true);
@@ -78,5 +83,10 @@ class ResultTest {
                 competition.getNoBoardsPerSet());
         result.collate(pairings, competition.getTravellers());
         result.createSummaryTable();
+    }
+
+    @BeforeEach
+    void setUp() {
+        DataStore.setTestMode(true);
     }
 }

@@ -64,16 +64,17 @@ public class FullCompTest {
     public void runTest() throws IOException, DataStoreException {
 
         String[] args = {"IntTestComp1", "5", "16", "10"};
-        String[] pairings = {"Jill & Jane",
+        String[] pairings = {"David & Salette",
+                "Liz B & Jane E",
+                "Jill R & Rob",
+                "Jill H & Jane D",
+                "Wendy & Diana",
                 "Diane & Alan",
-                "Clare & Jill",
-                "Lisbeth & Vicky",
-                "Caroline & Andrew",
-                "Liz & Jane",
-                "David & Salette",
                 "Julia & Sue",
-                "Jill & Rob",
-                "Wendy & Diana"};
+                "Clare & Jill A",
+                "Lisbeth & Vicky",
+                "Caroline & Andrew"
+        };
 
         String competitionName = args[0];
         int noSets = Integer.parseUnsignedInt(args[1]);
@@ -102,8 +103,6 @@ public class FullCompTest {
                                                   }
         );
 
-        pairingTableModel.setNoPairs(noPairs);
-        pairingTableModel.setPairings(Arrays.asList(pairings));
         actions.init(scoringBean, travellerTableModel, pairingTableModel, defaultComboBoxModel);
 
         //Add new Competition
@@ -113,6 +112,8 @@ public class FullCompTest {
         scoringBean.setNewNoPairs(args[3]);
         actions.addCompActionPerformed(scoringBean);
 
+        pairingTableModel.setNoPairs(noPairs);
+        pairingTableModel.setPairings(Arrays.asList(pairings));
         TableModelEvent event = new TableModelEvent(pairingTableModel);
         actions.pairingTableChangedAction(event);
 
