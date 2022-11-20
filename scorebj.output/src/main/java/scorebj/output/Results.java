@@ -1,5 +1,7 @@
 package scorebj.output;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import scorebj.model.*;
 
 import java.io.File;
@@ -9,12 +11,13 @@ import java.io.PrintWriter;
 import java.util.List;
 
 public class Results {
+    Logger logger = LogManager.getLogger();
 
     public Results() {
     }
 
     public void save(Competition competition) throws DataStoreException {
-
+        logger.debug("Producing results...");
         int noPairs = competition.getNoPairs();
         int noSets = competition.getNoSets();
         int noBoardsPerSet = competition.getNoBoardsPerSet();

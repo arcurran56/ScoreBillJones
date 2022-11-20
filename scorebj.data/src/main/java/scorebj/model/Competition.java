@@ -7,21 +7,22 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 
 public class Competition {
+    private static final Logger logger = LogManager.getLogger();
     private final String DEFAULT_COMPETITION_NAME = "";
 
-private String competitionName = DEFAULT_COMPETITION_NAME;
-    private Date date = new Date();
+    private String competitionName = DEFAULT_COMPETITION_NAME;
+    private final Date date = new Date();
     private int noSets;
     private int noBoardsPerSet;
     private int noPairs;
-    private List<String> pairings = new ArrayList<>(20);
+    private final List<String> pairings = new ArrayList<>(20);
 
-private List<Traveller> travellers = new ArrayList<>(100);
+    private final List<Traveller> travellers = new ArrayList<>(100);
 
     public Competition() {
-        Traveller defaultTraveller = new Traveller(0);
-        defaultTraveller.setBoardId(new BoardId(1,1));
-        travellers.add(0,defaultTraveller);
+        //Traveller defaultTraveller = new Traveller(0);
+        //defaultTraveller.setBoardId(new BoardId(1, 1));
+        //travellers.add(0, defaultTraveller);
     }
 
     public String getCompetitionName() {
@@ -32,14 +33,6 @@ private List<Traveller> travellers = new ArrayList<>(100);
         this.competitionName = competitionName;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public int getNoSets() {
         return noSets;
     }
@@ -47,9 +40,6 @@ private List<Traveller> travellers = new ArrayList<>(100);
     public void setNoSets(int noSets) {
         int oldVal = this.noSets;
         this.noSets = noSets;
-        if(noSets != oldVal) {
-            initialise();
-        }
     }
 
     public int getNoBoardsPerSet() {
@@ -60,9 +50,6 @@ private List<Traveller> travellers = new ArrayList<>(100);
         int oldVal = this.noBoardsPerSet;
         this.noBoardsPerSet = noBoardsPerSet;
 
-        if (noBoardsPerSet != oldVal) {
-            initialise();
-        }
     }
 
     public List<String> getPairings() {
@@ -70,7 +57,9 @@ private List<Traveller> travellers = new ArrayList<>(100);
     }
 
     public void setPairings(List<String> pairings) {
-        this.pairings = pairings;
+
+        this.pairings.clear();
+        this.pairings.addAll(pairings);
     }
 
     public List<Traveller> getTravellers() {
@@ -80,12 +69,11 @@ private List<Traveller> travellers = new ArrayList<>(100);
     public Traveller getTraveller(BoardId boardId) {
         int index = (boardId.getSet() - 1) * noBoardsPerSet + boardId.getBoard() - 1;
         Traveller traveller = null;
-        if (index>=0) {
+        if (index >= 0) {
             traveller = travellers.get(index);
         }
         if (traveller == null) {
-            traveller = new Traveller(noPairs/2);
-            traveller.setBoardId(boardId.clone());
+            traveller = new Traveller(boardId.clone(), noPairs / 2);
         }
         return traveller;
     }
@@ -113,35 +101,41 @@ private List<Traveller> travellers = new ArrayList<>(100);
     public void setNoPairs(int noPairs) {
         int oldVal = this.noPairs;
         this.noPairs = noPairs;
-        if (noPairs != oldVal) {
-            initialise();
-        }
     }
+
+    /**
+     * Initialise Competition creating requisite number of empty travellers and pairings.
+      */
     public void initialise() {
+        logger.debug("Initialising Competition, " + competitionName + "...");
+        logger.debug("...for " + noPairs + " pairs...");
+        logger.debug("...with " + noSets + " of " + noBoardsPerSet + ".");
         BoardId boardId = new BoardId(noSets, noBoardsPerSet);
-        if( noSets>0 && noBoardsPerSet>0 && noPairs>0) {
+        if (noSets > 0 && noBoardsPerSet > 0 && noPairs > 0) {
             travellers.clear();
             Traveller traveller;
-            for (int i = 0; i < noSets*noBoardsPerSet; i++) {
-                traveller = new Traveller(noPairs / 2);
-                traveller.setBoardId(boardId.clone());
+            for (int i = 0; i < noSets * noBoardsPerSet; i++) {
+                traveller = new Traveller(boardId.clone(), noPairs / 2);
                 travellers.add(traveller);
                 boardId = boardId.next();
             }
-            pairings = new ArrayList<>(noPairs);
             for (int i = 0; i < noPairs; i++) {
                 pairings.add("");
             }
         }
     }
-    public String getProgress(){
+
+    public String getProgress() {
         int completionCount = 0;
-        for (Traveller t: travellers) {
+        for (Traveller t : travellers) {
             if (t.isComplete()) completionCount++;
         }
         return " " + completionCount +
                 "/" +
                 travellers.size() +
                 " complete";
+    }
+    public String toString(){
+        return "Competition: " + competitionName;
     }
 }

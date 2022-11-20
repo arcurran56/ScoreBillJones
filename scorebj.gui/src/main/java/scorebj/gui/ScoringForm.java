@@ -2,14 +2,10 @@ package scorebj.gui;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scorebj.model.BoardId;
-import scorebj.model.Competition;
-import scorebj.model.DataStore;
 import scorebj.model.DataStoreException;
-import scorebj.model.Traveller;
-import scorebj.output.Results;
 import scorebj.pairing.PairingTableModel;
 import scorebj.traveller.TravellerTableColumnModel;
 import scorebj.traveller.TravellerTableModel;
@@ -23,13 +19,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.List;
-import java.util.function.Function;
 
 public class ScoringForm {
     private static final Logger logger = LogManager.getLogger();
 
     private final JFrame frame = new JFrame("Scoring Bill Jones");
+    private final DefaultComboBoxModel<String> compComboBoxModel = new DefaultComboBoxModel<>();
 
     private JPanel mainPanel;
     private JPanel buttonPanel;
@@ -69,80 +64,52 @@ public class ScoringForm {
     private JLabel newBpSLabel;
     private JLabel currentSetsLabel;
 
-    private static DataStore dataStore;
-    private final ScoringBean scoringBean;
     private final TravellerTableModel travellerTableModel = new TravellerTableModel();
-    private Competition competition;
-    private BoardId currentBoardId;
-    private Vector<String> nameList;
+
     private final PairingTableModel pairingTableModel = new PairingTableModel();
-    private TableColumnModel pairingTableColumnModel;
+    private final ScoringFormActions actions = new ScoringFormActions();
 
 
-    public ScoringForm() {
+    public ScoringForm() throws DataStoreException {
 
         $$$setupUI$$$();
 
-        scoringBean = new ScoringBean();
-        competition = dataStore.getCompetition(0);
+        TableColumnModel travellerTableColumnModel =
+                new TravellerTableColumnModel();
 
-        int noSets = 0;
-        int noPairs = 0;
-        int noBoardsPerSet = 0;
-        String competitionName = null;
-        List<String> pairings = null;
+        ScoringBean scoringBean = new ScoringBean();
 
-        if (competition != null) {
+        compComboBoxModel.addAll(actions.getCompetitionNames());
 
-            noSets = competition.getNoSets();
-            noPairs = competition.getNoPairs();
-            noBoardsPerSet = competition.getNoBoardsPerSet();
-            competitionName = competition.getCompetitionName();
-
-            BoardId boardId = new BoardId(noSets, noBoardsPerSet);
-
-            Traveller traveller = competition.getTraveller(boardId);
-            //travellerTableModel.setNoPairs(noPairs);
-            travellerTableModel.setTraveller(traveller);
-
-            pairings = competition.getPairings();
-            pairingTableModel.setNoPairs(noPairs);
-            pairingTableModel.setPairings(pairings);
-
-            scoringBean.setCurrentSets(Integer.toString(noSets));
-            scoringBean.setCurrentBoardsPerSet(Integer.toString(noBoardsPerSet));
-            scoringBean.setCurrentNoPairs(Integer.toString(noPairs));
-
-            scoringBean.setNewSet(Integer.toString(boardId.getSet()));
-            scoringBean.setNewBoard(Integer.toString(boardId.getBoard()));
-
-            String completionStatus = traveller.getCompetionStatus();
-            scoringBean.setTravellerComplete(completionStatus);
-            scoringBean.setProgress(competition.getProgress());
-
-
+        String competitionName = "";
+        if (compComboBoxModel.getSize() > 0) {
+            compComboBox.setSelectedIndex(0);
+            competitionName = (String) compComboBox.getSelectedItem();
         }
+        ;
+
+        scoringBean.setCurrentCompetitionName(competitionName);
+        try {
+            actions.init(scoringBean, travellerTableModel,
+                    pairingTableModel, compComboBoxModel);
+        } catch (DataStoreException e) {
+            throw new RuntimeException(e);
+        }
+
         setData(scoringBean);
-
-        assert pairings != null;
-        StringBuilder logLine = new StringBuilder()
-                .append("Initialisation:  Selected Competition:")
-                .append(competitionName)
-                .append(", pairs: ")
-                .append(noPairs)
-                .append("(")
-                .append(pairings.size())
-                .append(")");
-
-        logger.debug(logLine);
         mainPanel.repaint();
 
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("back");
-                navigateTraveller(BoardId::prev);
+                logger.debug("back..." + e.getActionCommand());
 
+                ScoringBean scoringBean = new ScoringBean();
+                getData(scoringBean);
+                actions.backButtonActionPerformed(scoringBean);
+                setData(scoringBean);
+
+                logger.debug("...repaint back");
                 mainPanel.repaint();
             }
 
@@ -150,21 +117,27 @@ public class ScoringForm {
         forwardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("fwd");
-                navigateTraveller(BoardId::next);
+                logger.debug("forward..." + e.getActionCommand());
 
-                mainPanel.repaint();
+                ScoringBean scoringBean = new ScoringBean();
+                getData(scoringBean);
+                actions.forwardButtonActionPerformed(scoringBean);
+                setData(scoringBean);
+
+                logger.debug("...repaint forward");
             }
         });
         goButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("go");
+                logger.debug("go..." + e.getActionCommand());
 
-                navigateTraveller((bd) -> bd.select(
-                        Integer.parseUnsignedInt(scoringBean.getNewSet()),
-                        Integer.parseUnsignedInt(scoringBean.getNewBoard())));
+                ScoringBean scoringBean = new ScoringBean();
+                getData(scoringBean);
+                actions.goButtonActionPerformed(scoringBean);
+                setData(scoringBean);
 
+                logger.debug("...repaint go");
 
                 mainPanel.repaint();
             }
@@ -173,22 +146,15 @@ public class ScoringForm {
             @Override
             public void tableChanged(TableModelEvent e) {
                 logger.debug("Traveller table changed: " + e.getSource());
+                int firstRow = e.getFirstRow();
+                int column = e.getColumn();
 
                 ScoringBean scoringBean = new ScoringBean();
                 getData(scoringBean);
-                TravellerTableModel travellerTableModel = (TravellerTableModel) e.getSource();
-                Traveller newTraveller = travellerTableModel.getTraveller();
-                newTraveller.scoreHand(e.getFirstRow(), true);
-                BoardId currentBoardId = newTraveller.getBoardId();
-
-                Traveller savedTraveller = competition.getTraveller(currentBoardId);
-                savedTraveller.copy(newTraveller);
-
-                scoringBean.setTravellerComplete(newTraveller.getCompetionStatus());
-                scoringBean.setProgress(competition.getProgress());
-
+                actions.travellerTableChangedAction(scoringBean, travellerTableModel, firstRow, column);
                 setData(scoringBean);
-                dataStore.persist(competition);
+
+                logger.debug("...repaint after traveller changed");
 
                 mainPanel.repaint();
             }
@@ -198,10 +164,14 @@ public class ScoringForm {
             public void tableChanged(TableModelEvent e) {
                 PairingTableModel pairingTableModel = (PairingTableModel) e.getSource();
                 logger.debug("Pairing table changed from " + e.getSource());
-                List<String> pairings = pairingTableModel.getPairings();
-                competition.setPairings(pairings);
 
-                dataStore.persist(competition);
+                ScoringBean scoringBean = new ScoringBean();
+                getData(scoringBean);
+                logger.debug("...repaint after traveller changed");
+                actions.pairingTableChangedAction(e);
+                setData(scoringBean);
+
+                logger.debug("...repaint after pairings changed");
 
                 mainPanel.repaint();
             }
@@ -209,15 +179,11 @@ public class ScoringForm {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("Save...");
-                dataStore.persist(competition);
-                Results results;
-                try {
-                    results = new Results();
-                    results.save(competition);
-                } catch (DataStoreException ex) {
-                    throw new RuntimeException(ex);
-                }
+                logger.debug("Save..." + e.getActionCommand());
+                actions.saveButtonActionPerformed();
+
+                logger.debug("...repaint after traveller changed");
+                mainPanel.repaint();
             }
         });
         compComboBox.addActionListener(new ActionListener() {
@@ -225,73 +191,21 @@ public class ScoringForm {
             public void actionPerformed(ActionEvent e) {
                 logger.debug("compComboBox: " + e.getActionCommand());
 
-                //Get selected Competition and save key for later...
-                String key = (String) compComboBox.getSelectedItem();
-                logger.debug(key + " selected...");
+                //Get selected Competition and save currentCompetitionName for later...
+                String currentCompetitionName = (String) compComboBox.getSelectedItem();
+                logger.debug(currentCompetitionName + " selected...");
 
                 ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
+                scoringBean.setCurrentCompetitionName(currentCompetitionName);
 
+                actions.compComboBoxActionPerformed(scoringBean);
                 //Save current Traveller in old Competition.
-                Traveller savedTraveller;
-                Traveller newTraveller = travellerTableModel.getTraveller();
 
-                BoardId boardId = newTraveller.getBoardId();
-                if (competition != null && scoreTable != null && boardId != null) {
-                    scoreTable.clearSelection();
-                    savedTraveller = competition.getTraveller(boardId);
-                    savedTraveller.copy(newTraveller);
-
-                    //...and pairings
-                    competition.setPairings(pairingTableModel.getPairings());
-
-                    //...and persist.
-                    dataStore.persist(competition);
-                } else {
-                    logger.debug("...traveller not saved.");
-                }
-
-                //Fetch newly chosen Competition.
-                competition = dataStore.getCompetition(key);
-                String name = competition.getCompetitionName();
-                int noPairs = competition.getNoPairs();
-                int noSets = competition.getNoSets();
-                int noBoardsPerSet = competition.getNoBoardsPerSet();
-
-                List<String> pairings = competition.getPairings();
-
-                boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
-
-                scoringBean.setNewSet(Integer.toString(boardId.getSet()));
-                scoringBean.setNewBoard(Integer.toString(boardId.getBoard()));
-
-                scoringBean.setCurrentNoPairs(Integer.toString(noPairs));
-                scoringBean.setCurrentSets(Integer.toString(noSets));
-                scoringBean.setCurrentBoardsPerSet(Integer.toString(noBoardsPerSet));
-
-                pairingTableModel.setNoPairs(noPairs);
-                pairingTableModel.setPairings(pairings);
-
-                StringBuilder logLine = new StringBuilder()
-                        .append("New Competition selected:")
-                        .append(name)
-                        .append(", pairs: ")
-                        .append(noPairs)
-                        .append("(")
-                        .append(pairings.size())
-                        .append(")");
-
-                logger.debug(logLine);
-
-                //Update view.
-                savedTraveller = competition.getTraveller(boardId);
-                travellerTableModel.setTraveller(savedTraveller);
-
-                scoringBean.setTravellerComplete(savedTraveller.getCompetionStatus());
-                scoringBean.setProgress(competition.getProgress());
 
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
                 setData(scoringBean);
+
+                logger.debug("...repaint after new  competition");
 
                 mainPanel.repaint();
             }
@@ -299,58 +213,20 @@ public class ScoringForm {
         addComp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("Add...");
+                logger.debug("Add..." + e.getActionCommand());
+
+                ScoringBean scoringBean = new ScoringBean();
                 getData(scoringBean);
-                competition = new Competition();
-                competition.setCompetitionName(scoringBean.getNewCompetitionName());
-                int noPairs = Integer.parseUnsignedInt(scoringBean.getNewNoPairs());
-                List<String> pairings = null;
-                try {
-                    competition.setNoSets(Integer.parseUnsignedInt(scoringBean.getNewSets()));
-                    competition.setNoBoardsPerSet(Integer.parseUnsignedInt(scoringBean.getNewBoardsPerSet()));
-                    competition.setNoPairs(Integer.parseUnsignedInt(scoringBean.getNewNoPairs()));
-                    competition.initialise();
+                String newCompetitionName = scoringBean.getNewCompetitionName();
 
-                    pairings = competition.getPairings();
-                    dataStore.persist(competition);
+                actions.addCompActionPerformed(scoringBean);
 
-                } catch (NumberFormatException ex) {
-                    logger.warn("Exception caught in Add listener: " + ex);
-                }
-                BoardId boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
-                scoringBean.setCurrentSets(scoringBean.getNewSets());
-                scoringBean.setCurrentBoardsPerSet(scoringBean.getNewBoardsPerSet());
-                scoringBean.setCurrentNoPairs(scoringBean.getNewBoardsPerSet());
-
-                pairingTableModel.setNoPairs(noPairs);
-                pairingTableModel.setPairings(pairings);
-
-                StringBuilder logLine = new StringBuilder()
-                        .append("Competition:")
-                        .append(scoringBean.getNewCompetitionName())
-                        .append(", pairs: ")
-                        .append(noPairs)
-                        .append("(")
-                        .append(pairings.size())
-                        .append(")");
-
-                logger.debug(logLine);
-
-                //Update view.
-                Traveller traveller = competition.getTraveller(boardId);
-                travellerTableModel.setTraveller(traveller);
-
-                scoringBean.setProgress(competition.getProgress());
-                scoringBean.setTravellerComplete(traveller.getCompetionStatus());
-
-                //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
                 setData(scoringBean);
 
-                //Update comboBox with latest list of Competition names.
-                Set<String> names = dataStore.getCompetitionNames();
-                nameList.clear();
-                nameList.addAll(names);
-                compComboBox.setSelectedItem(scoringBean.getNewCompetitionName());
+                compComboBoxModel.addElement(newCompetitionName);
+                compComboBox.setSelectedIndex(Math.max(compComboBoxModel.getSize() - 1, 0));
+
+                logger.debug("...repaint after add competitiion");
 
                 mainPanel.repaint();
 
@@ -359,51 +235,21 @@ public class ScoringForm {
         deleteComp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("Delete...");
+                logger.debug("Delete..." + e.getActionCommand());
                 String key = (String) compComboBox.getSelectedItem();
                 int index = compComboBox.getSelectedIndex();
-                dataStore.delete(key);
 
-                Set<String> names = dataStore.getCompetitionNames();
-                nameList.clear();
-                nameList.addAll(names);
+                ScoringBean scoringBean = new ScoringBean();
+                getData(scoringBean);
+                scoringBean.setCurrentCompetitionName(key);
 
-                int newIndex = Math.min(index - 1, 0);
-                compComboBox.setSelectedIndex(newIndex);
-                String newSelection = (String) compComboBox.getSelectedItem();
-                competition = dataStore.getCompetition(newSelection);
-
-                int noPairs = competition.getNoPairs();
-                List<String> pairings = competition.getPairings();
-
-                BoardId boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
-                scoringBean.setCurrentSets(scoringBean.getNewSets());
-                scoringBean.setCurrentBoardsPerSet(scoringBean.getNewBoardsPerSet());
-                scoringBean.setCurrentNoPairs(scoringBean.getNewBoardsPerSet());
-
-                pairingTableModel.setNoPairs(noPairs);
-                pairingTableModel.setPairings(pairings);
-
-                StringBuilder logLine = new StringBuilder()
-                        .append("Competition:")
-                        .append(scoringBean.getNewCompetitionName())
-                        .append(", pairs: ")
-                        .append(noPairs)
-                        .append("(")
-                        .append(pairings.size())
-                        .append(")");
-
-                logger.debug(logLine);
-
-                //Update view.
-                Traveller traveller = competition.getTraveller(boardId);
-                travellerTableModel.setTraveller(traveller);
-
-                scoringBean.setTravellerComplete(traveller.getCompetionStatus());
-                scoringBean.setProgress(competition.getProgress());
-
+                actions.deleteCompActionPerformed(scoringBean);
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
                 setData(scoringBean);
+
+                compComboBox.setSelectedItem(0);
+
+                logger.debug("...repaint after competition deleted");
 
                 mainPanel.repaint();
             }
@@ -411,31 +257,22 @@ public class ScoringForm {
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("Clear");
+                logger.debug("Clear..." + e.getActionCommand());
 
                 ScoringBean scoringBean = new ScoringBean();
                 getData(scoringBean);
+                actions.clearButtonActionPerformed(scoringBean);
 
-                Traveller displayedTraveller = travellerTableModel.getTraveller();
-                displayedTraveller.clear();
-                travellerTableModel.setTraveller(displayedTraveller);
-                BoardId board = displayedTraveller.getBoardId();
+                setData(scoringBean);
 
-                if (competition != null) {
-                    competition.getTraveller(board).copy(displayedTraveller);
-                    dataStore.persist(competition);
-                }
-                //travellerTableModel.setTraveller(traveller);
-                scoringBean.setTravellerComplete(displayedTraveller.getCompetionStatus());
-                scoringBean.setProgress(competition.getProgress());
+                logger.debug("...repaint after clear");
+
                 mainPanel.repaint();
             }
         });
     }
 
     public static void main(String[] args) throws DataStoreException {
-
-        dataStore = DataStore.create();
 
         JFrame frame = new JFrame("ScoresheetForm");
         frame.setContentPane(new ScoringForm().mainPanel);
@@ -447,58 +284,39 @@ public class ScoringForm {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-
-        TableColumnModel columnModel =
+        TableColumnModel travellerTableColumnModel =
                 new TravellerTableColumnModel();
 
-        scoreTable = new JTable(travellerTableModel, columnModel);
+        compComboBox = new JComboBox<>();
+        compComboBox.setModel(compComboBoxModel);
 
-        //TableColumnModel pairingTableColumnModel = new DefaultTableColumnModel();
+        String competitionName = "";
+        if (compComboBoxModel.getSize() > 0) {
+            compComboBox.setSelectedIndex(0);
+            competitionName = (String) compComboBox.getSelectedItem();
+        }
 
+        scoreTable = new JTable(travellerTableModel, travellerTableColumnModel);
         pairingTable = new JTable(pairingTableModel);
 
         setField = new JTextField();
         boardField = new JTextField();
 
-        nameList = new Vector<String>(dataStore.getCompetitionNames());
-        compComboBox = new JComboBox<String>(nameList);
+        currentNoPairsField = new JTextField();
+        currentSetsField = new JTextField();
+        currentBpSField = new JTextField();
 
+        completionStatusField = new JTextField();
+        progressField = new JTextField();
 
+        newCompField = new JTextField();
+        newBpSField = new JTextField();
+        newNoPairsField = new JTextField();
+        newSetsField = new JTextField();
+
+        logger.debug("...end createUIcomponents.");
     }
 
-    private void navigateTraveller(Function<BoardId, BoardId> navigateTo) {
-        //Save current Traveller.
-        scoreTable.clearSelection();
-
-        ScoringBean scoringBean = new ScoringBean();
-        getData(scoringBean);
-
-        Traveller formTraveller = travellerTableModel.getTraveller();
-        BoardId boardId = formTraveller.getBoardId();
-        Traveller savedTraveller = competition.getTraveller(boardId);
-        formTraveller.setBoardId(boardId.clone());
-        savedTraveller.copy(formTraveller);
-
-        //Fetch specified traveller
-        BoardId newBoardId = navigateTo.apply(boardId);
-        scoringBean.setNewSet(Integer.toString(newBoardId.getSet()));
-        scoringBean.setNewBoard(Integer.toString(newBoardId.getBoard()));
-
-        //Update view.
-        Traveller newTraveller = competition.getTraveller(newBoardId);
-        if (newTraveller.isEmpty() && Objects.equals(boardId.getSet(), newBoardId.getSet())) {
-            logger.debug("Traveller " + newBoardId.getSet() + "-" + newBoardId.getBoard() + " is blank.");
-            newTraveller = formTraveller.generatePrefilled(newBoardId);
-        }
-        travellerTableModel.setTraveller(newTraveller);
-
-        scoringBean.setTravellerComplete(newTraveller.getCompetionStatus());
-        scoringBean.setProgress(competition.getProgress());
-
-        setData(scoringBean);
-
-        dataStore.persist(competition);
-    }
 
     /**
      * Method generated by IntelliJ IDEA GUI Designer
@@ -510,57 +328,62 @@ public class ScoringForm {
     private void $$$setupUI$$$() {
         createUIComponents();
         mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayoutManager(5, 2, new Insets(20, 20, 20, 20), -1, -1));
-        mainPanel.setBackground(new Color(-8326521));
+        mainPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(5, 2, new Insets(20, 20, 20, 20), -1, -1));
+        mainPanel.setBackground(new Color(-2097185));
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayoutManager(1, 11, new Insets(20, 20, 20, 20), -1, -1));
-        mainPanel.add(buttonPanel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(500, 50), null, 0, false));
+        buttonPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 11, new Insets(20, 20, 20, 20), -1, -1));
+        buttonPanel.setBackground(new Color(-2097185));
+        mainPanel.add(buttonPanel, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(500, 50), null, 0, false));
         backButton = new JButton();
+        backButton.setBackground(new Color(-1));
         backButton.setText("<");
-        buttonPanel.add(backButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(backButton, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         forwardButton = new JButton();
+        forwardButton.setBackground(new Color(-1));
         forwardButton.setText(">");
-        buttonPanel.add(forwardButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(forwardButton, new com.intellij.uiDesigner.core.GridConstraints(0, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         setLabel = new JLabel();
         this.$$$loadLabelText$$$(setLabel, this.$$$getMessageFromBundle$$$("score-bill-jones", "set"));
-        buttonPanel.add(setLabel, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(setLabel, new com.intellij.uiDesigner.core.GridConstraints(0, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         setField.setBackground(new Color(-1));
         setField.setColumns(4);
         setField.setHorizontalAlignment(4);
         setField.setText("");
-        buttonPanel.add(setField, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(setField, new com.intellij.uiDesigner.core.GridConstraints(0, 4, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         boardLabel = new JLabel();
         this.$$$loadLabelText$$$(boardLabel, this.$$$getMessageFromBundle$$$("score-bill-jones", "board"));
-        buttonPanel.add(boardLabel, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(boardLabel, new com.intellij.uiDesigner.core.GridConstraints(0, 5, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         boardField.setColumns(4);
         boardField.setHorizontalAlignment(4);
         boardField.setText("");
-        buttonPanel.add(boardField, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(boardField, new com.intellij.uiDesigner.core.GridConstraints(0, 6, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         goButton = new JButton();
+        goButton.setBackground(new Color(-1));
         goButton.setText("Go");
-        buttonPanel.add(goButton, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(goButton, new com.intellij.uiDesigner.core.GridConstraints(0, 7, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         saveButton = new JButton();
+        saveButton.setBackground(new Color(-1));
+        saveButton.setEnabled(true);
         this.$$$loadButtonText$$$(saveButton, this.$$$getMessageFromBundle$$$("score-bill-jones", "save"));
-        buttonPanel.add(saveButton, new GridConstraints(0, 8, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(saveButton, new com.intellij.uiDesigner.core.GridConstraints(0, 8, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         clearButton = new JButton();
+        clearButton.setBackground(new Color(-1));
         clearButton.setText("CLEAR");
-        buttonPanel.add(clearButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        completionStatusField = new JTextField();
+        buttonPanel.add(clearButton, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         completionStatusField.setEditable(false);
-        completionStatusField.setText("completionStatusField");
-        buttonPanel.add(completionStatusField, new GridConstraints(0, 9, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        progressField = new JTextField();
+        completionStatusField.setText("");
+        buttonPanel.add(completionStatusField, new com.intellij.uiDesigner.core.GridConstraints(0, 9, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         progressField.setEditable(false);
         progressField.setText("");
-        buttonPanel.add(progressField, new GridConstraints(0, 10, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        buttonPanel.add(progressField, new com.intellij.uiDesigner.core.GridConstraints(0, 10, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         tablePanel = new JPanel();
-        tablePanel.setLayout(new GridLayoutManager(1, 1, new Insets(20, 20, 20, 20), -1, -1));
-        tablePanel.setBackground(new Color(-855310));
-        mainPanel.add(tablePanel, new GridConstraints(2, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(529, 432), null, 0, true));
+        tablePanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(20, 20, 20, 20), -1, -1));
+        tablePanel.setBackground(new Color(-2097185));
+        mainPanel.add(tablePanel, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(529, 432), null, 0, true));
         tableScrollPane = new JScrollPane();
         tableScrollPane.setBackground(new Color(-1));
         tableScrollPane.setEnabled(false);
-        tablePanel.add(tableScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(1206, 428), null, 0, false));
+        tablePanel.add(tableScrollPane, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(1206, 428), null, 0, false));
         scoreTable.setAutoCreateRowSorter(false);
         scoreTable.setAutoResizeMode(4);
         scoreTable.setBackground(new Color(-1));
@@ -570,70 +393,69 @@ public class ScoringForm {
         scoreTable.setRowHeight(40);
         tableScrollPane.setViewportView(scoreTable);
         compPanel = new JPanel();
-        compPanel.setLayout(new GridLayoutManager(4, 11, new Insets(20, 20, 20, 20), -1, -1));
-        mainPanel.add(compPanel, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(529, 69), null, 0, false));
-        newCompField = new JTextField();
-        newCompField.setText("comp");
-        compPanel.add(newCompField, new GridConstraints(1, 0, 1, 6, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        compPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(4, 11, new Insets(20, 20, 20, 20), -1, -1));
+        compPanel.setBackground(new Color(-2097185));
+        mainPanel.add(compPanel, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(529, 69), null, 0, false));
+        newCompField.setText("");
+        compPanel.add(newCompField, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 6, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         compComboBox.setEditable(true);
-        compPanel.add(compComboBox, new GridConstraints(0, 0, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        currentNoPairsField = new JTextField();
+        compPanel.add(compComboBox, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 4, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         currentNoPairsField.setEditable(false);
-        currentNoPairsField.setText("No of Pairs");
-        compPanel.add(currentNoPairsField, new GridConstraints(0, 9, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        currentNoPairsField.setText("");
+        compPanel.add(currentNoPairsField, new com.intellij.uiDesigner.core.GridConstraints(0, 9, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         currentNoPairsLabel = new JLabel();
         currentNoPairsLabel.setText("Pairs");
-        compPanel.add(currentNoPairsLabel, new GridConstraints(0, 10, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        label1.setText("Boards per Set");
-        compPanel.add(label1, new GridConstraints(3, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        newSetsField = new JTextField();
-        compPanel.add(newSetsField, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("Sets");
-        compPanel.add(label2, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        currentSetsField = new JTextField();
+        compPanel.add(currentNoPairsLabel, new com.intellij.uiDesigner.core.GridConstraints(0, 10, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        currentBpSLabel = new JLabel();
+        currentBpSLabel.setText("Boards per Set");
+        compPanel.add(currentBpSLabel, new com.intellij.uiDesigner.core.GridConstraints(3, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        compPanel.add(newSetsField, new com.intellij.uiDesigner.core.GridConstraints(3, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        newSetsLabel = new JLabel();
+        newSetsLabel.setText("Sets");
+        compPanel.add(newSetsLabel, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         currentSetsField.setEditable(false);
-        compPanel.add(currentSetsField, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        compPanel.add(currentSetsField, new com.intellij.uiDesigner.core.GridConstraints(0, 5, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         deleteComp = new JButton();
+        deleteComp.setBackground(new Color(-1));
         deleteComp.setText("Delete");
-        compPanel.add(deleteComp, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        currentBpSField = new JTextField();
+        compPanel.add(deleteComp, new com.intellij.uiDesigner.core.GridConstraints(0, 4, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         currentBpSField.setEditable(false);
-        compPanel.add(currentBpSField, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("Boards per Set");
-        compPanel.add(label3, new GridConstraints(0, 8, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        newBpSField = new JTextField();
-        compPanel.add(newBpSField, new GridConstraints(3, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        compPanel.add(currentBpSField, new com.intellij.uiDesigner.core.GridConstraints(0, 7, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        newBpSLabel = new JLabel();
+        newBpSLabel.setText("Boards per Set");
+        compPanel.add(newBpSLabel, new com.intellij.uiDesigner.core.GridConstraints(0, 8, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        compPanel.add(newBpSField, new com.intellij.uiDesigner.core.GridConstraints(3, 4, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         newNoPairsLabel = new JLabel();
         newNoPairsLabel.setText("No of Pairs");
-        compPanel.add(newNoPairsLabel, new GridConstraints(3, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        newNoPairsField = new JTextField();
-        compPanel.add(newNoPairsField, new GridConstraints(3, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label4 = new JLabel();
-        label4.setText("Sets");
-        compPanel.add(label4, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        compPanel.add(newNoPairsLabel, new com.intellij.uiDesigner.core.GridConstraints(3, 5, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        compPanel.add(newNoPairsField, new com.intellij.uiDesigner.core.GridConstraints(3, 6, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        currentSetsLabel = new JLabel();
+        currentSetsLabel.setText("Sets");
+        compPanel.add(currentSetsLabel, new com.intellij.uiDesigner.core.GridConstraints(0, 6, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         addComp = new JButton();
+        addComp.setBackground(new Color(-1));
         addComp.setText("Add");
-        compPanel.add(addComp, new GridConstraints(2, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        label5.setText("Temp Label");
-        compPanel.add(label5, new GridConstraints(1, 7, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        compPanel.add(addComp, new com.intellij.uiDesigner.core.GridConstraints(2, 6, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
+        compPanel.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(1, 7, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 40), null, null, 0, false));
         pairPanel = new JPanel();
-        pairPanel.setLayout(new GridLayoutManager(1, 1, new Insets(20, 20, 20, 20), -1, -1));
-        mainPanel.add(pairPanel, new GridConstraints(2, 1, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        pairPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(20, 20, 20, 20), -1, -1));
+        pairPanel.setBackground(new Color(-2097185));
+        mainPanel.add(pairPanel, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pairingScrollPane = new JScrollPane();
-        pairPanel.add(pairingScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        pairPanel.add(pairingScrollPane, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pairingTable.setAutoResizeMode(4);
         pairingTable.setFillsViewportHeight(true);
+        pairingTable.setGridColor(new Color(-16777216));
         pairingScrollPane.setViewportView(pairingTable);
-        setLabel.setLabelFor(tableScrollPane);
+        setLabel.setLabelFor(setField);
         boardLabel.setLabelFor(boardField);
-        label1.setLabelFor(newBpSField);
-        label2.setLabelFor(newSetsField);
-        label3.setLabelFor(currentBpSField);
-        label4.setLabelFor(pairingScrollPane);
+        currentNoPairsLabel.setLabelFor(currentNoPairsField);
+        currentBpSLabel.setLabelFor(currentBpSField);
+        newSetsLabel.setLabelFor(newSetsField);
+        newBpSLabel.setLabelFor(newBpSField);
+        newNoPairsLabel.setLabelFor(newNoPairsField);
+        currentSetsLabel.setLabelFor(currentSetsField);
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;
@@ -717,29 +539,30 @@ public class ScoringForm {
     public void setData(ScoringBean data) {
         setField.setText(data.getNewSet());
         boardField.setText(data.getNewBoard());
-        completionStatusField.setText(data.getTravellerComplete());
+        completionStatusField.setText(data.getCompletionStatus());
         progressField.setText(data.getProgress());
         newCompField.setText(data.getNewCompetitionName());
         currentNoPairsField.setText(data.getCurrentNoPairs());
+        newSetsField.setText(data.getNewSets());
         currentSetsField.setText(data.getCurrentSets());
         currentBpSField.setText(data.getCurrentBoardsPerSet());
-        newNoPairsField.setText(data.getNewNoPairs());
         newBpSField.setText(data.getNewBoardsPerSet());
-        newSetsField.setText(data.getNewSets());
+        newNoPairsField.setText(data.getNewNoPairs());
+
     }
 
     public void getData(ScoringBean data) {
         data.setNewSet(setField.getText());
         data.setNewBoard(boardField.getText());
-        data.setTravellerComplete(completionStatusField.getText());
+        data.setCompletionStatus(completionStatusField.getText());
         data.setProgress(progressField.getText());
         data.setNewCompetitionName(newCompField.getText());
         data.setCurrentNoPairs(currentNoPairsField.getText());
+        data.setNewSets(newSetsField.getText());
         data.setCurrentSets(currentSetsField.getText());
         data.setCurrentBoardsPerSet(currentBpSField.getText());
-        data.setNewNoPairs(newNoPairsField.getText());
         data.setNewBoardsPerSet(newBpSField.getText());
-        data.setNewSets(newSetsField.getText());
+        data.setNewNoPairs(newNoPairsField.getText());
     }
 
     public boolean isModified(ScoringBean data) {
@@ -747,7 +570,7 @@ public class ScoringForm {
             return true;
         if (boardField.getText() != null ? !boardField.getText().equals(data.getNewBoard()) : data.getNewBoard() != null)
             return true;
-        if (completionStatusField.getText() != null ? !completionStatusField.getText().equals(data.getTravellerComplete()) : data.getTravellerComplete() != null)
+        if (completionStatusField.getText() != null ? !completionStatusField.getText().equals(data.getCompletionStatus()) : data.getCompletionStatus() != null)
             return true;
         if (progressField.getText() != null ? !progressField.getText().equals(data.getProgress()) : data.getProgress() != null)
             return true;
@@ -755,15 +578,17 @@ public class ScoringForm {
             return true;
         if (currentNoPairsField.getText() != null ? !currentNoPairsField.getText().equals(data.getCurrentNoPairs()) : data.getCurrentNoPairs() != null)
             return true;
+        if (newSetsField.getText() != null ? !newSetsField.getText().equals(data.getNewSets()) : data.getNewSets() != null)
+            return true;
         if (currentSetsField.getText() != null ? !currentSetsField.getText().equals(data.getCurrentSets()) : data.getCurrentSets() != null)
             return true;
         if (currentBpSField.getText() != null ? !currentBpSField.getText().equals(data.getCurrentBoardsPerSet()) : data.getCurrentBoardsPerSet() != null)
             return true;
-        if (newNoPairsField.getText() != null ? !newNoPairsField.getText().equals(data.getNewNoPairs()) : data.getNewNoPairs() != null)
-            return true;
         if (newBpSField.getText() != null ? !newBpSField.getText().equals(data.getNewBoardsPerSet()) : data.getNewBoardsPerSet() != null)
             return true;
-        return newSetsField.getText() != null ? !newSetsField.getText().equals(data.getNewSets()) : data.getNewSets() != null;
+        if (newNoPairsField.getText() != null ? !newNoPairsField.getText().equals(data.getNewNoPairs()) : data.getNewNoPairs() != null)
+            return true;
+        return false;
     }
 }
 

@@ -7,7 +7,11 @@ import scorebj.model.Contract;
 import scorebj.model.ScoreLine;
 import scorebj.model.Traveller;
 
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +21,6 @@ public class TravellerTableModel extends AbstractTableModel {
 
     private final String INTEGER = "java.lang.Integer";
     private final String CONTRACT = "scorebj.model.Contract";
-    //private final String STRING = "java.lang.String";
     private final String DIRECTION = "scorebj.model.ScoreLine.Direction";
 
     private final String[] travellerColumnHeaders = new String[]
@@ -46,14 +49,30 @@ public class TravellerTableModel extends AbstractTableModel {
                     INTEGER};
 
 
-    private int noPairs =0;
-    private final List<ScoreLine> travellerTable;
+    private int noPairs = 0;
+    private final List<ScoreLine> travellerTable = new ArrayList<>(INITIAL_CAPACITY);
     private int rowCount = 0;
     private BoardId boardId;
 
-    public TravellerTableModel(){
-        travellerTable = new ArrayList<ScoreLine>(INITIAL_CAPACITY);
+    private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener(){
 
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if ("score".equals(evt.getPropertyName())){
+                allocateMPs();
+            }
+        }
+    };
+
+    public TravellerTableModel() {
+        addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                logger.debug("TableChanged event.");
+                int column = e.getColumn();
+                int row = e.getFirstRow();
+            }
+        });
     }
 
     @Override
@@ -92,7 +111,7 @@ public class TravellerTableModel extends AbstractTableModel {
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         Object convertedValue = null;
         try {
-            switch (columnClassNames[columnIndex]){
+            switch (columnClassNames[columnIndex]) {
                 case INTEGER:
                     convertedValue = Integer.valueOf((String) aValue);
                     break;
@@ -105,12 +124,9 @@ public class TravellerTableModel extends AbstractTableModel {
         } catch (Exception e) {
             logger.warn(e.toString());
         }
+        (travellerTable.get(rowIndex)).set(columnIndex, convertedValue);
+        fireTableCellUpdated(rowIndex, columnIndex);
 
-        ScoreLine scoreLine = travellerTable.get(rowIndex);
-        if(convertedValue != (Object) scoreLine.get(columnIndex)) {
-            (travellerTable.get(rowIndex)).set(columnIndex, convertedValue);
-            fireTableCellUpdated(rowIndex,columnIndex);
-        }
     }
 
     @Override
@@ -125,23 +141,22 @@ public class TravellerTableModel extends AbstractTableModel {
 
     public void setTraveller(Traveller traveller) {
         //ScoreLine scoreLine;
-        boardId  = traveller.getBoardId();
+        boardId = traveller.getBoardId();
         travellerTable.clear();
         travellerTable.addAll(traveller.getScoreLines());
         rowCount = travellerTable.size();
 
         StringBuilder logLine = new StringBuilder()
-                .append("Displaying traveller: ") ;
+                .append("Displaying Traveller: ");
 
         if (boardId != null) {
-            traveller = new Traveller(0);
+            //traveller = new Traveller(0);
             logLine
-                .append("Set ")
+                    .append("Set ")
                     .append(boardId.getSet())
                     .append(", Board ")
-                    .append(boardId.getBoard())    ;
-        }
-        else {
+                    .append(boardId.getBoard());
+        } else {
             logLine.append(" null board ");
         }
         logLine
@@ -149,16 +164,65 @@ public class TravellerTableModel extends AbstractTableModel {
                 .append(rowCount)
                 .append(" rows.");
         logger.debug(logLine);
+
+        TableModelEvent e = new TableModelEvent(this);
+        fireTableChanged(e);
     }
 
-    public Traveller getTraveller(){
-        Traveller traveller = new Traveller(rowCount);
+    public Traveller getTraveller() {
+        Traveller traveller = new Traveller(this.boardId, rowCount);
         List<ScoreLine> lines = traveller.getScoreLines();
-        for (int i=0; i<rowCount; i++) {
-            lines.set(i,travellerTable.get(i));
+
+        for (int i = 0; i < rowCount; i++) {
+            lines.set(i, travellerTable.get(i));
         }
-        traveller.setBoardId(this.boardId);
         return traveller;
     }
+    private void allocateMPs() {
+        int netScore1;
+        int netScore2;
 
+
+        for (ScoreLine scoreLine1 : travellerTable) {
+            int nsMPs = 0;
+            int ewMPs = 0;
+            if (scoreLine1 != null) {
+                if (scoreLine1.getNSScore() != null && scoreLine1.getEWScore() != null) {
+                    netScore1 = scoreLine1.getNSScore() - scoreLine1.getEWScore();
+
+                    for (ScoreLine scoreLine2 : travellerTable) {
+                        if (scoreLine2 != null) {
+                            if (scoreLine2.getNSScore() != null && scoreLine2.getEWScore() != null) {
+                                if (scoreLine1 != scoreLine2) {
+                                    netScore2 = scoreLine2.getNSScore() - scoreLine2.getEWScore();
+                                    switch (Integer.compare(netScore1, netScore2)) {
+                                        case -1:
+                                            ewMPs = ewMPs + 2;
+                                            break;
+                                        case 0:
+                                            nsMPs++;
+                                            ewMPs++;
+                                            break;
+                                        case 1:
+                                            nsMPs = nsMPs + 2;
+                                            break;
+
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    scoreLine1.setNsMPs(nsMPs);
+                    scoreLine1.setEwMPs(ewMPs);
+                }
+
+            }
+
+        }
+
+    }
+    public String toString() {
+        return "Traveller for " + (boardId==null?" null ":boardId.toString());
+    }
 }

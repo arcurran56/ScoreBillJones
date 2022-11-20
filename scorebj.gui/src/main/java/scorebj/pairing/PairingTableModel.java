@@ -1,10 +1,14 @@
 package scorebj.pairing;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PairingTableModel extends AbstractTableModel {
+    Logger logger = LogManager.getLogger();
     List<String> pairings;
     private int noPairs;
 
@@ -57,15 +61,18 @@ public class PairingTableModel extends AbstractTableModel {
         for (int i = 0; i<noPairs; i++) {
             pairings.add("");
         }
+        fireTableDataChanged();
     }
 
     public void setPairings(List<String> pairings) {
+        logger.debug("Setting pairings...");
         for (int i=0; i<noPairs; i++){
             if (i< pairings.size()) {
                 this.pairings.set(i, pairings.get(i));
             }
             else { this.pairings.set(i, "");}
         }
+        fireTableDataChanged();
     }
 
     @Override

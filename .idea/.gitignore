@@ -1,11 +1,4 @@
 # Default ignored files
 /shelf/
 /workspace.xml
-/libraries/Maven__asm_asm_3_0.xml
-/libraries/Maven__asm_asm_commons_3_0.xml
-/libraries/Maven__asm_asm_tree_3_0.xml
-/libraries/Maven__com_intellij_javac2_7_0_3.xml
-/libraries/Maven__com_jgoodies_forms_1_1_preview.xml
-/libraries/Maven__jdom_jdom_1_0.xml
-/libraries/Maven__org_apache_ant_ant_1_7_0.xml
-/libraries/Maven__org_apache_ant_ant_launcher_1_7_0.xml
+/libraries/*.*

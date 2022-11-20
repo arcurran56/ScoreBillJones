@@ -5,35 +5,39 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Traveller {
+public class Traveller implements PropertyChangeListener {
 
     @XStreamOmitField
     private static final Logger logger = LogManager.getLogger();
     private final int size;
 
-    private BoardId boardId;
+    private final BoardId boardId;
 
     public BoardId getBoardId() {
         return boardId;
     }
 
-    public void setBoardId(BoardId boardId) {
-        this.boardId = boardId;
+     public Traveller(){
+        throw new RuntimeException();
     }
-
-    public Traveller(){
-        this(0);
-    }
-    public Traveller(int size) {
+    public Traveller(BoardId boardId, int size) {
         this.size = size;
+        this.boardId = boardId;
+
+        ScoreLine scoreLine;
         for (int i = 0; i < size; i++) {
-            scoreLines.add(new ScoreLine());
+            scoreLine = new ScoreLine();
+            scoreLine.setVulnerability(boardId.getVulnerabilityStatus());
+            scoreLine.addPropertyChangeListener(this);
+            scoreLines.add(scoreLine);
         }
-        boardId = new BoardId(1,1);
+
     }
 
     public List<ScoreLine> getScoreLines() {
@@ -56,8 +60,7 @@ public class Traveller {
      * @return
      */
     public Traveller generatePrefilled(BoardId newBoardId) {
-        Traveller newTraveller = new Traveller(size);
-        newTraveller.setBoardId(newBoardId);
+        Traveller newTraveller = new Traveller(newBoardId, size);
 
         List<ScoreLine> newScoreLines = newTraveller.getScoreLines();
         int nsPair;
@@ -92,11 +95,11 @@ public class Traveller {
         }
     }
 
-    public void scoreHand(int line, boolean vulnerable) {
+/*    public void scoreHand(int line, boolean vulnerable) {
         ScoreLine scoreLine = getScoreLine(line);
-        scoreLine.scoreHand(vulnerable);
+        scoreLine.scoreHand();
         allocateMPs();
-    }
+    }*/
 
     private void allocateMPs() {
         int netScore1;
@@ -156,7 +159,9 @@ public class Traveller {
         int completedLines = 0;
         boolean complete;
         for (ScoreLine scoreLine: scoreLines){
-            if (scoreLine.getNsMPs() != null){
+            if (scoreLine.getNsMPs() != null
+            && scoreLine.getNsPair() != null
+            && scoreLine.getEwPair() != null){
                 completedLines++;
             }
         }
@@ -195,5 +200,12 @@ public class Traveller {
 
     public String getCompetionStatus() {
         return isComplete()?"":"Unfinished";
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("score".equals(evt.getPropertyName())) {
+            allocateMPs();
+        }
     }
 }

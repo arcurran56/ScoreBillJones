@@ -18,44 +18,29 @@ class TravellerTest {
 
 
     @Test
-    void scoreHand() {
-        incompleteTraveller.scoreHand(1, true);//NS 200; 4-0
-        incompleteTraveller.scoreHand(2, true);//NS 100; 2-2
-        incompleteTraveller.scoreHand(3, true);//EW 730; MP 0-4
-        List<ScoreLine> list = incompleteTraveller.getScoreLines();
+    void scoreHandComplete() {
 
-        assertAll("scoreHand", () -> {
-            assertNull(list.get(4).getNSScore());
-            assertNull(list.get(4).getNsMPs());
-            assertNull(list.get(4).getEwMPs());
+         List<ScoreLine> list = completeTraveller.getScoreLines();
+
+        assertAll("scoreHandComplete", () -> {
 
             assertEquals(200, list.get(1).getNSScore());
             assertEquals(730, list.get(3).getEWScore());
-            assertEquals(2, list.get(2).getNsMPs());
-            assertEquals(2, list.get(2).getEwMPs());
+            assertEquals(4, list.get(2).getNsMPs());
+            assertEquals(4, list.get(2).getEwMPs());
             assertEquals(0, list.get(3).getNsMPs());
-            assertEquals(4, list.get(3).getEwMPs());
+            assertEquals(8, list.get(3).getEwMPs());
+            assertEquals(50, list.get(4).getEWScore());
+            assertEquals(2, list.get(4).getNsMPs());
+            assertEquals(6, list.get(4).getEwMPs());
         });
 
     }
 
     @Test
     void isComplete() {
-        //List<ScoreLine> list = completeTraveller.getScoreLines();
 
-        completeTraveller.scoreHand(0,true);//NS 200; MP 5-1
-
-        completeTraveller.scoreHand(1, true);//NS 200; MP 5-1
-
-
-        completeTraveller.scoreHand(2, true);//NS 100; 2-4
-
-        completeTraveller.scoreHand(3, true);//EW 730; MP 0-6
-
-        completeTraveller.scoreHand(4, true);//NS 100; 2-4
         assertTrue(completeTraveller.isComplete());
-
-        incompleteTraveller.scoreHand(0,true);
         assertFalse(incompleteTraveller.isComplete());
     }
 
@@ -88,17 +73,22 @@ class TravellerTest {
 
     @BeforeEach
     void setUp() {
-        BoardId boardId1c = new BoardId(7,3); //Set 1, Board 1
-        BoardId boardId1i = new BoardId(7,3); //Set 1, Board 1
+        BoardId boardId1cv = new BoardId(7,3);
+        boardId1cv.setBoard(3); //Set 1, Board 3, EW Vuln
+
+        BoardId boardId1inv = new BoardId(7,3); //Set 1, Board 1, None Vuln
+
         boardId1 = new BoardId(7,3); //Set 1, Board 1
+
         boardId2 = new BoardId(7,3); //Set 1, Board 3
         boardId2.setBoard(3);
+
         boardId3 = new BoardId(7,3); //Set 2, Board 1
         boardId3.setSet(2);
-        boardId3.setBoard(1);
+        boardId3.setBoard(2);
 
-        completeTraveller = new Traveller(5);
-        completeTraveller.setBoardId(boardId1c);
+        completeTraveller = new Traveller(boardId1cv,5);
+
         List<ScoreLine> list = completeTraveller.getScoreLines();
 
         list.get(0).setNsPair(7);
@@ -106,40 +96,38 @@ class TravellerTest {
         list.get(0).setContract(new Contract("3H*"));
         list.get(0).setPlayedBy(ScoreLine.Direction.E);
         list.get(0).setTricks(8);
-        //completeTraveller.scoreHand(0,true);//NS 200; MP 5-1
+        //NS 200; MP 7-1
 
         list.get(1).setNsPair(1);
         list.get(1).setEwPair(2);
         list.get(1).setContract(new Contract("3H*"));
         list.get(1).setPlayedBy(ScoreLine.Direction.E);
         list.get(1).setTricks(8);
-        //completeTraveller.scoreHand(1, true);//NS 200; MP 5-1
+        //NS 200; MP 7-1
 
         list.get(2).setNsPair(3);
         list.get(2).setEwPair(4);
         list.get(2).setContract(new Contract("3H"));
         list.get(2).setPlayedBy(ScoreLine.Direction.E);
         list.get(2).setTricks(8);
-        //completeTraveller.scoreHand(2, true);//NS 100; 2-4
+        //NS 100; MP 4-4
 
         list.get(3).setNsPair(5);
         list.get(3).setEwPair(6);
         list.get(3).setContract(new Contract("3H*"));
         list.get(3).setPlayedBy(ScoreLine.Direction.E);
         list.get(3).setTricks(9);
+        //EW 730 MP: 0-8
 
         list.get(4).setNsPair(3);
         list.get(4).setEwPair(4);
-        list.get(4).setContract(new Contract("3H"));
-        list.get(4).setPlayedBy(ScoreLine.Direction.E);
+        list.get(4).setContract(new Contract("3S"));
+        list.get(4).setPlayedBy(ScoreLine.Direction.N);
         list.get(4).setTricks(8);
+        //EW 50, MP: 2-6
 
-        for(int i=0; i<5; i++) {
-            completeTraveller.scoreHand(i, true);
-        }
 
-        incompleteTraveller = new Traveller(5);
-        incompleteTraveller.setBoardId(boardId1i);
+        incompleteTraveller = new Traveller(boardId1inv, 5);
 
         list = incompleteTraveller.getScoreLines();
         list.get(0).setNsPair(7);
@@ -147,20 +135,21 @@ class TravellerTest {
         list.get(0).setContract(new Contract("3H*"));
         list.get(0).setPlayedBy(ScoreLine.Direction.E);
         list.get(0).setTricks(8);
-        //completeTraveller.scoreHand(0,true);//NS 200; MP 5-1
+        //NS 200
 
         list.get(1).setNsPair(1);
         list.get(1).setEwPair(2);
         list.get(1).setContract(new Contract("3H*"));
         list.get(1).setPlayedBy(ScoreLine.Direction.E);
         list.get(1).setTricks(8);
+        //NS 200
 
         list.get(2).setNsPair(3);
         list.get(2).setEwPair(4);
         list.get(2).setContract(new Contract("3H"));
         list.get(2).setPlayedBy(ScoreLine.Direction.E);
         list.get(2).setTricks(8);
-        //completeTraveller.scoreHand(2, true);//NS 100; 2-4
+        //NS 100
 
         list.get(3).setNsPair(5);
         list.get(3).setEwPair(6);
@@ -179,7 +168,7 @@ class TravellerTest {
 
     @Test
     void isEmpty() {
-        Traveller emptyTraveller = new Traveller(5);
+        Traveller emptyTraveller = new Traveller(boardId1, 5);
         assertTrue(emptyTraveller.isEmpty());
         assertFalse(incompleteTraveller.isEmpty());
     }

@@ -1,29 +1,21 @@
 package scorebj.gui;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import scorebj.model.Competition;
-
 public class ScoringBean {
 
-    private static final Logger logger = LogManager.getLogger();
-    private Competition currentCompetition;
-
-    private String currentCompetitionName;
+    private String currentCompetitionName = "";
     private String currentSets = "0";
     private String currentBoardsPerSet = "0";
     private String currentNoPairs = "0";
 
     private String newCompetitionName = "";
-    private String newSets = "";
-    private String newBoardsPerSet = "";
-    private String newNoPairs = "";
+    private String newSets = "0";
+    private String newBoardsPerSet = "0";
+    private String newNoPairs = "0";
 
-    private String newSet = "1";
-
-    private String travellerComplete;
-    private String progress;
+    private String newSet = "0";
+    private String travellerComplete = "";
+    private String progress = "";
+    private String completionStatus = "";
 
     public String getNewSet() {
         return newSet;
@@ -41,7 +33,7 @@ public class ScoringBean {
         this.newBoard = newBoard;
     }
 
-    private String newBoard = "1";
+    private String newBoard = "0";
 
     public String getCurrentNoPairs() {
         return currentNoPairs;
@@ -61,7 +53,13 @@ public class ScoringBean {
 
     public ScoringBean() {
     }
+    public String getCurrentCompetitionName() {
+        return currentCompetitionName;
+    }
 
+    public void setCurrentCompetitionName(String currentCompetitionName) {
+        this.currentCompetitionName = currentCompetitionName;
+    }
     public String getCurrentSets() {
         return currentSets;
     }
@@ -117,5 +115,13 @@ public class ScoringBean {
 
     public void setProgress(final String progress) {
         this.progress = progress;
+    }
+
+    public String getCompletionStatus() {
+        return completionStatus;
+    }
+
+    public void setCompletionStatus(final String completionStatus) {
+        this.completionStatus = completionStatus;
     }
 }

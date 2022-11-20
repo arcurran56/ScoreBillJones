@@ -85,8 +85,6 @@ public class Importer {
                     scoreLine.setPlayedBy(ScoreLine.Direction.valueOf(importLineValues[PLAYED_BY].replace("\"", "")));
                     scoreLine.setTricks(Integer.parseInt(importLineValues[TRICKS]));
 
-                    traveller.scoreHand(lineIndex, boardId.getVulnerability(scoreLine.getPlayedBy()));
-
                     lineIndex++;
                     if (lineIndex == lineCount) {
                         readingState = ReadingState.LINE_COUNT;

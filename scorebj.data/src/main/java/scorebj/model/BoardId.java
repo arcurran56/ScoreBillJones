@@ -19,17 +19,36 @@ public class BoardId implements Cloneable{
     }
 
     public Integer getSet() {
+        Integer set;
 
-        return serNo / noOfBoards + 1;
+        if (noOfBoards > 0) {
+            set = serNo / noOfBoards + 1;
+        }
+        else {
+            set = 0;
+        }
+        return set;
     }
 
     public void setSet(Integer set) {
-        int board0 = serNo % noOfBoards;
-        this.serNo = (set - 1) * noOfBoards + board0;
+        if (noOfBoards>0) {
+            int board0 = serNo % noOfBoards;
+            this.serNo = (set - 1) * noOfBoards + board0;
+        }
+        else {
+            serNo = 0;
+        }
     }
 
     public Integer getBoard() {
-        return serNo % noOfBoards + 1;
+        int board;
+        if (noOfBoards>0){
+            board = serNo % noOfBoards + 1;
+        }
+        else {
+            board = 0;
+        }
+        return board;
     }
 
     private int getSerNo() {
@@ -44,29 +63,37 @@ public class BoardId implements Cloneable{
     }
 
     public void setBoard(int board) {
-        this.serNo = (serNo / noOfBoards) * noOfBoards + (board - 1) ;
-        determineVulnerability();
+        if (noOfBoards>0) {
+            this.serNo = (serNo / noOfBoards) * noOfBoards + (board - 1);
+            determineVulnerability();
+        }
+        else {
+            serNo = 0;
+        }
     }
 
     public BoardId next(){
         BoardId nextBoardId = this.clone();
         int newSerNo = this.serNo + 1;
         nextBoardId.setSerNo(newSerNo);
+        nextBoardId.determineVulnerability();
         return nextBoardId;
     }
     public BoardId prev(){
         BoardId prevBoardId = this.clone();
         int newSerNo = this.serNo - 1;
         prevBoardId.setSerNo(newSerNo);
+        prevBoardId.determineVulnerability();
         return prevBoardId;
     }
     public BoardId select(Integer set, Integer board){
         BoardId newBoardId = this.clone();
         newBoardId.setSet(set);
         newBoardId.setBoard(board);
+        newBoardId.determineVulnerability();
         return newBoardId;
     }
-    public boolean getVulnerability(ScoreLine.Direction direction) {
+    public boolean isVulnerable(ScoreLine.Direction direction) {
         boolean vulnerability = false;
         switch (vulnerabilityStatus){
             case NONE: break;
@@ -94,10 +121,31 @@ public class BoardId implements Cloneable{
         return clone;
     }
      private void determineVulnerability(){
-        int board = serNo % noOfBoards;
-        int vulnerabilityOrd = ( (board % 4) + (board / 4) ) % 4;
+        int board = getBoard();
+        int vulnerabilityOrd;
+        if(board>0) {
+            vulnerabilityOrd = (((board - 1) % 4) + ((board - 1) / 4)) % 4;
+        }
+        else {
+            vulnerabilityOrd = 0;
+        }
         vulnerabilityStatus = Vulnerability.values()[vulnerabilityOrd];
 
     }
+    public String toString(){
+        StringBuilder builder = new StringBuilder("Board ");
+        builder.append(getBoard())
+                .append("/")
+                .append(noOfBoards)
+                .append(", set")
+                .append(getSet())
+                .append("/")
+                .append(noOfSets)
+                .append(".  ");
+        return builder.toString();
 
+    }
+    public Vulnerability getVulnerabilityStatus(){
+        return vulnerabilityStatus;
+    }
 }

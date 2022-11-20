@@ -107,7 +107,7 @@
               <text value="CLEAR"/>
             </properties>
           </component>
-          <component id="8cefb" class="javax.swing.JTextField" binding="completionStatusField">
+          <component id="8cefb" class="javax.swing.JTextField" binding="completionStatusField" custom-create="true">
             <constraints>
               <grid row="0" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -115,10 +115,10 @@
             </constraints>
             <properties>
               <editable value="false"/>
-              <text value="completionStatusField"/>
+              <text value=""/>
             </properties>
           </component>
-          <component id="2b9a1" class="javax.swing.JTextField" binding="progressField">
+          <component id="2b9a1" class="javax.swing.JTextField" binding="progressField" custom-create="true">
             <constraints>
               <grid row="0" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -126,7 +126,7 @@
             </constraints>
             <properties>
               <editable value="false"/>
-              <text value="Progress field"/>
+              <text value=""/>
             </properties>
           </component>
         </children>
@@ -183,14 +183,14 @@
         </properties>
         <border type="none"/>
         <children>
-          <component id="cc916" class="javax.swing.JTextField" binding="newCompField">
+          <component id="cc916" class="javax.swing.JTextField" binding="newCompField" custom-create="true">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
             <properties>
-              <text value="comp"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="77684" class="javax.swing.JComboBox" binding="compComboBox" custom-create="true">
@@ -201,7 +201,7 @@
               <editable value="true"/>
             </properties>
           </component>
-          <component id="1f774" class="javax.swing.JTextField" binding="currentNoPairsField">
+          <component id="1f774" class="javax.swing.JTextField" binding="currentNoPairsField" custom-create="true">
             <constraints>
               <grid row="0" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -230,7 +230,7 @@
               <text value="Boards per Set"/>
             </properties>
           </component>
-          <component id="9fad7" class="javax.swing.JTextField" binding="newSetsField">
+          <component id="9fad7" class="javax.swing.JTextField" binding="newSetsField" custom-create="true">
             <constraints>
               <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -247,7 +247,7 @@
               <text value="Sets"/>
             </properties>
           </component>
-          <component id="8b4a1" class="javax.swing.JTextField" binding="currentSetsField">
+          <component id="8b4a1" class="javax.swing.JTextField" binding="currentSetsField" custom-create="true">
             <constraints>
               <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -266,7 +266,7 @@
               <text value="Delete"/>
             </properties>
           </component>
-          <component id="f0476" class="javax.swing.JTextField" binding="currentBpSField">
+          <component id="f0476" class="javax.swing.JTextField" binding="currentBpSField" custom-create="true">
             <constraints>
               <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -285,7 +285,7 @@
               <text value="Boards per Set"/>
             </properties>
           </component>
-          <component id="ca871" class="javax.swing.JTextField" binding="newBpSField">
+          <component id="ca871" class="javax.swing.JTextField" binding="newBpSField" custom-create="true">
             <constraints>
               <grid row="3" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -302,7 +302,7 @@
               <text value="No of Pairs"/>
             </properties>
           </component>
-          <component id="11414" class="javax.swing.JTextField" binding="newNoPairsField">
+          <component id="11414" class="javax.swing.JTextField" binding="newNoPairsField" custom-create="true">
             <constraints>
               <grid row="3" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>

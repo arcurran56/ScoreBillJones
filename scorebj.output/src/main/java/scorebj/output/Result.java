@@ -34,6 +34,7 @@ public class Result {
     }
 
     public void collate(List<String> pairings, List<Traveller> travellers) {
+        logger.debug("Collating results...");
 
         this.pairings = pairings;
         //noPairs = pairings.size();
@@ -73,6 +74,17 @@ public class Result {
                         ewMPs = scoreLine.getEwMPs();
 
                         logBuilder = new StringBuilder()
+                                .append(nsPair)
+                                .append("v")
+                                .append(ewPair)
+                                .append(" ")
+                                .append(nsMPs)
+                                .append(" ")
+                                .append(ewMPs);
+
+                        logger.debug(logBuilder);
+
+                        logBuilder = new StringBuilder()
                                 .append(index)
                                 .append(": NS ")
                                 .append(nsPair)
@@ -107,10 +119,12 @@ public class Result {
             boardId = boardId.next();
 
         }
-
+        logger.debug("...done.");
     }
 
     public void printDetails(File detailsFile) throws IOException {
+        logger.debug("Ouputting details...");
+
         PrintWriter output = new PrintWriter(detailsFile);
 
         StringBuilder logLine = new StringBuilder()
@@ -155,6 +169,7 @@ public class Result {
      * @throws IOException
      */
     public void printSummary(File summaryFile) throws IOException {
+        logger.debug("Printing summary file...");
         PrintWriter output = new PrintWriter(summaryFile);
 
         StringBuilder logLine = new StringBuilder()
@@ -200,6 +215,7 @@ public class Result {
     }
 
     public void printMatrix(File matrixFile) throws IOException {
+        logger.debug("Outputting matrix...");
         PrintWriter output = new PrintWriter(matrixFile);
 
         StringBuilder logLine = new StringBuilder()
@@ -229,15 +245,15 @@ public class Result {
 
         }
         output.close();
+        logger.debug("...done.");
     }
 
     /**
      * createSummaryTable
-     *
+     * <p>
      * Creates a table of results
      */
     ResultSS createSummaryTable() {
-
         StringBuilder logLine = new StringBuilder("Creating summary table for spreadsheet...")
                 .append(noPairs)
                 .append(",")
@@ -259,7 +275,7 @@ public class Result {
         }
         ssHeader.add("TOTAL");
 
-        StringBuilder line = new StringBuilder("Header: ")    ;
+        StringBuilder line = new StringBuilder("Header: ");
         ssHeader.forEach(str -> line.append("|").append(str));
         logger.debug(line);
 
@@ -286,7 +302,7 @@ public class Result {
 
         //Log debug lines.
         StringBuilder bodyLine;
-        for(SSRow r: resultSS.getSsRows()) {
+        for (SSRow r : resultSS.getSsRows()) {
             bodyLine = new StringBuilder("Body: ");
             bodyLine.append("|").append(r.getPair());
             StringBuilder sb = new StringBuilder();
@@ -295,11 +311,16 @@ public class Result {
             bodyLine.append(r.getTotal());
             logger.debug(bodyLine);
         }
+        logger.debug("...done.");
         return resultSS;
     }
-public void createResultsSpreadsheet(File spreadsheetFile) throws IOException {
+
+    public void createResultsSpreadsheet(File spreadsheetFile) throws IOException {
+        logger.debug("Creating Spreadsheet...");
+
         ResultSS ss = createSummaryTable();
         ss.createSpreadsheet(new FileOutputStream(spreadsheetFile));
-}
+        logger.debug("...done.");
+    }
 
 }

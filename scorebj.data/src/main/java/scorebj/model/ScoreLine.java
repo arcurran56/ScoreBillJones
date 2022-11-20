@@ -1,21 +1,68 @@
 package scorebj.model;
 
-public class ScoreLine {
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
+public class ScoreLine implements PropertyChangeListener, TableModelListener {
+    @XStreamOmitField
+    static Logger logger = LogManager.getLogger();
+    @XStreamOmitField
+    PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        logger.debug("Property change event for, " + evt.getPropertyName() + " from " + evt.getSource().toString());
+        if (!"score".equals(evt.getPropertyName())) {
+            if (entry[Columns.CONTRACT.ordinal()] != null
+                    && entry[Columns.PLAYED_BY.ordinal()] != null
+                    && entry[Columns.TRICKS.ordinal()] != null) {
+                scoreHand();
+                pcs.firePropertyChange("score", 0, 1);
+            }
+        }
+    }
+
+    private BoardId.Vulnerability vulnerability = BoardId.Vulnerability.NONE;
+
+
+    public void setVulnerability(BoardId.Vulnerability vulnerability) {
+        this.vulnerability = vulnerability;
+    }
+
+    @Override
+    public void tableChanged(TableModelEvent e) {
+        logger.debug("Table change event received from " + e.getSource().toString());
+    }
 
     enum Columns {NS_PAIR, EW_PAIR, CONTRACT, PLAYED_BY, TRICKS, NS_SCORE, EW_SCORE, NS_MPS, EW_MPS}
+
     private final Object[] entry = new Object[9];
 
     public enum Direction {N, S, E, W}
-    private enum Suit {CLUBS,DIAMONDS,HEARTS,SPADES,NOTRUMPS}
+
+    ScoreLine() {
+        logger.debug("Creating " + this.toString());
+        pcs.addPropertyChangeListener(this);
+    }
 
     public Object get(int index) {
         return entry[index];
     }
-     public void set(int index, Object value){
-        entry[index] = value;
-     }
 
-     public Integer getNsPair() {
+    public void set(int index, Object value) {
+        Object oldVal = entry[index];
+        entry[index] = value;
+        pcs.firePropertyChange("contract", oldVal, value);
+    }
+
+    public Integer getNsPair() {
         return (Integer) entry[Columns.NS_PAIR.ordinal()];
     }
 
@@ -36,7 +83,9 @@ public class ScoreLine {
     }
 
     public void setContract(Contract contract) {
+        Contract oldVal = (Contract) entry[Columns.CONTRACT.ordinal()];
         entry[Columns.CONTRACT.ordinal()] = contract;
+        pcs.firePropertyChange("contract", oldVal, contract);
     }
 
     public Direction getPlayedBy() {
@@ -44,7 +93,9 @@ public class ScoreLine {
     }
 
     public void setPlayedBy(Direction playedBy) {
+        Direction oldVal = (Direction) entry[Columns.PLAYED_BY.ordinal()];
         entry[Columns.PLAYED_BY.ordinal()] = playedBy;
+        pcs.firePropertyChange("playedBy", oldVal, playedBy);
     }
 
     public Integer getTricks() {
@@ -52,12 +103,15 @@ public class ScoreLine {
     }
 
     public void setTricks(Integer tricks) {
+        Integer oldVal = (Integer) entry[Columns.TRICKS.ordinal()];
         entry[Columns.TRICKS.ordinal()] = tricks;
+        pcs.firePropertyChange("tricks", oldVal, tricks);
     }
 
     public Integer getNSScore() {
         return (Integer) entry[Columns.NS_SCORE.ordinal()];
     }
+
     public Integer getEWScore() {
         return (Integer) entry[Columns.EW_SCORE.ordinal()];
     }
@@ -78,7 +132,7 @@ public class ScoreLine {
         entry[Columns.EW_MPS.ordinal()] = ewMPs;
     }
 
-    public void scoreHand(boolean vulnerable){
+    private void scoreHand() {
         Integer nsPair = getNsPair();
         Integer ewPair = getEwPair();
         Contract contract = getContract();
@@ -87,30 +141,43 @@ public class ScoreLine {
 
         Integer NSScore = 0;
         Integer EWScore = 0;
+        int score;
+
 
         if (nsPair != null
-        && ewPair !=null
-        && contract != null
-        && playedBy != null
-        && tricks != null){
-            int score = contract.getScore(tricks,vulnerable);
-            switch (playedBy){
-                case N:
-                    case S:
-                            if (score>0){ NSScore = score;
-                            EWScore = 0;}
-                            else {
-                                NSScore = 0;
-                                EWScore = -score;
-                            }
-                            break;
+                && ewPair != null
+                && contract != null
+                && playedBy != null
+                && tricks != null) {
+            switch (playedBy) {
+                case N, S:
+                    if (vulnerability == BoardId.Vulnerability.NS || vulnerability == BoardId.Vulnerability.ALL) {
+                        score = contract.getScore(tricks, true);
+                    } else {
+                        score = contract.getScore(tricks, false);
+                    }
 
-                case E:
-                case W:
-                    if (score>0){
+                    if (score > 0) {
+                        NSScore = score;
+                        EWScore = 0;
+                    } else {
                         NSScore = 0;
-                        EWScore = score; }
-                    else {
+                        EWScore = -score;
+                    }
+
+                    break;
+
+                case E, W:
+                    if (vulnerability == BoardId.Vulnerability.EW || vulnerability == BoardId.Vulnerability.ALL) {
+                        score = contract.getScore(tricks, true);
+                    } else {
+                        score = contract.getScore(tricks, false);
+                    }
+
+                    if (score > 0) {
+                        NSScore = 0;
+                        EWScore = score;
+                    } else {
                         NSScore = -score;
                         EWScore = 0;
                     }
@@ -121,7 +188,12 @@ public class ScoreLine {
         }
     }
 
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        logger.debug("Adding " + pcl.toString() + " to " + this.toString()  + " as listener.");
+        pcs.addPropertyChangeListener(pcl);
+    }
 
-
-
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+        pcs.removePropertyChangeListener(pcl);
+    }
 }

@@ -18,6 +18,10 @@ import java.util.*;
      */
     public class DataStore {
 
+        private static final String APP_FOLDER_NAME = "scorebj";
+        private static final String TEST_APP_FOLDER_NAME = "scorebj-test";
+        private static final String DATA_FOLDER_NAME = "data";
+
         protected static final Logger logger = LogManager.getLogger();
         //private static final Logger logger = LogManager.getLogger("scorebj.model.DataStore");
 
@@ -40,49 +44,29 @@ import java.util.*;
          * @return the Datastore singleton.
          */
         public static DataStore create() throws DataStoreException {
-            return create(false);
-        }
-        public static DataStore create(boolean test) throws DataStoreException {
+
             logger.debug("...creating...");
-            testMode = test;
                 try {
                     if (dataStore == null) {
                         logger.debug("...new datastore creation.");
                         dataStore = new DataStore();
-                        if (!test) {
-                            dataStore.initialise();
-                        }                    }
+                        dataStore.initialise();
+                    }
                 } catch (Exception e) {
                     logger.error(e.getStackTrace());
                     throw new DataStoreException();
                 }
 
-
-            if (testMode){
-                logger.debug("...test mode...");
-                xStream.addPermission(AnyTypePermission.ANY);
-                //xStream.allowTypes(ALLOWED_TYPES);
-
-                File dataLocation = null;
-                Reader xmlReader;
-                try {
-                    dataLocation = new File(ClassLoader.getSystemResource("test_data.xml").toURI());
-                    xmlReader = new FileReader(dataLocation);
-                    testCompetition = (Competition) xStream.fromXML(xmlReader);
-
-                } catch (URISyntaxException | FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-
-                logger.debug("...reading from " + dataLocation.getAbsolutePath());
-
-            }
             return dataStore;
         }
 
+        public static void setTestMode(boolean testMode) {
+            DataStore.testMode = testMode;
+        }
+
         /*
-        Initialise the Datastore with a single competition with test data.  Data is persisted in a series of XML files.
-         */
+                Initialise the Datastore with a single competition with test data.  Data is persisted in a series of XML files.
+                 */
         protected void initialise() throws IOException {
             logger.debug("...initialising...");
 
@@ -90,8 +74,15 @@ import java.util.*;
             xStream.addPermission(AnyTypePermission.ANY);
             //xStream.allowTypes(ALLOWED_TYPES);
 
-            persistenceLocation = new File(System.getProperty("user.home"), "scorebj");
-            File dataLocation = new File(persistenceLocation,"data");
+            String appFolder;
+            if(testMode){
+                appFolder = TEST_APP_FOLDER_NAME;
+            }
+            else {
+                appFolder = APP_FOLDER_NAME;
+            }
+            persistenceLocation = new File(System.getProperty("user.home"), appFolder);
+            File dataLocation = new File(persistenceLocation,DATA_FOLDER_NAME);
             logger.debug("...writing to " + dataLocation.getAbsolutePath());
             if (!dataLocation.exists() && !dataLocation.mkdir())
                 throw new IOException(String.format("Can't create persistence directory, %s", dataLocation.getAbsolutePath()));
@@ -125,15 +116,17 @@ import java.util.*;
                 Set<String> keys = persistentCompetitions.keySet();
                 String key = (String) keys.toArray()[0];
                 competition = persistentCompetitions.get(key);
+                logger.debug("Fetching competition " + competition.getCompetitionName());
             }
             else {
                 competition = testCompetition;
+                logger.debug("Fetching test competition.");
             }
             return competition;
         }
 
         public Competition getCompetition(String name) {
-
+            logger.debug("Fetching competition " + name);
             return persistentCompetitions.get(name);
         }
 
@@ -174,6 +167,9 @@ import java.util.*;
          * Get list of saved Competitions.
          */
         public Set<String> getCompetitionNames(){
-            return persistentCompetitions.keySet();
+            Set<String> set = new HashSet<>();
+            set.addAll(persistentCompetitions.keySet());
+            return set;
         }
     }
+

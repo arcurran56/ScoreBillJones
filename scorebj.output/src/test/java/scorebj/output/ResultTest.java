@@ -1,5 +1,7 @@
 package scorebj.output;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import scorebj.model.Competition;
 import scorebj.model.DataStore;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 class ResultTest {
+    Logger logger = LogManager.getLogger();
     private final String[] DEFAULT_PAIRINGS = {"David Sherry & Salette Avison",
             "Liz Buckland & Jane Edge",
             "Jill Ryan & Ron Eyre-Brook",
@@ -26,7 +29,9 @@ class ResultTest {
 
     @Test
     void collate() throws IOException, DataStoreException {
-        DataStore dataStore = DataStore.create(true);
+        logger.debug("Collatimg...");
+        DataStore.setTestMode(true);
+        DataStore dataStore = DataStore.create();
         Competition competition = dataStore.getCompetition(0);
         List<String> pairings = Arrays.asList(DEFAULT_PAIRINGS);
 
@@ -45,7 +50,9 @@ class ResultTest {
 
     @Test
     void printTravellers() throws FileNotFoundException, DataStoreException {
-        DataStore dataStore = DataStore.create(true);
+        logger.debug("Writing travellers...");
+        DataStore.setTestMode(true);
+        DataStore dataStore = DataStore.create();
         Competition competition = dataStore.getCompetition(0);
         List<String> strings = competition.travellersToText();
         File persistenceLocation = DataStore.getPersistenceLocation();
@@ -60,7 +67,9 @@ class ResultTest {
 
     @Test
     void createSummaryTable() throws DataStoreException {
-        DataStore dataStore = DataStore.create(true);
+        logger.debug("Creating summary table...");
+        DataStore.setTestMode(true);
+        DataStore dataStore = DataStore.create();
         Competition competition = dataStore.getCompetition(0);
         List<String> pairings = Arrays.asList(DEFAULT_PAIRINGS);
 

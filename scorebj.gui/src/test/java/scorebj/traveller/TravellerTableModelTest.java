@@ -17,7 +17,8 @@ class TravellerTableModelTest {
     void getRowCount() {
         TravellerTableModel t = new TravellerTableModel();
         assertEquals(0,t.getRowCount());
-        Traveller tr = new Traveller(6);
+        Traveller tr = new Traveller(new BoardId(6,12), 6);
+
         t.setTraveller(tr);
         assertEquals(6,t.getRowCount());
     }
@@ -62,7 +63,8 @@ class TravellerTableModelTest {
     @Test
     void getValueAt() {
         TravellerTableModel t = new TravellerTableModel();
-        Traveller tr = new Traveller(6);
+        Traveller tr = new Traveller(new BoardId(10, 5), 6);
+
         t.setTraveller(tr);
         t.setValueAt("2", 3, 0);
         t.setValueAt("3H", 3, 2);
@@ -79,7 +81,9 @@ class TravellerTableModelTest {
     @Test
     void getTraveller() {
         TravellerTableModel t = new TravellerTableModel();
-        Traveller tr = new Traveller(5);
+        BoardId boardId = new BoardId(5,16);;
+        Traveller tr = new Traveller(boardId, 5);
+
         t.setTraveller(tr);
         t.setValueAt("2", 3, 0);
         t.setValueAt("3H", 3, 2);
@@ -97,11 +101,11 @@ class TravellerTableModelTest {
     @Test
     void setTraveller() {
         TravellerTableModel t = new TravellerTableModel();
-        Traveller traveller = new Traveller(5);
         BoardId boardId = new BoardId(3,4);
+        Traveller traveller = new Traveller(boardId, 5);
         boardId.setSet(2);
         boardId.setBoard(3);
-        traveller.setBoardId(boardId);
+
         ScoreLine scoreLine = traveller.getScoreLines().get(2);
         scoreLine.setNsPair(2);
         scoreLine.setContract(new Contract("3H"));
@@ -119,11 +123,10 @@ class TravellerTableModelTest {
     @Test
     void testGetTraveller() {
         TravellerTableModel model = new TravellerTableModel();
-        Traveller blank = new Traveller(3);
         BoardId boardId = new BoardId(5, 3);
         boardId.setSet(3);
         boardId.setBoard(2);
-        blank.setBoardId(boardId);
+        Traveller blank = new Traveller(boardId, 3);
 
         model.setTraveller(blank);
         model.setValueAt("4",0,1);
