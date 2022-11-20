@@ -199,7 +199,7 @@ public class ScoringFormActions {
 
     public void compComboBoxActionPerformed(ScoringBean scoringBean) {
         //Save currently displayed traveller.
-
+        logger.debug("compComboBox selection set to " + compComboBoxModel.getSelectedItem());
         //Get selected Competition name and save key for later...
         String currentCompetitionName = (String) competition.getCompetitionName();
         String newCompetitionName = (String) compComboBoxModel.getSelectedItem();
@@ -293,7 +293,7 @@ public class ScoringFormActions {
     }
 
     public void deleteCompActionPerformed(ScoringBean scoringBean) {
-        logger.debug("Delete...");
+        logger.debug("Deleting..." + scoringBean.getCurrentCompetitionName());
 
         dataStore.delete(scoringBean.getCurrentCompetitionName());
 
