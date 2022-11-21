@@ -51,17 +51,6 @@ public class ScoringFormActions {
 
         createDataStore();
 
-        //Get first Competition for display...
-        if (!("".equals(scoringBean.getCurrentCompetitionName()))) {
-            logger.debug("initial competition: " + scoringBean.getCurrentCompetitionName());
-            competition = dataStore.getCompetition(scoringBean.getCurrentCompetitionName());
-
-            scoringBean.setCurrentSets(Integer.toString(competition.getNoSets()));
-            scoringBean.setCurrentBoardsPerSet(Integer.toString(competition.getNoBoardsPerSet()));
-            scoringBean.setCurrentNoPairs(Integer.toString(competition.getNoPairs()));
-
-            displaySelectedCompetition(scoringBean);
-        }
     }
 
     void createDataStore() {
@@ -84,6 +73,7 @@ public class ScoringFormActions {
         List<String> pairings = null;
         StringBuilder builder = new StringBuilder("Displaying ");
 
+        competition = dataStore.getCompetition(competitionName);
         if (competition != null) {
 
             noSets = competition.getNoSets();
@@ -207,10 +197,10 @@ public class ScoringFormActions {
         //Save currently displayed traveller.
         logger.debug("compComboBox selection set to " + compComboBoxModel.getSelectedItem());
         //Get selected Competition name and save key for later...
-        String currentCompetitionName = (String) competition.getCompetitionName();
+        String currentCompetitionName;
         String newCompetitionName = (String) compComboBoxModel.getSelectedItem();
 
-        logger.debug(currentCompetitionName + " selected...");
+        logger.debug(newCompetitionName + " selected...");
 
         //Save current Traveller in old Competition.
         Traveller savedTraveller;
@@ -218,7 +208,8 @@ public class ScoringFormActions {
 
         BoardId boardId = newTraveller.getBoardId();
         if (competition != null && boardId != null) {
-
+            currentCompetitionName = (String) competition.getCompetitionName();
+            logger.debug("...saving to " + currentCompetitionName);
             savedTraveller = competition.getTraveller(boardId);
             savedTraveller.copy(newTraveller);
 
@@ -232,7 +223,7 @@ public class ScoringFormActions {
         }
 
         //Fetch newly chosen Competition.
-        logger.debug("Fetching " + newCompetitionName);
+        logger.debug("...fetching " + newCompetitionName);
         competition = dataStore.getCompetition(newCompetitionName);
 
         displaySelectedCompetition(scoringBean);
@@ -261,41 +252,15 @@ public class ScoringFormActions {
 
         dataStore.persist(competition);
 
-        displaySelectedCompetition(scoringBean);
-
-        //Display traveller for first board.
-        BoardId boardId = new BoardId(competition.getNoSets(), competition.getNoBoardsPerSet());
-        scoringBean.setNewSet(Integer.toString(boardId.getSet()));
-        scoringBean.setNewBoard(Integer.toString(boardId.getBoard()));
-
-        //Blank new Competition fields...
-        scoringBean.setCurrentSets(scoringBean.getNewSets());
-        scoringBean.setCurrentBoardsPerSet(scoringBean.getNewBoardsPerSet());
-        scoringBean.setCurrentNoPairs(scoringBean.getNewBoardsPerSet());
-
-        List<String> pairings = competition.getPairings();
-        pairingTableModel.setPairings(pairings);
+        compComboBoxModel.addElement(newCompetitionName);
 
         StringBuilder logLine = new StringBuilder()
                 .append("Competition:")
                 .append(scoringBean.getNewCompetitionName())
                 .append(", pairs: ")
-                .append(noPairs)
-                .append("(")
-                .append(pairings.size())
-                .append(")");
+                .append(noPairs);
 
         logger.debug(logLine);
-
-        //Update view.
-        Traveller traveller = competition.getTraveller(boardId);
-        travellerTableModel.setTraveller(traveller);
-
-        scoringBean.setProgress(competition.getProgress());
-        scoringBean.setTravellerComplete(traveller.getCompetionStatus());
-
-        //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
-
     }
 
     public void deleteCompActionPerformed(ScoringBean scoringBean) {

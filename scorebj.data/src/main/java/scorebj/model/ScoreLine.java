@@ -14,7 +14,11 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
     @XStreamOmitField
     static Logger logger = LogManager.getLogger();
     @XStreamOmitField
-    PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    PropertyChangeSupport pcs;
+
+    public void setPcs(PropertyChangeSupport pcs) {
+        this.pcs = pcs;
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
@@ -41,6 +45,13 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
         logger.debug("Table change event received from " + e.getSource().toString());
     }
 
+    public void activate(PropertyChangeListener propertyChangeListener) {
+        pcs = new PropertyChangeSupport(this);
+        pcs.addPropertyChangeListener(this);
+        pcs.addPropertyChangeListener(propertyChangeListener);
+
+    }
+
     enum Columns {NS_PAIR, EW_PAIR, CONTRACT, PLAYED_BY, TRICKS, NS_SCORE, EW_SCORE, NS_MPS, EW_MPS}
 
     private final Object[] entry = new Object[9];
@@ -49,6 +60,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
 
     ScoreLine() {
         logger.debug("Creating " + this.toString());
+        pcs = new PropertyChangeSupport(this);
         pcs.addPropertyChangeListener(this);
     }
 

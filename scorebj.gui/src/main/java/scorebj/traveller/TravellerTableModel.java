@@ -12,6 +12,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,7 +147,10 @@ public class TravellerTableModel extends AbstractTableModel {
         travellerTable.addAll(traveller.getScoreLines());
 
         for(ScoreLine sl: travellerTable){
-            sl.addPropertyChangeListener(this.propertyChangeListener);
+
+            if(sl!=null) {
+                sl.activate(this.propertyChangeListener);
+            }
         }
         rowCount = travellerTable.size();
 
