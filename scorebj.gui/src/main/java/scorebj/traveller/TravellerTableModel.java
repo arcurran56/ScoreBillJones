@@ -12,7 +12,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,9 +50,39 @@ public class TravellerTableModel extends AbstractTableModel {
 
 
     private int noPairs = 0;
-    private final List<ScoreLine> travellerTable = new ArrayList<>(INITIAL_CAPACITY);
+    private final ArrayList<ScoreLine> travellerTable = new ArrayList<>(INITIAL_CAPACITY);
     private int rowCount = 0;
     private BoardId boardId;
+
+    public void setAutoFillEnabled(boolean autoFillEnabled) {
+        this.autoFillEnabled = autoFillEnabled;
+    }
+
+    private boolean autoFillEnabled = true;
+
+    public boolean isComplete() {
+        boolean complete = true;
+        for (ScoreLine scoreLine : travellerTable) {
+            complete = complete && scoreLine.isComplete();
+        }
+        return complete;
+    }
+
+    public boolean isEmpty() {
+        boolean empty = true;
+        for (ScoreLine scoreLine: travellerTable){
+            if (!scoreLine.isEmpty()){
+                empty = false;
+            }
+        }
+        return empty;
+    }
+
+    private static class Matchup {
+        Integer nsPair;
+        Integer ewPair;
+    }
+    private final ArrayList<Matchup> autoFillCache = new ArrayList<>(INITIAL_CAPACITY);
 
     private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener(){
 
@@ -61,9 +90,28 @@ public class TravellerTableModel extends AbstractTableModel {
         public void propertyChange(PropertyChangeEvent evt) {
             if ("score".equals(evt.getPropertyName())){
                 allocateMPs();
+                createAutoFillCache();
             }
         }
     };
+
+    private void createAutoFillCache(){
+        if ( boardId.getBoard()==1 && isComplete() ){
+            for (int i=0; i<travellerTable.size(); i++ ) {
+                autoFillCache.add(new Matchup());
+                autoFillCache.get(i).nsPair = travellerTable.get(i).getNsPair();
+                autoFillCache.get(i).ewPair = travellerTable.get(i).getEwPair();
+            }
+        }
+    }
+    private void autofill() {
+            if (boardId.getBoard() != 1  && isEmpty() && autoFillEnabled) {
+                for ( int i=0; i<travellerTable.size(); i++ ) {
+                    travellerTable.get(i).setNsPair(autoFillCache.get(i).nsPair);
+                    travellerTable.get(i).setEwPair(autoFillCache.get(i).ewPair);
+                }
+            }
+    }
 
     public TravellerTableModel() {
         addTableModelListener(new TableModelListener() {
@@ -174,6 +222,7 @@ public class TravellerTableModel extends AbstractTableModel {
         logger.debug(logLine);
 
         TableModelEvent e = new TableModelEvent(this);
+        autofill();
         fireTableChanged(e);
     }
 

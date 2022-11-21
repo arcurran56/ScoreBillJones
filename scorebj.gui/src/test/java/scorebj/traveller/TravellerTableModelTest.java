@@ -81,7 +81,7 @@ class TravellerTableModelTest {
     @Test
     void getTraveller() {
         TravellerTableModel t = new TravellerTableModel();
-        BoardId boardId = new BoardId(5,16);;
+        BoardId boardId = new BoardId(5,16);
         Traveller tr = new Traveller(boardId, 5);
 
         t.setTraveller(tr);
@@ -143,4 +143,14 @@ class TravellerTableModelTest {
             assertEquals(3,res.getBoardId().getSet());
         });
     }
+
+    @Test
+    void isComplete() {
+    }
+
+    @Test
+    void isEmpty() {
+    }
+
+
 }
