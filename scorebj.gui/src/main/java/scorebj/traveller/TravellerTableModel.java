@@ -144,6 +144,10 @@ public class TravellerTableModel extends AbstractTableModel {
         boardId = traveller.getBoardId();
         travellerTable.clear();
         travellerTable.addAll(traveller.getScoreLines());
+
+        for(ScoreLine sl: travellerTable){
+            sl.addPropertyChangeListener(this.propertyChangeListener);
+        }
         rowCount = travellerTable.size();
 
         StringBuilder logLine = new StringBuilder()
@@ -223,6 +227,6 @@ public class TravellerTableModel extends AbstractTableModel {
 
     }
     public String toString() {
-        return "Traveller for " + (boardId==null?" null ":boardId.toString());
+        return "Traveller for " + (boardId==null?" null ":boardId.toString() );
     }
 }

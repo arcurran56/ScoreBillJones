@@ -34,7 +34,6 @@ public class Traveller implements PropertyChangeListener {
         for (int i = 0; i < size; i++) {
             scoreLine = new ScoreLine();
             scoreLine.setVulnerability(boardId.getVulnerabilityStatus());
-            scoreLine.addPropertyChangeListener(this);
             scoreLines.add(scoreLine);
         }
 
@@ -94,12 +93,6 @@ public class Traveller implements PropertyChangeListener {
             scoreLines.add(new ScoreLine());
         }
     }
-
-/*    public void scoreHand(int line, boolean vulnerable) {
-        ScoreLine scoreLine = getScoreLine(line);
-        scoreLine.scoreHand();
-        allocateMPs();
-    }*/
 
     private void allocateMPs() {
         int netScore1;

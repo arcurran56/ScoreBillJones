@@ -70,7 +70,7 @@ public class ScoringForm {
     private final ScoringFormActions actions = new ScoringFormActions();
 
 
-    public ScoringForm() throws DataStoreException {
+    public ScoringForm() {
 
         $$$setupUI$$$();
 
@@ -86,7 +86,6 @@ public class ScoringForm {
             compComboBox.setSelectedIndex(0);
             competitionName = (String) compComboBox.getSelectedItem();
         }
-        ;
 
         scoringBean.setCurrentCompetitionName(competitionName);
         try {
@@ -226,7 +225,7 @@ public class ScoringForm {
                 compComboBoxModel.addElement(newCompetitionName);
                 compComboBox.setSelectedIndex(Math.max(compComboBoxModel.getSize() - 1, 0));
 
-                logger.debug("...repaint after add competitiion");
+                logger.debug("...repaint after add competition");
 
                 mainPanel.repaint();
 
@@ -237,7 +236,6 @@ public class ScoringForm {
             public void actionPerformed(ActionEvent e) {
                 logger.debug("Delete..." + e.getActionCommand());
                 String key = (String) compComboBox.getSelectedItem();
-                int index = compComboBox.getSelectedIndex();
 
                 ScoringBean scoringBean = new ScoringBean();
                 getData(scoringBean);
@@ -291,10 +289,9 @@ public class ScoringForm {
         compComboBox = new JComboBox<>();
         compComboBox.setModel(compComboBoxModel);
 
-        String competitionName = "";
+        String competitionName;
         if (compComboBoxModel.getSize() > 0) {
             compComboBox.setSelectedIndex(0);
-            competitionName = (String) compComboBox.getSelectedItem();
         }
 
         scoreTable = new JTable(travellerTableModel, travellerTableColumnModel);
