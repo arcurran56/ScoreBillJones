@@ -86,7 +86,9 @@ public class Competition {
             header = new StringBuilder();
             header.append(boardId.getSet())
                     .append(",")
-                    .append(boardId.getBoard());
+                    .append(boardId.getBoard())
+                    .append(",")
+                    .append(boardId.getVulnerabilityStatus());
             strings.add(header.toString());
             strings.addAll(traveller.toStringList());
             boardId = boardId.next();
