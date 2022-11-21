@@ -2,19 +2,30 @@ package scorebj.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ScoreLineTest {
+    PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+
+        }
+    };
 
     @Test
     void scoreHand1() {
         ScoreLine scoreLine = new ScoreLine();
+        scoreLine.activate(propertyChangeListener);
         scoreLine.setVulnerability(BoardId.Vulnerability.NONE);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
         scoreLine.setContract(new Contract("3H"));
         scoreLine.setPlayedBy(ScoreLine.Direction.E);
         scoreLine.setTricks(11);
+
         assertEquals(0, scoreLine.getNSScore());
         assertEquals(200, scoreLine.getEWScore());
 
@@ -22,6 +33,7 @@ class ScoreLineTest {
     @Test
     void scoreHand2() {
         ScoreLine scoreLine = new ScoreLine();
+        scoreLine.activate(propertyChangeListener);
         scoreLine.setVulnerability(BoardId.Vulnerability.NS);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
@@ -35,6 +47,7 @@ class ScoreLineTest {
     @Test
     void scoreHand3() {
         ScoreLine scoreLine = new ScoreLine();
+        scoreLine.activate(propertyChangeListener);
         scoreLine.setVulnerability(BoardId.Vulnerability.NS);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);

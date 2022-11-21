@@ -143,7 +143,8 @@ import java.util.*;
         }
 
         /**
-         * Return competition for given competitionId from persistent store.  Updates competitions hash with this competition because competition returned has different reference from when it was saved.
+         * Return competition for given competitionId from persistent store.  Updates competitions hash with this
+         * competition because competition returned has different reference from when it was saved.
          * @param competitionId the id of the competition to fetch.
          * @return the Competition requested.
          */

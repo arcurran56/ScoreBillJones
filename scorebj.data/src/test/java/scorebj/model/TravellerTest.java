@@ -90,6 +90,9 @@ class TravellerTest {
         completeTraveller = new Traveller(boardId1cv,5);
 
         List<ScoreLine> list = completeTraveller.getScoreLines();
+        for (ScoreLine sl: list){
+            sl.activate(completeTraveller);
+        };
 
         list.get(0).setNsPair(7);
         list.get(0).setEwPair(8);
@@ -130,6 +133,10 @@ class TravellerTest {
         incompleteTraveller = new Traveller(boardId1inv, 5);
 
         list = incompleteTraveller.getScoreLines();
+        for (ScoreLine sl: list){
+            sl.activate(incompleteTraveller);
+        };
+
         list.get(0).setNsPair(7);
         list.get(0).setEwPair(8);
         list.get(0).setContract(new Contract("3H*"));

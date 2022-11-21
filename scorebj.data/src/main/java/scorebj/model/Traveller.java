@@ -138,27 +138,20 @@ public class Traveller implements PropertyChangeListener {
 
     }
     public boolean isEmpty() {
-        int emptyLines = 0;
-        boolean empty;
+        boolean empty = true;
         for (ScoreLine scoreLine: scoreLines){
-            if (scoreLine.getNsPair() == null && scoreLine.getEwPair() == null){
-                emptyLines++;
+            if (!scoreLine.isEmpty()){
+                empty = false;
             }
         }
-        empty = emptyLines == size;
         return empty;
     }
     public boolean isComplete(){
         int completedLines = 0;
-        boolean complete;
-        for (ScoreLine scoreLine: scoreLines){
-            if (scoreLine.getNsMPs() != null
-            && scoreLine.getNsPair() != null
-            && scoreLine.getEwPair() != null){
-                completedLines++;
-            }
+        boolean complete = true;
+        for (ScoreLine scoreLine: scoreLines) {
+            complete = complete && scoreLine.isComplete();
         }
-        complete = completedLines == size;
         return complete;
     }
     public List<String> toStringList(){

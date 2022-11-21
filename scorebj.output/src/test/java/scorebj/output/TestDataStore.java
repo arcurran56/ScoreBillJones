@@ -39,7 +39,7 @@ public class TestDataStore extends DataStore {
 
         File dataLocation = null;
         try {
-            dataLocation = new File(ClassLoader.getSystemResource("/scorebj/output/test_data.xml").toURI());
+            dataLocation = new File(ClassLoader.getSystemResource("/scorebj/output/String@TestComp.xml").toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

@@ -1,5 +1,5 @@
 <scorebj.model.Competition>
-    <DEFAULT__COMPETITION__NAME>Default</DEFAULT__COMPETITION__NAME>
+    <DEFAULT__COMPETITION__NAME>TestComp</DEFAULT__COMPETITION__NAME>
     <competitionName>Bill Jones 2021-22</competitionName>
     <date>2022-05-17 22:37:35.328 UTC</date>
     <noSets>5</noSets>

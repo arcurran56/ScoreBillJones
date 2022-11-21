@@ -15,6 +15,13 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
     static Logger logger = LogManager.getLogger();
     @XStreamOmitField
     PropertyChangeSupport pcs;
+    private boolean complete = false;
+
+    public boolean isEmpty() {
+        return empty;
+    }
+
+    private boolean empty = true;
 
     public void setPcs(PropertyChangeSupport pcs) {
         this.pcs = pcs;
@@ -31,6 +38,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
                 pcs.firePropertyChange("score", 0, 1);
             }
         }
+        empty = false;
     }
 
     private BoardId.Vulnerability vulnerability = BoardId.Vulnerability.NONE;
@@ -60,8 +68,6 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
 
     ScoreLine() {
         logger.debug("Creating " + this.toString());
-        pcs = new PropertyChangeSupport(this);
-        pcs.addPropertyChangeListener(this);
     }
 
     public Object get(int index) {
@@ -134,6 +140,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
 
     public void setNsMPs(Integer nsMPs) {
         entry[Columns.NS_MPS.ordinal()] = nsMPs;
+        if (entry[Columns.EW_MPS.ordinal()] != null) complete = true;
     }
 
     public Integer getEwMPs() {
@@ -142,6 +149,8 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
 
     public void setEwMPs(Integer ewMPs) {
         entry[Columns.EW_MPS.ordinal()] = ewMPs;
+        if (entry[Columns.NS_MPS.ordinal()] != null) complete = true;
+
     }
 
     private void scoreHand() {
@@ -197,6 +206,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
             }
             entry[Columns.NS_SCORE.ordinal()] = NSScore;
             entry[Columns.EW_SCORE.ordinal()] = EWScore;
+            complete = false;
         }
     }
 
@@ -207,5 +217,9 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
 
     public void removePropertyChangeListener(PropertyChangeListener pcl) {
         pcs.removePropertyChangeListener(pcl);
+    }
+
+    public boolean isComplete(){
+        return complete;
     }
 }
