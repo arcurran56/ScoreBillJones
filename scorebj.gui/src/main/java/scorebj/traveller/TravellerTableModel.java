@@ -58,7 +58,7 @@ public class TravellerTableModel extends AbstractTableModel {
         this.autoFillEnabled = autoFillEnabled;
     }
 
-    private boolean autoFillEnabled = true;
+    private boolean autoFillEnabled = false;
 
     public boolean isComplete() {
         boolean complete = true;

@@ -64,7 +64,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
 
     private final Object[] entry = new Object[9];
 
-    public enum Direction {N, S, E, W}
+    public enum Direction {N, S, E, W, PASS}
 
     ScoreLine() {
         logger.debug("Creating " + this.toString());
@@ -77,7 +77,11 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
     public void set(int index, Object value) {
         Object oldVal = entry[index];
         entry[index] = value;
-        pcs.firePropertyChange("contract", oldVal, value);
+        if ( index == Columns.CONTRACT.ordinal() && "ALL".equals(value.toString()) ){
+            entry[Columns.PLAYED_BY.ordinal()] = Direction.PASS;
+            entry[Columns.TRICKS.ordinal()] = 0;
+        }
+        pcs.firePropertyChange("entry", oldVal, value);
     }
 
     public Integer getNsPair() {

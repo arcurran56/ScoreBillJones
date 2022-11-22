@@ -53,7 +53,7 @@ public class Contract {
     public Contract(String contractString) {
         this.contractString = contractString;
         int length = contractString.length();
-        if (length<2 || "AP".equals(contractString) ) {
+        if (length<2 || "ALL".equals(contractString) ) {
             contractedTricks = 0;
             trumpSuit = null;
             doubledStatus = DoubledStatus.UNDOUBLED;
