@@ -45,16 +45,19 @@ public class Contract {
     private final Suit trumpSuit;
     private DoubledStatus doubledStatus;
 
+    private boolean passedOut = false;
+
     public Contract(){
         this("");
     }
     public Contract(String contractString) {
         this.contractString = contractString;
         int length = contractString.length();
-        if (length<2) {
+        if (length<2 || "AP".equals(contractString) ) {
             contractedTricks = 0;
             trumpSuit = null;
             doubledStatus = DoubledStatus.UNDOUBLED;
+            passedOut = true;
         }
         else {
             contractedTricks = Integer.parseUnsignedInt(String.valueOf(contractString.charAt(0))) + 6;
@@ -69,12 +72,15 @@ public class Contract {
         }
     }
 
+
     public int getScore(int tricksWon, boolean vulnerable){
 
         boolean made;
         int overTricks = 0;
         int underTricks = 0;
         int score = 0;
+
+        if (passedOut) return score;
 
         if (tricksWon>=contractedTricks) {
 

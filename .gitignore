@@ -12,3 +12,8 @@
 /scorebj.output/target/
 /scorebj.util/target/
 /**/*.log
+/scorebj.gui/IntTestComp1-details.csv
+/scorebj.gui/IntTestComp1-matrix.csv
+/scorebj.gui/IntTestComp1-results.xlsx
+/scorebj.gui/IntTestComp1-summary.csv
+/scorebj.gui/IntTestComp1-travellers.csv
