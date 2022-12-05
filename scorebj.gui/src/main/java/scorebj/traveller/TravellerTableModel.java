@@ -58,7 +58,7 @@ public class TravellerTableModel extends AbstractTableModel {
         this.autoFillEnabled = autoFillEnabled;
     }
 
-    private boolean autoFillEnabled = false;
+    private boolean autoFillEnabled = true;
 
     public boolean isComplete() {
         boolean complete = true;
@@ -70,8 +70,8 @@ public class TravellerTableModel extends AbstractTableModel {
 
     public boolean isEmpty() {
         boolean empty = true;
-        for (ScoreLine scoreLine: travellerTable){
-            if (!scoreLine.isEmpty()){
+        for (ScoreLine scoreLine : travellerTable) {
+            if (!scoreLine.isEmpty()) {
                 empty = false;
             }
         }
@@ -82,35 +82,88 @@ public class TravellerTableModel extends AbstractTableModel {
         Integer nsPair;
         Integer ewPair;
     }
-    private final ArrayList<Matchup> autoFillCache = new ArrayList<>(INITIAL_CAPACITY);
 
-    private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener(){
+    private static class AutoFillCache {
+        int set;
+        ArrayList<Matchup> cache = new ArrayList<>(INITIAL_CAPACITY);
+
+        int getSet() {
+            return set;
+        }
+
+        void setSet(int s) {
+            set = s;
+        }
+
+        void add(Matchup matchup) {
+            cache.add(matchup);
+        }
+
+        Matchup get(int index) {
+            return cache.get(index);
+        }
+
+        int size() {
+            return cache.size();
+        }
+
+    }
+
+    private AutoFillCache autoFillCache;
+
+    private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if ("score".equals(evt.getPropertyName())){
+            if ("score".equals(evt.getPropertyName())) {
                 allocateMPs();
                 createAutoFillCache();
             }
         }
     };
 
-    private void createAutoFillCache(){
-        if ( boardId.getBoard()==1 && isComplete() ){
-            for (int i=0; i<travellerTable.size(); i++ ) {
-                autoFillCache.add(new Matchup());
-                autoFillCache.get(i).nsPair = travellerTable.get(i).getNsPair();
-                autoFillCache.get(i).ewPair = travellerTable.get(i).getEwPair();
+    private void processAutofill() {
+
+        if (autoFillCache != null) {
+            if (boardId.getSet() == autoFillCache.getSet()) {
+                if (isEmpty()) {
+                    autofill();
+                }
+            } else {
+                autoFillCache = null;
             }
         }
+        if (isComplete() && autoFillEnabled) {
+            createAutoFillCache();
+        }
     }
+
+    private void createAutoFillCache() {
+        if (isComplete()) {
+            autoFillCache = new AutoFillCache();
+            autoFillCache.setSet(boardId.getSet());
+            for (int i = 0; i < travellerTable.size(); i++) {
+                Matchup matchup = new Matchup();
+                matchup.nsPair = travellerTable.get(i).getNsPair();
+                matchup.ewPair = travellerTable.get(i).getEwPair();
+                autoFillCache.add(matchup);
+            }
+            logger.debug("New autofill cache created.");
+        }
+    }
+
     private void autofill() {
-            if (boardId.getBoard() != 1  && isEmpty() && autoFillEnabled) {
-                for ( int i=0; i<travellerTable.size(); i++ ) {
+        if (autoFillCache != null) {
+            if (autoFillCache.size() > 0
+                    && isEmpty()
+                    && autoFillEnabled) {
+                logger.debug("...autofilling...");
+                for (int i = 0; i < travellerTable.size(); i++) {
                     travellerTable.get(i).setNsPair(autoFillCache.get(i).nsPair);
                     travellerTable.get(i).setEwPair(autoFillCache.get(i).ewPair);
                 }
             }
+        }
     }
 
     public TravellerTableModel() {
@@ -194,9 +247,9 @@ public class TravellerTableModel extends AbstractTableModel {
         travellerTable.clear();
         travellerTable.addAll(traveller.getScoreLines());
 
-        for(ScoreLine sl: travellerTable){
+        for (ScoreLine sl : travellerTable) {
 
-            if(sl!=null) {
+            if (sl != null) {
                 sl.activate(this.propertyChangeListener);
             }
         }
@@ -208,10 +261,7 @@ public class TravellerTableModel extends AbstractTableModel {
         if (boardId != null) {
             //traveller = new Traveller(0);
             logLine
-                    .append("Set ")
-                    .append(boardId.getSet())
-                    .append(", Board ")
-                    .append(boardId.getBoard());
+                    .append(boardId);
         } else {
             logLine.append(" null board ");
         }
@@ -221,8 +271,9 @@ public class TravellerTableModel extends AbstractTableModel {
                 .append(" rows.");
         logger.debug(logLine);
 
+        processAutofill();
+
         TableModelEvent e = new TableModelEvent(this);
-        autofill();
         fireTableChanged(e);
     }
 
@@ -235,11 +286,12 @@ public class TravellerTableModel extends AbstractTableModel {
         }
         return traveller;
     }
+
     private void allocateMPs() {
         int netScore1;
         int netScore2;
 
-
+        logger.debug("Traveller completed:");
         for (ScoreLine scoreLine1 : travellerTable) {
             int nsMPs = 0;
             int ewMPs = 0;
@@ -272,14 +324,22 @@ public class TravellerTableModel extends AbstractTableModel {
                     }
                     scoreLine1.setNsMPs(nsMPs);
                     scoreLine1.setEwMPs(ewMPs);
+                    scoreLine1.setComplete(true);
+                    logger.debug(scoreLine1);
                 }
 
             }
 
         }
+        logger.debug("..done.");
 
     }
+
     public String toString() {
-        return "Traveller for " + (boardId==null?" null ":boardId.toString() );
+        return "Traveller for " + (boardId == null ? " null " : boardId.toString());
+    }
+
+    public String getCompetionStatus() {
+        return isComplete() ? "" : "Unfinished";
     }
 }

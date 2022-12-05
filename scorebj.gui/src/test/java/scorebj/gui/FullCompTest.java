@@ -8,6 +8,7 @@ import scorebj.model.*;
 import scorebj.pairing.PairingTableModel;
 import scorebj.traveller.TravellerTableModel;
 
+import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -40,6 +41,10 @@ public class FullCompTest {
             logger.debug(logMessage);
             travellerTableModel.setValueAt(value, row, column);
             column++;
+        }
+
+        void offset(int cols) {
+            column = column + cols;
         }
 
         public void nextRow() {
@@ -81,7 +86,7 @@ public class FullCompTest {
         int noBoardsPerSet = Integer.parseUnsignedInt(args[2]);
         int noPairs = Integer.parseUnsignedInt(args[3]);
 
-        DataStore.setTestMode(true);
+        ScoringFormActions.setTestMode(true);
 
         //Set up gui interface
         Traveller traveller = new Traveller(new BoardId(5, 16), (noPairs + 1) / 2);
@@ -92,7 +97,7 @@ public class FullCompTest {
                                                       public void tableChanged(TableModelEvent e) {
                                                           logger.debug("Table event type, "
                                                                   + e.getType() + " (" + e.getFirstRow()
-                                                                  + ", " +e.getColumn()
+                                                                  + ", " + e.getColumn()
                                                                   + ") fired by " + e.getSource());
                                                           int firstRow = e.getFirstRow();
                                                           int column = e.getColumn();
@@ -195,5 +200,153 @@ public class FullCompTest {
         reader.close();
     }
 
+    @Test
+    public void runTestWithAutoComplete() throws IOException, DataStoreException {
+
+        String[] args = {"IntTestComp2", "5", "16", "10"};
+        String[] pairings = {"David & Salette",
+                "Liz B & Jane E",
+                "Jill R & Rob",
+                "Jill H & Jane D",
+                "Wendy & Diana",
+                "Diane & Alan",
+                "Julia & Sue",
+                "Clare & Jill A",
+                "Lisbeth & Vicky",
+                "Caroline & Andrew"
+        };
+
+        String competitionName = args[0];
+        int noSets = Integer.parseUnsignedInt(args[1]);
+        int noBoardsPerSet = Integer.parseUnsignedInt(args[2]);
+        int noPairs = Integer.parseUnsignedInt(args[3]);
+
+        ScoringFormActions.setTestMode(true);
+
+        //Set up gui interface
+        //Traveller traveller = new Traveller(new BoardId(5, 16), (noPairs + 1) / 2);
+
+        //travellerTableModel.setTraveller(traveller);
+        travellerTableModel.addTableModelListener(new TableModelListener() {
+                                                      @Override
+                                                      public void tableChanged(TableModelEvent e) {
+                                                          logger.debug("Table event type, "
+                                                                  + e.getType() + " (" + e.getFirstRow()
+                                                                  + ", " + e.getColumn()
+                                                                  + ") fired by " + e.getSource());
+                                                          int firstRow = e.getFirstRow();
+                                                          int column = e.getColumn();
+
+                                                          actions.travellerTableChangedAction(scoringBean, travellerTableModel, firstRow, column);
+
+                                                      }
+                                                  }
+        );
+
+        actions.init(scoringBean, travellerTableModel, pairingTableModel, defaultComboBoxModel);
+
+        //Add new Competition
+        scoringBean.setNewCompetitionName(competitionName);
+        scoringBean.setNewSets(args[1]);
+        scoringBean.setNewBoardsPerSet(args[2]);
+        scoringBean.setNewNoPairs(args[3]);
+        actions.addCompActionPerformed(scoringBean);
+
+        scoringBean.setCurrentCompetitionName(competitionName);
+        actions.compComboBoxActionPerformed(scoringBean);
+
+        pairingTableModel.setNoPairs(noPairs);
+        pairingTableModel.setPairings(Arrays.asList(pairings));
+        TableModelEvent event = new TableModelEvent(pairingTableModel);
+        actions.pairingTableChangedAction(event);
+
+        StringBuilder builder = (new StringBuilder())
+                .append(competitionName)
+                .append(", ")
+                .append(noSets)
+                .append(", ")
+                .append(noBoardsPerSet)
+                .append(", ")
+                .append(noPairs);
+        logger.info(builder);
+
+        InputStream inputStream = FullCompTest.class.getClassLoader().getResourceAsStream("FullCompTest.csv");
+        assert inputStream != null;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+        String importLine;
+        int lineIndex = 0;
+        int lineCount = 0;
+        int travellerIndex = 0;
+
+        importLine = reader.readLine();
+        ReadingState readingState = ReadingState.LINE_COUNT;
+
+        //Complete travellers.
+        String[] importLineValues;
+        String splitLine;
+        TableInserter inserter = new TableInserter();
+        logger.info("Reading file...");
+        int tno = 0;
+        while (importLine != null) {
+            logger.debug("Read: " + importLine);
+            switch (readingState) {
+                case LINE_COUNT:
+                    //Complete traveller.
+                    tno++;
+                    logger.debug("Traveller #" + Integer.toString(tno) + "...");
+                    inserter = new TableInserter();
+                    importLineValues = importLine.split(",");
+                    splitLine = "";
+                    for (String s : importLineValues) {
+                        splitLine = splitLine + ":" + s + ":";
+                    }
+                    logger.debug(splitLine);
+                    lineCount = Integer.parseInt(importLineValues[0]);
+                    lineIndex = 0;
+                    readingState = ReadingState.SCORE_LINE;
+                    break;
+
+                case SCORE_LINE:
+                    importLineValues = importLine.split(",");
+                    logger.info("Line: " + lineIndex);
+
+                    int board = (tno - 1) % noBoardsPerSet;
+                    int set = (tno - 1) / noBoardsPerSet;
+                    StringBuilder msg = new StringBuilder("Board ")
+                            .append(board + 1)
+                            .append(", Set ")
+                            .append(set + 1);
+                    logger.debug(msg);
+
+                    if (board == 0) {
+                        inserter.insert(importLineValues[NS_PAIR]);
+                        inserter.insert(importLineValues[EW_PAIR]);
+                    } else {
+                        inserter.offset(2);
+                    }
+                    inserter.insert(importLineValues[CONTRACT]);
+                    inserter.insert(importLineValues[PLAYED_BY]);
+                    inserter.insert(importLineValues[TRICKS]);
+                    inserter.nextRow();
+
+                    lineIndex++;
+                    if (lineIndex == lineCount) {
+                        readingState = ReadingState.LINE_COUNT;
+
+                        //Next board...
+                        logger.info("Next board");
+                        actions.forwardButtonActionPerformed(scoringBean);
+                    }
+                    break;
+            }
+            importLine = reader.readLine();
+        }
+        logger.info("...outputting results...");
+        actions.saveButtonActionPerformed();
+
+        logger.info("...complete.");
+        reader.close();
+    }
 
 }

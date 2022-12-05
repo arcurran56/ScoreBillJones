@@ -58,4 +58,52 @@ class ScoreLineTest {
         assertEquals(0, scoreLine.getEWScore());
 
     }
+
+    @Test
+    void isEmpty() {
+        ScoreLine scoreLine = new ScoreLine();
+        scoreLine.activate(propertyChangeListener);
+        scoreLine.setVulnerability(BoardId.Vulnerability.NS);
+        scoreLine.setNsPair(2);
+        scoreLine.setEwPair(3);
+        scoreLine.setContract(new Contract("3H"));
+        scoreLine.setPlayedBy(ScoreLine.Direction.W);
+        scoreLine.setTricks(8);
+        boolean resultNotEmpty = scoreLine.isEmpty();
+
+        scoreLine = new ScoreLine();
+        boolean resultEmpty = scoreLine.isEmpty();
+
+        assertAll("isEmpty",
+        () -> {
+            assertFalse(resultNotEmpty);
+            assertTrue(resultEmpty);
+        });
+    }
+
+    @Test
+    void activate() {
+    }
+
+    @Test
+    void isComplete() {
+        ScoreLine scoreLine = new ScoreLine();
+        scoreLine.activate(propertyChangeListener);
+        scoreLine.setVulnerability(BoardId.Vulnerability.NS);
+        scoreLine.setNsPair(2);
+        scoreLine.setEwPair(3);
+        scoreLine.setContract(new Contract("3H"));
+        scoreLine.setPlayedBy(ScoreLine.Direction.W);
+        scoreLine.setTricks(8);
+        boolean resultNotComplete = scoreLine.isComplete();
+        scoreLine.setNsMPs(6);
+        scoreLine.setEwMPs(2);
+        boolean resultComplete = scoreLine.isComplete();
+
+        assertAll("isComplete", () -> {
+            assertEquals(50, scoreLine.getNSScore());
+            assertFalse(resultNotComplete);
+            assertTrue((resultComplete));
+        });
+    }
 }

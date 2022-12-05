@@ -113,7 +113,7 @@ public class ScoringFormActions {
             scoringBean.setNewBoardsPerSet("");
             scoringBean.setNewNoPairs("");
 
-            String completionStatus = traveller.getCompetionStatus();
+            String completionStatus = travellerTableModel.getCompetionStatus();
             scoringBean.setTravellerComplete(completionStatus);
             logger.debug("Completion status: " + completionStatus);
 
@@ -285,7 +285,7 @@ public class ScoringFormActions {
             dataStore.persist(competition);
         }
         //travellerTableModel.setTraveller(traveller);
-        scoringBean.setTravellerComplete(displayedTraveller.getCompetionStatus());
+        scoringBean.setTravellerComplete(travellerTableModel.getCompetionStatus());
         scoringBean.setProgress(competition.getProgress());
     }
 
@@ -303,10 +303,7 @@ public class ScoringFormActions {
 
         //Update view.
         Traveller newTraveller = competition.getTraveller(newBoardId);
-        if (newTraveller.isEmpty() && Objects.equals(boardId.getSet(), newBoardId.getSet())) {
-            logger.debug("Traveller " + newBoardId.getSet() + "-" + newBoardId.getBoard() + " is blank.");
-            newTraveller = formTraveller.generatePrefilled(newBoardId);
-        }
+
         travellerTableModel.setTraveller(newTraveller);
 
         scoringBean.setTravellerComplete(newTraveller.getCompetionStatus());

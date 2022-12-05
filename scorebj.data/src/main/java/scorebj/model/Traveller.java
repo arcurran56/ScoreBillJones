@@ -11,10 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Traveller implements PropertyChangeListener {
+public class Traveller {
 
     @XStreamOmitField
     private static final Logger logger = LogManager.getLogger();
+
+    public int getSize() {
+        return size;
+    }
+
     private final int size;
 
     private final BoardId boardId;
@@ -52,32 +57,6 @@ public class Traveller implements PropertyChangeListener {
     public void copy(Traveller traveller) {
         this.scoreLines = traveller.getScoreLines();
     }
-
-    /**
-     * Generate a new traveller pre-filled with pairings from this Traveller.
-     * @param newBoardId
-     * @return
-     */
-    public Traveller generatePrefilled(BoardId newBoardId) {
-        Traveller newTraveller = new Traveller(newBoardId, size);
-
-        List<ScoreLine> newScoreLines = newTraveller.getScoreLines();
-        int nsPair;
-        int ewPair;
-        int newSet = newBoardId.getSet();
-        int oldSet = boardId.getSet();
-        boolean complete = isComplete();
-        if (newSet == oldSet && complete) {
-            for (int i=0; i<size; i++) {
-                nsPair = scoreLines.get(i).getNsPair();
-                ewPair = scoreLines.get(i).getEwPair();
-                newScoreLines.get(i).setNsPair(nsPair);
-                newScoreLines.get(i).setEwPair(ewPair);
-            }
-        }
-        return  newTraveller;
-    }
-
     public void addAll(List<ScoreLine> scoreLines) {
         this.scoreLines.addAll(scoreLines);
         int newSize = scoreLines.size();
@@ -93,49 +72,21 @@ public class Traveller implements PropertyChangeListener {
             scoreLines.add(new ScoreLine());
         }
     }
-
-    private void allocateMPs() {
-        int netScore1;
-        int netScore2;
-
-        for (ScoreLine scoreLine1 : scoreLines) {
-            int nsMPs = 0;
-            int ewMPs = 0;
-            if (scoreLine1 != null) {
-                if (scoreLine1.getNSScore() != null && scoreLine1.getEWScore() != null) {
-                    netScore1 = scoreLine1.getNSScore() - scoreLine1.getEWScore();
-
-                    for (ScoreLine scoreLine2 : scoreLines) {
-                        if (scoreLine2 != null) {
-                            if (scoreLine2.getNSScore() != null && scoreLine2.getEWScore() != null) {
-                                if (scoreLine1 != scoreLine2) {
-                                    netScore2 = scoreLine2.getNSScore() - scoreLine2.getEWScore();
-                                    switch (Integer.compare(netScore1, netScore2)) {
-                                        case -1:
-                                            ewMPs = ewMPs + 2;
-                                            break;
-                                        case 0:
-                                            nsMPs++;
-                                            ewMPs++;
-                                            break;
-                                        case 1:
-                                            nsMPs = nsMPs + 2;
-                                            break;
-
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-                    scoreLine1.setNsMPs(nsMPs);
-                    scoreLine1.setEwMPs(ewMPs);
+    public boolean isComplete() {
+        boolean complete = true;
+        ScoreLine scoreLine;
+        for (int i = 0; i < size; i++) {
+            scoreLine = scoreLines.get(i);
+            if (scoreLine != null) {
+                if (!scoreLine.isComplete()) {
+                    complete = false;
                 }
-
             }
-
+            else {
+                complete = false;
+            }
         }
-
+        return complete;
     }
     public boolean isEmpty() {
         boolean empty = true;
@@ -146,14 +97,7 @@ public class Traveller implements PropertyChangeListener {
         }
         return empty;
     }
-    public boolean isComplete(){
-        int completedLines = 0;
-        boolean complete = true;
-        for (ScoreLine scoreLine: scoreLines) {
-            complete = complete && scoreLine.isComplete();
-        }
-        return complete;
-    }
+
     public List<String> toStringList(){
         List<String> stringList = new ArrayList<>(5);
         StringBuilder textLine = new StringBuilder("NS Pair,EW Pair,Contract,By,Tricks,Score NS,Score EW,MP NS,MP EW");
@@ -166,11 +110,11 @@ public class Traveller implements PropertyChangeListener {
                     .append(",")
                     .append((scoreLine.getContract()!=null?scoreLine.getContract().toString():"null"))
                     .append(",")
+                    .append(scoreLine.getPlayedBy())
+                    .append(",")
                     .append(scoreLine.getTricks())
                     .append(",")
                     .append(scoreLine.getNSScore())
-                    .append(",")
-                    .append(scoreLine.getEWScore())
                     .append(",")
                     .append(scoreLine.getEWScore())
                     .append(",")
@@ -183,15 +127,7 @@ public class Traveller implements PropertyChangeListener {
         stringList.add("");
         return stringList;
     }
-
     public String getCompetionStatus() {
         return isComplete()?"":"Unfinished";
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if ("score".equals(evt.getPropertyName())) {
-            allocateMPs();
-        }
     }
 }

@@ -14,7 +14,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
     @XStreamOmitField
     static Logger logger = LogManager.getLogger();
     @XStreamOmitField
-    PropertyChangeSupport pcs;
+    PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private boolean complete = false;
 
     public boolean isEmpty() {
@@ -60,14 +60,19 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
 
     }
 
+    public void setComplete(boolean b) {
+        complete = b;
+    }
+
     enum Columns {NS_PAIR, EW_PAIR, CONTRACT, PLAYED_BY, TRICKS, NS_SCORE, EW_SCORE, NS_MPS, EW_MPS}
 
     private final Object[] entry = new Object[9];
 
     public enum Direction {N, S, E, W, PASS}
 
-    ScoreLine() {
+    public ScoreLine() {
         logger.debug("Creating " + this.toString());
+        pcs = new PropertyChangeSupport(this);
     }
 
     public Object get(int index) {
@@ -81,6 +86,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
             entry[Columns.PLAYED_BY.ordinal()] = Direction.PASS;
             entry[Columns.TRICKS.ordinal()] = 0;
         }
+        if( index<=Columns.TRICKS.ordinal() ) complete = false;
         pcs.firePropertyChange("entry", oldVal, value);
     }
 
@@ -107,6 +113,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
     public void setContract(Contract contract) {
         Contract oldVal = (Contract) entry[Columns.CONTRACT.ordinal()];
         entry[Columns.CONTRACT.ordinal()] = contract;
+        complete = false;
         pcs.firePropertyChange("contract", oldVal, contract);
     }
 
@@ -117,6 +124,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
     public void setPlayedBy(Direction playedBy) {
         Direction oldVal = (Direction) entry[Columns.PLAYED_BY.ordinal()];
         entry[Columns.PLAYED_BY.ordinal()] = playedBy;
+        complete = false;
         pcs.firePropertyChange("playedBy", oldVal, playedBy);
     }
 
@@ -127,6 +135,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
     public void setTricks(Integer tricks) {
         Integer oldVal = (Integer) entry[Columns.TRICKS.ordinal()];
         entry[Columns.TRICKS.ordinal()] = tricks;
+        complete = false;
         pcs.firePropertyChange("tricks", oldVal, tricks);
     }
 
@@ -225,5 +234,16 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
 
     public boolean isComplete(){
         return complete;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("ScoreLine: ");
+        for (Object o: entry){
+            builder.append(o);
+            builder.append("-");
+        }
+        builder.append(complete);
+        return builder.toString();
     }
 }
