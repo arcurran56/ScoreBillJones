@@ -290,7 +290,7 @@ public class ScoringFormActions {
 
         travellerTableModel.setTraveller(newTraveller);
 
-        scoringBean.setCompletionStatus(newTraveller.getCompletionStatus());
+        scoringBean.setCompletionStatus(travellerTableModel.getCompetionStatus());
         scoringBean.setProgress(competition.getProgress());
 
     }

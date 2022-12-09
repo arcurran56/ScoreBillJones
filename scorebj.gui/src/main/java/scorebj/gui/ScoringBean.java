@@ -13,7 +13,6 @@ public class ScoringBean {
     private String newNoPairs = "0";
 
     private String newSet = "0";
-    private String travellerComplete = "";
     private String progress = "";
     private String completionStatus = "";
 
