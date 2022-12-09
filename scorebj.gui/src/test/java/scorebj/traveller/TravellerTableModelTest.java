@@ -159,7 +159,7 @@ class TravellerTableModelTest {
         scoreLineFilled.setTricks(9);
         scoreLineFilled.setNsMPs(4);
         scoreLineFilled.setEwMPs(2);
-        scoreLineFilled.setComplete(true);
+        //scoreLineFilled.setComplete(true);
 
         ScoreLine scoreLineUnfilled = new ScoreLine();
         scoreLines.add(scoreLineFilled);

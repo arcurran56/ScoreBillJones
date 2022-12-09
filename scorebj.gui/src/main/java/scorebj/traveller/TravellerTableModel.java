@@ -331,7 +331,7 @@ public class TravellerTableModel extends AbstractTableModel {
                     }
                     scoreLine1.setNsMPs(nsMPs);
                     scoreLine1.setEwMPs(ewMPs);
-                    scoreLine1.setComplete(true);
+                    //scoreLine1.setComplete(true);
                     logger.debug(scoreLine1);
                 }
 

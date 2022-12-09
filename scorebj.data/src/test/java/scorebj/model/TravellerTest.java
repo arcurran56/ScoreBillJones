@@ -60,7 +60,6 @@ class TravellerTest {
                     ScoreLine scoreLine = (ScoreLine) evt.getSource();
                     scoreLine.setNsMPs(6);
                     scoreLine.setEwMPs(2);
-                    scoreLine.setComplete(true);
                 }
             });
         }
