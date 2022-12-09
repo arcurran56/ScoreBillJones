@@ -30,12 +30,18 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         logger.debug("Property change event for, " + evt.getPropertyName() + " from " + evt.getSource().toString());
-        if (!"score".equals(evt.getPropertyName())) {
+        if (!"score".equals(evt.getPropertyName()) && !"blank".equals(evt.getPropertyName())) {
             if (entry[Columns.CONTRACT.ordinal()] != null
                     && entry[Columns.PLAYED_BY.ordinal()] != null
                     && entry[Columns.TRICKS.ordinal()] != null) {
                 scoreHand();
                 pcs.firePropertyChange("score", 0, 1);
+            } else {
+                entry[Columns.NS_SCORE.ordinal()] = null;
+                entry[Columns.EW_SCORE.ordinal()] = null;
+                entry[Columns.NS_MPS.ordinal()] = null;
+                entry[Columns.EW_MPS.ordinal()] = null;
+                pcs.firePropertyChange("blank", 0, 1);
             }
         }
         empty = false;
@@ -50,7 +56,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
 
     @Override
     public void tableChanged(TableModelEvent e) {
-        logger.debug("Table change event received from " + e.getSource().toString());
+        logger.debug("Table change event, " + e.getType() + " received from " + e.getSource().toString());
     }
 
     public void activate(PropertyChangeListener propertyChangeListener) {

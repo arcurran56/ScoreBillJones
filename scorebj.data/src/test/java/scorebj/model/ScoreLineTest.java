@@ -30,6 +30,7 @@ class ScoreLineTest {
         assertEquals(200, scoreLine.getEWScore());
 
     }
+
     @Test
     void scoreHand2() {
         ScoreLine scoreLine = new ScoreLine();
@@ -44,6 +45,7 @@ class ScoreLineTest {
         assertEquals(0, scoreLine.getEWScore());
 
     }
+
     @Test
     void scoreHand3() {
         ScoreLine scoreLine = new ScoreLine();
@@ -71,14 +73,15 @@ class ScoreLineTest {
         scoreLine.setTricks(8);
         boolean resultNotEmpty = scoreLine.isEmpty();
 
+
         scoreLine = new ScoreLine();
         boolean resultEmpty = scoreLine.isEmpty();
 
         assertAll("isEmpty",
-        () -> {
-            assertFalse(resultNotEmpty);
-            assertTrue(resultEmpty);
-        });
+                () -> {
+                    assertFalse(resultNotEmpty);
+                    assertTrue(resultEmpty);
+                });
     }
 
     @Test
@@ -105,5 +108,38 @@ class ScoreLineTest {
             assertFalse(resultNotComplete);
             assertTrue((resultComplete));
         });
+
+        scoreLine.setTricks(null);
+        boolean resultNotComplete2 = scoreLine.isComplete();
+
+        assertFalse(resultNotComplete2);
+    }
+
+    @Test
+    void blankScores() {
+        ScoreLine scoreLine = new ScoreLine();
+        scoreLine.activate(propertyChangeListener);
+        scoreLine.setVulnerability(BoardId.Vulnerability.NONE);
+        scoreLine.setNsPair(2);
+        scoreLine.setEwPair(3);
+        scoreLine.setContract(new Contract("3H"));
+        scoreLine.setPlayedBy(ScoreLine.Direction.E);
+        scoreLine.setTricks(11);
+        scoreLine.setNsMPs(2);
+        scoreLine.setEwMPs(6);
+
+        assertAll(() -> {
+            assertEquals(0, scoreLine.getNSScore());
+            assertEquals(200, scoreLine.getEWScore());
+            assertEquals(6, scoreLine.getEwMPs());
+        });
+        scoreLine.setTricks(null);
+
+        assertAll(() -> {
+            assertNull(scoreLine.getNSScore());
+            assertNull(scoreLine.getEWScore());
+            assertNull(scoreLine.getEwMPs());
+        });
+
     }
 }

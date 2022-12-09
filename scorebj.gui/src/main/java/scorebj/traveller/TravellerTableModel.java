@@ -119,6 +119,13 @@ public class TravellerTableModel extends AbstractTableModel {
                 allocateMPs();
                 createAutoFillCache();
             }
+            if ("blank".equals(evt.getPropertyName())) {
+                for (ScoreLine sl: travellerTable){
+                    sl.setNsMPs(null);
+                    sl.setEwMPs(null);
+                }
+                createAutoFillCache();
+            }
         }
     };
 
