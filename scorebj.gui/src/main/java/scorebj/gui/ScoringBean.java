@@ -99,16 +99,7 @@ public class ScoringBean {
     public void setNewBoardsPerSet(String newBoardsPerSet) {
         this.newBoardsPerSet = newBoardsPerSet;
     }
-
-
-    public String getTravellerComplete() {
-        return travellerComplete;
-    }
-
-    public void setTravellerComplete(String travellerComplete) {
-        this.travellerComplete = travellerComplete;
-    }
-
+    
     public String getProgress() {
         return progress;
     }

@@ -108,7 +108,7 @@ public class FullCompTest {
                                                   }
         );
 
-        actions.init(scoringBean, travellerTableModel, pairingTableModel, defaultComboBoxModel);
+        actions.init(travellerTableModel, pairingTableModel, defaultComboBoxModel);
 
         //Add new Competition
         scoringBean.setNewCompetitionName(competitionName);
@@ -243,7 +243,7 @@ public class FullCompTest {
                                                   }
         );
 
-        actions.init(scoringBean, travellerTableModel, pairingTableModel, defaultComboBoxModel);
+        actions.init(travellerTableModel, pairingTableModel, defaultComboBoxModel);
 
         //Add new Competition
         scoringBean.setNewCompetitionName(competitionName);

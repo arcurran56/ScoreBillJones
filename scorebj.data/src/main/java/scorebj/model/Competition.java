@@ -128,6 +128,7 @@ public class Competition {
     }
 
     public String getProgress() {
+        logger.debug("...checking progress...");
         int completionCount = 0;
         for (Traveller t : travellers) {
             if (t.isComplete()) completionCount++;
@@ -138,6 +139,7 @@ public class Competition {
                 " complete";
     }
     public String toString(){
-        return "Competition: " + competitionName;
+        return "Competition: " + competitionName
+                + "(" + noPairs + " pairs, " + noSets + " sets, " + noBoardsPerSet + ")";
     }
 }

@@ -10,7 +10,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class ScoreLine implements PropertyChangeListener, TableModelListener {
+public class ScoreLine implements PropertyChangeListener, TableModelListener, Cloneable {
     @XStreamOmitField
     static Logger logger = LogManager.getLogger();
     @XStreamOmitField
@@ -71,7 +71,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
     public enum Direction {N, S, E, W, PASS}
 
     public ScoreLine() {
-        logger.debug("Creating " + this.toString());
+        logger.trace("Creating " + this.toString());
         pcs = new PropertyChangeSupport(this);
     }
 
@@ -233,6 +233,15 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
     }
 
     public boolean isComplete(){
+        boolean complete;
+        complete = getNsPair() != null
+                && getEwPair() != null
+                && getContract() != null
+                && getTricks() != null
+                && getPlayedBy() != null
+                && getNsMPs() != null
+                && getEwMPs() != null;
+
         return complete;
     }
 
@@ -245,5 +254,16 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener {
         }
         builder.append(complete);
         return builder.toString();
+    }
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        ScoreLine sl = (ScoreLine) super.clone();
+        sl.setNsPair(this.getNsPair());
+        sl.setEwPair(this.getEwPair());
+        sl.setContract(this.getContract());
+        sl.setPlayedBy(this.getPlayedBy());
+        sl.setTricks(this.getTricks());
+
+        return sl;
     }
 }

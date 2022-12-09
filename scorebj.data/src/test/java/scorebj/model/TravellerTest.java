@@ -184,4 +184,11 @@ class TravellerTest {
     }
 
 
+    @Test
+    void getCompletionStatus() {
+        assertAll( "Completion Status", () -> {
+        assertEquals("Done",completeTraveller.getCompletionStatus());
+        assertEquals("Incomplete", incompleteTraveller.getCompletionStatus());
+        });
+    }
 }

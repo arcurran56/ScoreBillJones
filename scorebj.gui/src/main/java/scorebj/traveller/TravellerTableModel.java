@@ -340,6 +340,6 @@ public class TravellerTableModel extends AbstractTableModel {
     }
 
     public String getCompetionStatus() {
-        return isComplete() ? "" : "Unfinished";
+        return isComplete() ? "Complete" : "Incomplete";
     }
 }

@@ -5,8 +5,6 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +39,6 @@ public class Traveller {
             scoreLine.setVulnerability(boardId.getVulnerabilityStatus());
             scoreLines.add(scoreLine);
         }
-
     }
 
     public List<ScoreLine> getScoreLines() {
@@ -55,24 +52,27 @@ public class Traveller {
     private List<ScoreLine> scoreLines = new ArrayList<>(5);
 
     public void copy(Traveller traveller) {
+        logger.debug("Copying Traveller for board " + traveller.getBoardId());
         this.scoreLines = traveller.getScoreLines();
     }
+
     public void addAll(List<ScoreLine> scoreLines) {
         this.scoreLines.addAll(scoreLines);
         int newSize = scoreLines.size();
         if ( newSize != size) {
             logger.warn("Size mismatch: " + newSize + " vs " + size);
         }
-
     }
 
     public void clear() {
+        logger.debug("Clearing...");
         scoreLines.clear();
         for (int i = 0; i < size; i++) {
             scoreLines.add(new ScoreLine());
         }
     }
     public boolean isComplete() {
+        logger.debug("...checking complete...");
         boolean complete = true;
         ScoreLine scoreLine;
         for (int i = 0; i < size; i++) {
@@ -88,7 +88,9 @@ public class Traveller {
         }
         return complete;
     }
+
     public boolean isEmpty() {
+        logger.debug("...checking empty...");
         boolean empty = true;
         for (ScoreLine scoreLine: scoreLines){
             if (!scoreLine.isEmpty()){
@@ -127,7 +129,16 @@ public class Traveller {
         stringList.add("");
         return stringList;
     }
-    public String getCompetionStatus() {
-        return isComplete()?"":"Unfinished";
+    public String getCompletionStatus() {
+        return isComplete()?"Done":"Incomplete";
+    }
+
+    public String toString(){
+        StringBuilder builder = new StringBuilder("Traveller: ")
+                .append("Board: ")
+                .append(boardId)
+                .append("; size: ")
+                .append(size);
+        return builder.toString();
     }
 }

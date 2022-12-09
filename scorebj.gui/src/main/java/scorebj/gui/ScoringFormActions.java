@@ -39,8 +39,7 @@ public class ScoringFormActions {
     public ScoringFormActions() {
     }
 
-    public void init(ScoringBean scoringBean,
-                     TravellerTableModel travellerTableModel,
+    public void init(TravellerTableModel travellerTableModel,
                      PairingTableModel pairingTableModel,
                      DefaultComboBoxModel<String> compComboBoxModel) throws DataStoreException {
 
@@ -65,13 +64,12 @@ public class ScoringFormActions {
     private void displaySelectedCompetition(ScoringBean scoringBean) {
         String competitionName = scoringBean.getCurrentCompetitionName();
 
-        logger.debug("Displaying " + competitionName);
+        logger.debug("Displaying " + competition);
 
         int noSets = 0;
         int noPairs = 0;
         int noBoardsPerSet = 0;
         List<String> pairings = null;
-        StringBuilder builder = new StringBuilder("Displaying ");
 
         competition = dataStore.getCompetition(competitionName);
         if (competition != null) {
@@ -80,15 +78,7 @@ public class ScoringFormActions {
             noPairs = competition.getNoPairs();
             noBoardsPerSet = competition.getNoBoardsPerSet();
 
-            builder.append(competitionName)
-                    .append(", ")
-                    .append(noSets)
-                    .append(" sets of ")
-                    .append(noBoardsPerSet)
-                    .append(" boards, ")
-                    .append(noPairs)
-                    .append(" pairs");
-            logger.debug(builder);
+            logger.debug(competition);
 
             scoringBean.setCurrentSets(Integer.toString(noSets));
             scoringBean.setCurrentNoPairs(Integer.toString(noPairs));
@@ -113,8 +103,8 @@ public class ScoringFormActions {
             scoringBean.setNewBoardsPerSet("");
             scoringBean.setNewNoPairs("");
 
-            String completionStatus = travellerTableModel.getCompetionStatus();
-            scoringBean.setTravellerComplete(completionStatus);
+            String completionStatus = traveller.getCompletionStatus();
+            scoringBean.setCompletionStatus(completionStatus);
             logger.debug("Completion status: " + completionStatus);
 
             String progress = competition.getProgress();
@@ -123,14 +113,7 @@ public class ScoringFormActions {
 
             //compComboBoxModel.addElement(competitionName));
             assert pairings != null;
-            StringBuilder logLine = new StringBuilder()
-                    .append("Selected Competition: ")
-                    .append(competition.getCompetitionName())
-                    .append(", pairs: ")
-                    .append(noPairs)
-                    .append("(")
-                    .append(pairings.size())
-                    .append(")");
+            String logLine = "Selected: " + competition;
 
             logger.debug(logLine);
 
@@ -167,7 +150,9 @@ public class ScoringFormActions {
                                             int firstRow, int column) {
         logger.debug("travellerTableChangedAction method: " + travellerTableModel);
 
-        dataStore.persist(competition);
+        scoringBean.setCompletionStatus(travellerTableModel.getCompetionStatus());
+        scoringBean.setProgress(competition.getProgress());
+
 
     }
 
@@ -228,7 +213,6 @@ public class ScoringFormActions {
 
         displaySelectedCompetition(scoringBean);
 
-
     }
 
     public void addCompActionPerformed(ScoringBean scoringBean) {
@@ -285,7 +269,7 @@ public class ScoringFormActions {
             dataStore.persist(competition);
         }
         //travellerTableModel.setTraveller(traveller);
-        scoringBean.setTravellerComplete(travellerTableModel.getCompetionStatus());
+        scoringBean.setCompletionStatus(travellerTableModel.getCompetionStatus());
         scoringBean.setProgress(competition.getProgress());
     }
 
@@ -297,7 +281,7 @@ public class ScoringFormActions {
         Traveller formTraveller = travellerTableModel.getTraveller();
         BoardId boardId = formTraveller.getBoardId();
         BoardId newBoardId = navigateTo.apply(boardId);
-        logger.debug("New Traveller: " + boardId);
+        logger.debug("Displaying Traveller for board: " + boardId);
         scoringBean.setNewSet(Integer.toString(newBoardId.getSet()));
         scoringBean.setNewBoard(Integer.toString(newBoardId.getBoard()));
 
@@ -306,10 +290,9 @@ public class ScoringFormActions {
 
         travellerTableModel.setTraveller(newTraveller);
 
-        scoringBean.setTravellerComplete(newTraveller.getCompetionStatus());
+        scoringBean.setCompletionStatus(newTraveller.getCompletionStatus());
         scoringBean.setProgress(competition.getProgress());
 
-        dataStore.persist(competition);
     }
 
     private int parseInt(String string) {
@@ -334,7 +317,6 @@ public class ScoringFormActions {
     }
 
     public Set<String> getCompetitionNames() {
-        createDataStore();
         return dataStore.getCompetitionNames();
     }
 

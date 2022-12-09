@@ -38,7 +38,7 @@ class ScoringFormActionsTest {
 
     @BeforeEach
     void setUp() throws DataStoreException {
-        actions.init(bean,mockedTTM,mockedPTM,mockedCBM);
+        actions.init(mockedTTM,mockedPTM,mockedCBM);
 
     }
 

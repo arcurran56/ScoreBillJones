@@ -77,6 +77,13 @@ public class ScoringForm {
         TableColumnModel travellerTableColumnModel =
                 new TravellerTableColumnModel();
 
+        try {
+            actions.init(travellerTableModel,
+                    pairingTableModel, compComboBoxModel);
+        } catch (DataStoreException e) {
+            throw new RuntimeException(e);
+        }
+
         ScoringBean scoringBean = new ScoringBean();
 
         compComboBoxModel.addAll(actions.getCompetitionNames());
@@ -88,12 +95,6 @@ public class ScoringForm {
         }
 
         scoringBean.setCurrentCompetitionName(competitionName);
-        try {
-            actions.init(scoringBean, travellerTableModel,
-                    pairingTableModel, compComboBoxModel);
-        } catch (DataStoreException e) {
-            throw new RuntimeException(e);
-        }
 
         setData(scoringBean);
         mainPanel.repaint();
@@ -144,7 +145,7 @@ public class ScoringForm {
         travellerTableModel.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
-                logger.debug("Traveller table changed: " + e.getSource());
+                logger.debug("Traveller table change type: " + Integer.toString(e.getType()) + e.getSource());
                 int firstRow = e.getFirstRow();
                 int column = e.getColumn();
 
@@ -162,11 +163,13 @@ public class ScoringForm {
             @Override
             public void tableChanged(TableModelEvent e) {
                 PairingTableModel pairingTableModel = (PairingTableModel) e.getSource();
-                logger.debug("Pairing table changed from " + e.getSource());
+                int type = e.getType();
+                logger.debug("Pairing table change type "
+                        + type + " from " + e.getSource());
 
                 ScoringBean scoringBean = new ScoringBean();
                 getData(scoringBean);
-                logger.debug("...repaint after traveller changed");
+
                 actions.pairingTableChangedAction(e);
                 setData(scoringBean);
 
@@ -195,6 +198,7 @@ public class ScoringForm {
                 logger.debug(currentCompetitionName + " selected...");
 
                 ScoringBean scoringBean = new ScoringBean();
+                getData(scoringBean);
                 scoringBean.setCurrentCompetitionName(currentCompetitionName);
 
                 actions.compComboBoxActionPerformed(scoringBean);
