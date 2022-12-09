@@ -74,30 +74,7 @@ public class ScoringForm {
 
         $$$setupUI$$$();
 
-        TableColumnModel travellerTableColumnModel =
-                new TravellerTableColumnModel();
 
-        try {
-            actions.init(travellerTableModel,
-                    pairingTableModel, compComboBoxModel);
-        } catch (DataStoreException e) {
-            throw new RuntimeException(e);
-        }
-
-        ScoringBean scoringBean = new ScoringBean();
-
-        compComboBoxModel.addAll(actions.getCompetitionNames());
-
-        String competitionName = "";
-        if (compComboBoxModel.getSize() > 0) {
-            compComboBox.setSelectedIndex(0);
-            competitionName = (String) compComboBox.getSelectedItem();
-        }
-
-        scoringBean.setCurrentCompetitionName(competitionName);
-
-        setData(scoringBean);
-        mainPanel.repaint();
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -272,6 +249,30 @@ public class ScoringForm {
                 mainPanel.repaint();
             }
         });
+        TableColumnModel travellerTableColumnModel =
+                new TravellerTableColumnModel();
+
+        try {
+            actions.init(travellerTableModel,
+                    pairingTableModel, compComboBoxModel);
+        } catch (DataStoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        ScoringBean scoringBean = new ScoringBean();
+
+        compComboBoxModel.addAll(actions.getCompetitionNames());
+
+        String competitionName = "";
+        if (compComboBoxModel.getSize() > 0) {
+            compComboBox.setSelectedIndex(0);
+            competitionName = (String) compComboBox.getSelectedItem();
+        }
+
+        scoringBean.setCurrentCompetitionName(competitionName);
+
+        setData(scoringBean);
+        mainPanel.repaint();
     }
 
     public static void main(String[] args) throws DataStoreException {
