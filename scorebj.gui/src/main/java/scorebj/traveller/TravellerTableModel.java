@@ -23,7 +23,7 @@ public class TravellerTableModel extends AbstractTableModel {
     private final String CONTRACT = "scorebj.model.Contract";
     private final String DIRECTION = "scorebj.model.ScoreLine.Direction";
 
-    private final String[] travellerColumnHeaders = new String[]
+    private final String[] COLUMN_HEADERS = new String[]
             {"NS Pair",
                     "EW Pair",
                     "Contract",
@@ -32,10 +32,12 @@ public class TravellerTableModel extends AbstractTableModel {
                     "NS Score",
                     "EW Score",
                     "NS MP",
-                    "EW MP"};
+                    "EW MP",
+                    "NS OR",
+                    "EW OR"};
 
     private final boolean[] editableColumns =
-            {true, true, true, true, true, false, false, false, false};
+            {true, true, true, true, true, false, false, false, false, true, true};
 
     private final String[] columnClassNames = new String[]
             {INTEGER,
@@ -46,10 +48,11 @@ public class TravellerTableModel extends AbstractTableModel {
                     INTEGER,
                     INTEGER,
                     INTEGER,
+                    INTEGER,
+                    INTEGER,
                     INTEGER};
 
 
-    private int noPairs = 0;
     private final ArrayList<ScoreLine> travellerTable = new ArrayList<>(INITIAL_CAPACITY);
     private int rowCount = 0;
     private BoardId boardId;
@@ -120,11 +123,10 @@ public class TravellerTableModel extends AbstractTableModel {
                 createAutoFillCache();
             }
             if ("blank".equals(evt.getPropertyName())) {
-                for (ScoreLine sl: travellerTable){
+                for (ScoreLine sl : travellerTable) {
                     sl.setNsMPs(null);
                     sl.setEwMPs(null);
                 }
-                createAutoFillCache();
             }
         }
     };
@@ -191,7 +193,7 @@ public class TravellerTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return travellerColumnHeaders[column];
+        return COLUMN_HEADERS[column];
     }
 
     @Override
@@ -240,7 +242,8 @@ public class TravellerTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return travellerColumnHeaders.length;
+        return 11;
+        //return COLUMN_HEADERS.length;
     }
 
     @Override

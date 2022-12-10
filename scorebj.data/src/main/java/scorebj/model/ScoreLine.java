@@ -16,6 +16,10 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     @XStreamOmitField
     PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
+    private final static int NO_COLUMNS=11;
+
+    @XStreamOmitField
+    private boolean complete = false;
     public boolean isEmpty() {
         return empty;
     }
@@ -65,9 +69,15 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
 
     }
 
-    enum Columns {NS_PAIR, EW_PAIR, CONTRACT, PLAYED_BY, TRICKS, NS_SCORE, EW_SCORE, NS_MPS, EW_MPS}
+    enum Columns {
+        NS_PAIR, EW_PAIR, CONTRACT, PLAYED_BY, TRICKS,
+        NS_SCORE, EW_SCORE, NS_MPS, EW_MPS,
+        NS_OVERRIDE, EW_OVERRIDE
+    }
 
-    private final Object[] entry = new Object[9];
+    ;
+
+    private final Object[] entry = new Object[NO_COLUMNS];
 
     public enum Direction {N, S, E, W, PASS}
 
@@ -83,11 +93,11 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     public void set(int index, Object value) {
         Object oldVal = entry[index];
         entry[index] = value;
-        if ( index == Columns.CONTRACT.ordinal() && "ALL".equals(value.toString()) ){
+        if (index == Columns.CONTRACT.ordinal() && "ALL".equals(value.toString())) {
             entry[Columns.PLAYED_BY.ordinal()] = Direction.PASS;
             entry[Columns.TRICKS.ordinal()] = 0;
         }
-        if( index<=Columns.TRICKS.ordinal() ) ;
+        if (index <= Columns.TRICKS.ordinal()) ;
         pcs.firePropertyChange("entry", oldVal, value);
     }
 
@@ -164,6 +174,20 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
 
     }
 
+    public Integer getNsOverride(){
+        return (Integer) entry[Columns.NS_OVERRIDE.ordinal()];
+    }
+    public void setNsOverride(Integer nsOverride){
+        entry[Columns.NS_OVERRIDE.ordinal()] = nsOverride;
+    }
+
+    public Integer getEwOverride(){
+        return (Integer) entry[Columns.EW_OVERRIDE.ordinal()];
+    }
+    public void setEwOverride(Integer ewOverride){
+        entry[Columns.EW_OVERRIDE.ordinal()] = ewOverride;
+    }
+
     private void scoreHand() {
         Integer nsPair = getNsPair();
         Integer ewPair = getEwPair();
@@ -221,7 +245,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
-        logger.debug("Adding " + pcl.toString() + " to " + this.toString()  + " as listener.");
+        logger.debug("Adding " + pcl.toString() + " to " + this.toString() + " as listener.");
         pcs.addPropertyChangeListener(pcl);
     }
 
@@ -229,7 +253,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         pcs.removePropertyChangeListener(pcl);
     }
 
-    public boolean isComplete(){
+    public boolean isComplete() {
         boolean complete;
         complete = getNsPair() != null
                 && getEwPair() != null
@@ -245,13 +269,14 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("ScoreLine: ");
-        for (Object o: entry){
+        for (Object o : entry) {
             builder.append(o);
             builder.append("-");
         }
         builder.append(isComplete());
         return builder.toString();
     }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         ScoreLine sl = (ScoreLine) super.clone();

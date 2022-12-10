@@ -1,5 +1,7 @@
 package scorebj.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import java.beans.PropertyChangeEvent;
@@ -14,6 +16,7 @@ class ScoreLineTest {
 
         }
     };
+    private Logger logger = LogManager.getLogger();
 
     @Test
     void scoreHand1() {
@@ -142,4 +145,27 @@ class ScoreLineTest {
         });
 
     }
+
+    @Test
+    void setOverrides() {
+        ScoreLine scoreLine = new ScoreLine();
+        scoreLine.activate(propertyChangeListener);
+        scoreLine.setVulnerability(BoardId.Vulnerability.NONE);
+        scoreLine.setNsPair(2);
+        scoreLine.setEwPair(3);
+        scoreLine.setContract(new Contract("3H"));
+        scoreLine.setPlayedBy(ScoreLine.Direction.E);
+        scoreLine.setTricks(11);
+        scoreLine.setNsMPs(2);
+        scoreLine.setEwMPs(6);
+        scoreLine.setNsOverride(1);
+        scoreLine.setEwOverride(7);
+
+        logger.debug(scoreLine);
+        assertEquals(1,scoreLine.getNsOverride());
+        assertEquals(7,scoreLine.getEwOverride());
+
+
+    }
+
 }

@@ -122,7 +122,7 @@ public class ScoringForm {
         travellerTableModel.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
-                logger.debug("Traveller table change type: " + Integer.toString(e.getType()) + e.getSource());
+                logger.debug("Traveller table change type " + Integer.toString(e.getType()) + " from " + e.getSource());
                 int firstRow = e.getFirstRow();
                 int column = e.getColumn();
 
