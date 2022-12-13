@@ -2,7 +2,7 @@ package scorebj.gui;
 
 public class ScoringBean {
 
-    private String currentCompetitionName = "";
+    private String selectedCompetitionName = "";
     private String currentSets = "0";
     private String currentBoardsPerSet = "0";
     private String currentNoPairs = "0";
@@ -52,12 +52,12 @@ public class ScoringBean {
 
     public ScoringBean() {
     }
-    public String getCurrentCompetitionName() {
-        return currentCompetitionName;
+    public String getSelectedCompetitionName() {
+        return selectedCompetitionName;
     }
 
-    public void setCurrentCompetitionName(String currentCompetitionName) {
-        this.currentCompetitionName = currentCompetitionName;
+    public void setSelectedCompetitionName(String selectedCompetitionName) {
+        this.selectedCompetitionName = selectedCompetitionName;
     }
     public String getCurrentSets() {
         return currentSets;

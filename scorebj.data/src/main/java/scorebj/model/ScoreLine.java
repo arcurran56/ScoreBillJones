@@ -161,7 +161,6 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
 
     public void setNsMPs(Integer nsMPs) {
         entry[Columns.NS_MPS.ordinal()] = nsMPs;
-        if (entry[Columns.EW_MPS.ordinal()] != null) ;
     }
 
     public Integer getEwMPs() {
@@ -170,18 +169,20 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
 
     public void setEwMPs(Integer ewMPs) {
         entry[Columns.EW_MPS.ordinal()] = ewMPs;
-        if (entry[Columns.NS_MPS.ordinal()] != null) ;
 
     }
 
     public Integer getNsOverride(){
+
         return (Integer) entry[Columns.NS_OVERRIDE.ordinal()];
     }
     public void setNsOverride(Integer nsOverride){
+
         entry[Columns.NS_OVERRIDE.ordinal()] = nsOverride;
     }
 
     public Integer getEwOverride(){
+
         return (Integer) entry[Columns.EW_OVERRIDE.ordinal()];
     }
     public void setEwOverride(Integer ewOverride){

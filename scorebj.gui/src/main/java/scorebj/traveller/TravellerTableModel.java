@@ -55,7 +55,7 @@ public class TravellerTableModel extends AbstractTableModel {
 
     private final ArrayList<ScoreLine> travellerTable = new ArrayList<>(INITIAL_CAPACITY);
     private int rowCount = 0;
-    private BoardId boardId;
+    private BoardId boardId = new BoardId();
 
     public void setAutoFillEnabled(boolean autoFillEnabled) {
         this.autoFillEnabled = autoFillEnabled;
@@ -79,6 +79,10 @@ public class TravellerTableModel extends AbstractTableModel {
             }
         }
         return empty;
+    }
+
+    public BoardId getBoardId() {
+        return boardId.clone();
     }
 
     private static class Matchup {
@@ -349,7 +353,7 @@ public class TravellerTableModel extends AbstractTableModel {
         return "Traveller for " + (boardId == null ? " null " : boardId.toString());
     }
 
-    public String getCompetionStatus() {
+    public String getCompletionStatus() {
         return isComplete() ? "Complete" : "Incomplete";
     }
 }

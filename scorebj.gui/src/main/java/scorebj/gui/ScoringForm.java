@@ -63,6 +63,7 @@ public class ScoringForm {
     private JLabel newSetsLabel;
     private JLabel newBpSLabel;
     private JLabel currentSetsLabel;
+    private JButton publishButton;
 
     private final TravellerTableModel travellerTableModel = new TravellerTableModel();
 
@@ -73,7 +74,6 @@ public class ScoringForm {
     public ScoringForm() {
 
         $$$setupUI$$$();
-
 
 
         backButton.addActionListener(new ActionListener() {
@@ -168,24 +168,27 @@ public class ScoringForm {
         compComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("compComboBox: " + e.getActionCommand());
+                logger.debug("compComboBox: "
+                        + e.getActionCommand()
+                        + "-"
+                        + e.paramString()
+                        + " from "
+                        + e.getSource());
 
                 //Get selected Competition and save currentCompetitionName for later...
-                String currentCompetitionName = (String) compComboBox.getSelectedItem();
-                logger.debug(currentCompetitionName + " selected...");
+                String selectedCompetitionName = (String) compComboBox.getSelectedItem();
+                logger.debug(selectedCompetitionName + " selected...");
 
                 ScoringBean scoringBean = new ScoringBean();
                 getData(scoringBean);
-                scoringBean.setCurrentCompetitionName(currentCompetitionName);
+                scoringBean.setSelectedCompetitionName(selectedCompetitionName);
 
                 actions.compComboBoxActionPerformed(scoringBean);
-                //Save current Traveller in old Competition.
-
 
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
                 setData(scoringBean);
 
-                logger.debug("...repaint after new  competition");
+                logger.debug("...repaint after new competition selected.");
 
                 mainPanel.repaint();
             }
@@ -193,11 +196,16 @@ public class ScoringForm {
         addComp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("Add..." + e.getActionCommand());
-
+                logger.debug("Add..."
+                        + e.getActionCommand()
+                        + "-"
+                        + e.paramString()
+                        + " from "
+                        + e.getSource());
                 ScoringBean scoringBean = new ScoringBean();
                 getData(scoringBean);
                 String newCompetitionName = scoringBean.getNewCompetitionName();
+                logger.debug("Adding: " + newCompetitionName);
 
                 actions.addCompActionPerformed(scoringBean);
 
@@ -215,12 +223,17 @@ public class ScoringForm {
         deleteComp.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("Delete..." + e.getActionCommand());
+                logger.debug("Delete..."
+                        + e.getActionCommand()
+                        + "-"
+                        + e.paramString()
+                        + " from "
+                        + e.getSource());
                 String key = (String) compComboBox.getSelectedItem();
 
                 ScoringBean scoringBean = new ScoringBean();
                 getData(scoringBean);
-                scoringBean.setCurrentCompetitionName(key);
+                scoringBean.setSelectedCompetitionName(key);
 
                 actions.deleteCompActionPerformed(scoringBean);
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
@@ -236,8 +249,12 @@ public class ScoringForm {
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                logger.debug("Clear..." + e.getActionCommand());
-
+                logger.debug("Clear..."
+                        + e.getActionCommand()
+                        + "-"
+                        + e.paramString()
+                        + " from "
+                        + e.getSource());
                 ScoringBean scoringBean = new ScoringBean();
                 getData(scoringBean);
                 actions.clearButtonActionPerformed(scoringBean);
@@ -249,6 +266,18 @@ public class ScoringForm {
                 mainPanel.repaint();
             }
         });
+
+        publishButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logger.debug("Publish..." + e.getActionCommand());
+                actions.publishButtonActionPerformed();
+
+                logger.debug("...repaint after publish.");
+                mainPanel.repaint();
+            }
+        });
+
         TableColumnModel travellerTableColumnModel =
                 new TravellerTableColumnModel();
 
@@ -269,10 +298,11 @@ public class ScoringForm {
             competitionName = (String) compComboBox.getSelectedItem();
         }
 
-        scoringBean.setCurrentCompetitionName(competitionName);
+        scoringBean.setSelectedCompetitionName(competitionName);
 
         setData(scoringBean);
         mainPanel.repaint();
+
     }
 
     public static void main(String[] args) throws DataStoreException {
@@ -338,7 +368,7 @@ public class ScoringForm {
         mainPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(5, 2, new Insets(20, 20, 20, 20), -1, -1));
         mainPanel.setBackground(new Color(-2097185));
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 11, new Insets(20, 20, 20, 20), -1, -1));
+        buttonPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 12, new Insets(20, 20, 20, 20), -1, -1));
         buttonPanel.setBackground(new Color(-2097185));
         mainPanel.add(buttonPanel, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(500, 50), null, 0, false));
         backButton = new JButton();
@@ -379,10 +409,13 @@ public class ScoringForm {
         buttonPanel.add(clearButton, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         completionStatusField.setEditable(false);
         completionStatusField.setText("");
-        buttonPanel.add(completionStatusField, new com.intellij.uiDesigner.core.GridConstraints(0, 9, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        buttonPanel.add(completionStatusField, new com.intellij.uiDesigner.core.GridConstraints(0, 10, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         progressField.setEditable(false);
         progressField.setText("");
-        buttonPanel.add(progressField, new com.intellij.uiDesigner.core.GridConstraints(0, 10, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        buttonPanel.add(progressField, new com.intellij.uiDesigner.core.GridConstraints(0, 11, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        publishButton = new JButton();
+        publishButton.setText("PUBLISH");
+        buttonPanel.add(publishButton, new com.intellij.uiDesigner.core.GridConstraints(0, 9, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         tablePanel = new JPanel();
         tablePanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(20, 20, 20, 20), -1, -1));
         tablePanel.setBackground(new Color(-2097185));

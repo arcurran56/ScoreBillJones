@@ -8,7 +8,6 @@ import scorebj.model.*;
 import scorebj.pairing.PairingTableModel;
 import scorebj.traveller.TravellerTableModel;
 
-import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -117,6 +116,9 @@ public class FullCompTest {
         scoringBean.setNewNoPairs(args[3]);
         actions.addCompActionPerformed(scoringBean);
 
+        scoringBean.setSelectedCompetitionName(competitionName);
+        actions.compComboBoxActionPerformed(scoringBean);
+
         pairingTableModel.setNoPairs(noPairs);
         pairingTableModel.setPairings(Arrays.asList(pairings));
         TableModelEvent event = new TableModelEvent(pairingTableModel);
@@ -194,7 +196,7 @@ public class FullCompTest {
             importLine = reader.readLine();
         }
         logger.info("...outputting results...");
-        actions.saveButtonActionPerformed();
+        actions.publishButtonActionPerformed();
 
         logger.info("...complete.");
         reader.close();
@@ -252,7 +254,7 @@ public class FullCompTest {
         scoringBean.setNewNoPairs(args[3]);
         actions.addCompActionPerformed(scoringBean);
 
-        scoringBean.setCurrentCompetitionName(competitionName);
+        scoringBean.setSelectedCompetitionName(competitionName);
         actions.compComboBoxActionPerformed(scoringBean);
 
         pairingTableModel.setNoPairs(noPairs);
@@ -343,7 +345,7 @@ public class FullCompTest {
             importLine = reader.readLine();
         }
         logger.info("...outputting results...");
-        actions.saveButtonActionPerformed();
+        actions.publishButtonActionPerformed();
 
         logger.info("...complete.");
         reader.close();
