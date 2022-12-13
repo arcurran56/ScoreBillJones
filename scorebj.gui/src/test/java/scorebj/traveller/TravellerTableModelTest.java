@@ -50,12 +50,19 @@ class TravellerTableModelTest {
     @Test
     void findColumn() {
         TravellerTableModel t = new TravellerTableModel();
-        assertEquals(7, t.findColumn("NS MP"));
+
+        assertAll( ()-> {
+            assertEquals(7, t.findColumn("NS MP"));
+            assertEquals(9, t.findColumn("NS OR"));
+            assertEquals(10, t.findColumn("EW OR"));
+        });
+
     }
 
     @Test
     void getColumnClass() {
         TravellerTableModel t = new TravellerTableModel();
+        assertEquals(Integer.class, t.getColumnClass(9));
 
     }
 
@@ -76,7 +83,7 @@ class TravellerTableModelTest {
     @Test
     void getColumnCount() {
         TravellerTableModel t = new TravellerTableModel();
-        assertEquals(9, t.getColumnCount());
+        assertEquals(11, t.getColumnCount());
     }
 
     @Test
@@ -394,4 +401,11 @@ class TravellerTableModelTest {
         incompleteTraveller = null;
     }
 
+    @Test
+    void getColumnName() {
+    }
+
+   @Test
+    void testGetColumnClass() {
+    }
 }
