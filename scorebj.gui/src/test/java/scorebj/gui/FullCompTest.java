@@ -1,5 +1,7 @@
 package scorebj.gui;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,10 +20,18 @@ public class FullCompTest {
     private final static Logger logger = LogManager.getLogger();
 
     private final ScoringFormActions actions = new ScoringFormActions();
-    private final ScoringBean scoringBean = new ScoringBean();
+    private final CurrentCompetitionBean currentCompetitionBean = new CurrentCompetitionBean();
+
+    private final NewCompetitionBean newCompetitionBean = new NewCompetitionBean();
+
+    private final CurrentTravellerBean currentTravellerBean = new CurrentTravellerBean();
     private final TravellerTableModel travellerTableModel = new TravellerTableModel();
     private final PairingTableModel pairingTableModel = new PairingTableModel();
     private final DefaultComboBoxModel<String> defaultComboBoxModel = new DefaultComboBoxModel<>();
+    private int noSets;
+    private int noBoardsPerSet;
+    private int noPairs;
+    private String competitionName;
 
     private class TableInserter {
         private int row = 0;
@@ -64,75 +74,27 @@ public class FullCompTest {
     public FullCompTest() {
     }
 
+    @BeforeEach
+    void setUp() {
+
+    }
+
+    @AfterEach
+    void tearDown() {
+
+    }
+
     @Test
     public void runTest() throws IOException, DataStoreException {
 
         String[] args = {"IntTestComp1", "5", "16", "10"};
-        String[] pairings = {"David & Salette",
-                "Liz B & Jane E",
-                "Jill R & Rob",
-                "Jill H & Jane D",
-                "Wendy & Diana",
-                "Diane & Alan",
-                "Julia & Sue",
-                "Clare & Jill A",
-                "Lisbeth & Vicky",
-                "Caroline & Andrew"
-        };
 
-        String competitionName = args[0];
-        int noSets = Integer.parseUnsignedInt(args[1]);
-        int noBoardsPerSet = Integer.parseUnsignedInt(args[2]);
-        int noPairs = Integer.parseUnsignedInt(args[3]);
+        competitionName = args[0];
+        noSets = Integer.parseUnsignedInt(args[1]);
+        noBoardsPerSet = Integer.parseUnsignedInt(args[2]);
+        noPairs = Integer.parseUnsignedInt(args[3]);
 
-        ScoringFormActions.setTestMode(true);
-
-        //Set up gui interface
-        Traveller traveller = new Traveller(new BoardId(5, 16), (noPairs + 1) / 2);
-
-        travellerTableModel.setTraveller(traveller);
-        travellerTableModel.addTableModelListener(new TableModelListener() {
-                                                      @Override
-                                                      public void tableChanged(TableModelEvent e) {
-                                                          logger.debug("Table event type, "
-                                                                  + e.getType() + " (" + e.getFirstRow()
-                                                                  + ", " + e.getColumn()
-                                                                  + ") fired by " + e.getSource());
-                                                          int firstRow = e.getFirstRow();
-                                                          int column = e.getColumn();
-
-                                                          actions.travellerTableChangedAction(scoringBean, travellerTableModel, firstRow, column);
-
-                                                      }
-                                                  }
-        );
-
-        actions.init(travellerTableModel, pairingTableModel, defaultComboBoxModel);
-
-        //Add new Competition
-        scoringBean.setNewCompetitionName(competitionName);
-        scoringBean.setNewSets(args[1]);
-        scoringBean.setNewBoardsPerSet(args[2]);
-        scoringBean.setNewNoPairs(args[3]);
-        actions.addCompActionPerformed(scoringBean);
-
-        scoringBean.setSelectedCompetitionName(competitionName);
-        actions.compComboBoxActionPerformed(scoringBean);
-
-        pairingTableModel.setNoPairs(noPairs);
-        pairingTableModel.setPairings(Arrays.asList(pairings));
-        TableModelEvent event = new TableModelEvent(pairingTableModel);
-        actions.pairingTableChangedAction(event);
-
-        StringBuilder builder = (new StringBuilder())
-                .append(competitionName)
-                .append(", ")
-                .append(noSets)
-                .append(", ")
-                .append(noBoardsPerSet)
-                .append(", ")
-                .append(noPairs);
-        logger.info(builder);
+        preamble(competitionName, noSets, noBoardsPerSet, noPairs);
 
         InputStream inputStream = FullCompTest.class.getClassLoader().getResourceAsStream("FullCompTest.csv");
         assert inputStream != null;
@@ -189,7 +151,7 @@ public class FullCompTest {
 
                         //Next board...
                         logger.info("Next board");
-                        actions.forwardButtonActionPerformed(scoringBean);
+                        actions.forwardButtonActionPerformed(currentTravellerBean);
                     }
                     break;
             }
@@ -202,10 +164,8 @@ public class FullCompTest {
         reader.close();
     }
 
-    @Test
-    public void runTestWithAutoComplete() throws IOException, DataStoreException {
+    private void preamble(String competitionName, int noSets, int noBoardsPerSet, int noPairs) throws DataStoreException {
 
-        String[] args = {"IntTestComp2", "5", "16", "10"};
         String[] pairings = {"David & Salette",
                 "Liz B & Jane E",
                 "Jill R & Rob",
@@ -218,17 +178,13 @@ public class FullCompTest {
                 "Caroline & Andrew"
         };
 
-        String competitionName = args[0];
-        int noSets = Integer.parseUnsignedInt(args[1]);
-        int noBoardsPerSet = Integer.parseUnsignedInt(args[2]);
-        int noPairs = Integer.parseUnsignedInt(args[3]);
 
         ScoringFormActions.setTestMode(true);
 
         //Set up gui interface
-        //Traveller traveller = new Traveller(new BoardId(5, 16), (noPairs + 1) / 2);
+        Traveller traveller = new Traveller(new BoardId(noSets, noBoardsPerSet), (noPairs + 1) / 2);
 
-        //travellerTableModel.setTraveller(traveller);
+        travellerTableModel.setTraveller(traveller);
         travellerTableModel.addTableModelListener(new TableModelListener() {
                                                       @Override
                                                       public void tableChanged(TableModelEvent e) {
@@ -239,7 +195,7 @@ public class FullCompTest {
                                                           int firstRow = e.getFirstRow();
                                                           int column = e.getColumn();
 
-                                                          actions.travellerTableChangedAction(scoringBean, travellerTableModel, firstRow, column);
+                                                          actions.travellerTableChangedAction(currentTravellerBean, travellerTableModel, firstRow, column);
 
                                                       }
                                                   }
@@ -248,14 +204,15 @@ public class FullCompTest {
         actions.init(travellerTableModel, pairingTableModel, defaultComboBoxModel);
 
         //Add new Competition
-        scoringBean.setNewCompetitionName(competitionName);
-        scoringBean.setNewSets(args[1]);
-        scoringBean.setNewBoardsPerSet(args[2]);
-        scoringBean.setNewNoPairs(args[3]);
-        actions.addCompActionPerformed(scoringBean);
+        newCompetitionBean.setNewCompetitionName(competitionName);
+        newCompetitionBean.setNewSets(Integer.toString(noSets));
+        newCompetitionBean.setNewBoardsPerSet(Integer.toString(noBoardsPerSet));
+        newCompetitionBean.setNewNoPairs(Integer.toString(noPairs));
 
-        scoringBean.setSelectedCompetitionName(competitionName);
-        actions.compComboBoxActionPerformed(scoringBean);
+        actions.addCompActionPerformed(newCompetitionBean);
+
+        currentCompetitionBean.setSelectedCompetitionName(competitionName);
+        actions.compComboBoxActionPerformed(currentCompetitionBean);
 
         pairingTableModel.setNoPairs(noPairs);
         pairingTableModel.setPairings(Arrays.asList(pairings));
@@ -271,6 +228,19 @@ public class FullCompTest {
                 .append(", ")
                 .append(noPairs);
         logger.info(builder);
+    }
+
+    @Test
+    public void runTestWithAutoComplete() throws IOException, DataStoreException {
+
+        String[] args = {"IntTestComp2", "5", "16", "10"};
+
+        competitionName = args[0];
+        noSets = Integer.parseUnsignedInt(args[1]);
+        noBoardsPerSet = Integer.parseUnsignedInt(args[2]);
+        noPairs = Integer.parseUnsignedInt(args[3]);
+
+        preamble(competitionName, noSets, noBoardsPerSet, noPairs);
 
         InputStream inputStream = FullCompTest.class.getClassLoader().getResourceAsStream("FullCompTest.csv");
         assert inputStream != null;
@@ -338,7 +308,7 @@ public class FullCompTest {
 
                         //Next board...
                         logger.info("Next board");
-                        actions.forwardButtonActionPerformed(scoringBean);
+                        actions.forwardButtonActionPerformed(currentTravellerBean);
                     }
                     break;
             }

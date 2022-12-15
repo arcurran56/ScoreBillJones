@@ -127,11 +127,6 @@ import java.util.*;
                     new FilePersistenceStrategy(dataLocation, xStream);
             persistentCompetitions = (Map<String,Competition>) Collections.synchronizedMap((Map<String,Competition>) new XmlMap(persistenceStrategy));
 
-            Competition competition;
-            if(persistentCompetitions.isEmpty()) {
-                competition = new Competition();
-                persistentCompetitions.put(competition.getCompetitionName(), competition);
-            }
             logger.debug( "...exiting initialise");
         }
 
@@ -165,6 +160,7 @@ import java.util.*;
 
         public Competition getCompetition(String name) {
             logger.debug("Fetching competition " + name);
+
             return persistentCompetitions.get(name);
         }
 
@@ -172,16 +168,7 @@ import java.util.*;
          * Persist competitions data.  Replace existing entry with updated one.
          */
         public void persist(Competition competition){
-            logger.debug("...persisting...");
-            StringBuilder logMessage = new StringBuilder()
-                    .append(competition.getCompetitionName())
-                    .append(" ")
-                    .append(competition.getNoPairs())
-                    .append(" ")
-                    .append(competition.getNoSets())
-                    .append(" ")
-                    .append(competition.getNoBoardsPerSet());
-            logger.debug(logMessage);
+            logger.debug("...persisting..." + competition);
 
             if ( competition.getCompetitionName() != null
                 && !"".equals(competition.getCompetitionName())
@@ -189,9 +176,9 @@ import java.util.*;
                 && competition.getNoSets() > 0
                 && competition.getNoBoardsPerSet() > 0) {
                 persistentCompetitions.put(competition.getCompetitionName(), competition);
+                logger.debug("..done.");
             }
             else logger.warn("...ignored.");
-            logger.debug("...exit persist.");
         }
         public void delete(String key){
             logger.info("Deleting " + key);

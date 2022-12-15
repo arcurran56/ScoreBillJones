@@ -4,8 +4,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIf;
-import org.mockito.Mock;
 import scorebj.model.Competition;
 import scorebj.model.DataStore;
 import scorebj.model.DataStoreException;
@@ -28,7 +26,8 @@ class ScoringFormActionsTest {
         }
     }
     private final ScoringFormActions actions = new ScoringFormActions();
-    private final ScoringBean bean = new ScoringBean();
+    private final CurrentTravellerBean travellerBean = new CurrentTravellerBean();
+    private final CurrentCompetitionBean compBean = new CurrentCompetitionBean();
 
     Competition mockedCompetition1 = mock(Competition.class);
     Competition mockedCompetition2 = mock(Competition.class);
@@ -49,17 +48,17 @@ class ScoringFormActionsTest {
     @Test
     @Disabled
     void backButtonActionPerformed() {
-        bean.setNewCompetitionName("Test Competition 1");
-        bean.setNewSets("5");
-        bean.setNewBoardsPerSet("16");
-        bean.setNewNoPairs("10");
-        bean.setNewBoard("3");
-        bean.setNewSet("4");
+        compBean.setNewCompetitionName("Test Competition 1");
+        compBean.setNewSets("5");
+        compBean.setNewBoardsPerSet("16");
+        compBean.setNewNoPairs("10");
+        travellerBean.setBoard("3");
+        travellerBean.setSet("4");
 
-        actions.backButtonActionPerformed(bean);
+        actions.backButtonActionPerformed(travellerBean);
 
         assertAll("back", () -> {
-            assertEquals(2,bean.getNewBoard());
+            assertEquals(2, travellerBean.getBoard());
         });
 
     }

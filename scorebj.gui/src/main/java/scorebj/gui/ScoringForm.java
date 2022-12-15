@@ -26,6 +26,8 @@ public class ScoringForm {
     private final JFrame frame = new JFrame("Scoring Bill Jones");
     private final DefaultComboBoxModel<String> compComboBoxModel = new DefaultComboBoxModel<>();
 
+    private final CurrentTravellerBean scoringBean = new CurrentTravellerBean();
+
     private JPanel mainPanel;
     private JPanel buttonPanel;
     private JPanel infoPanel;
@@ -75,16 +77,18 @@ public class ScoringForm {
 
         $$$setupUI$$$();
 
+        startUp();
+
 
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logger.debug("back..." + e.getActionCommand());
 
-                ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
-                actions.backButtonActionPerformed(scoringBean);
-                setData(scoringBean);
+                CurrentTravellerBean currentTravellerBean = new CurrentTravellerBean();
+                getData(currentTravellerBean);
+                actions.backButtonActionPerformed(currentTravellerBean);
+                setData(currentTravellerBean);
 
                 logger.debug("...repaint back");
                 mainPanel.repaint();
@@ -96,10 +100,10 @@ public class ScoringForm {
             public void actionPerformed(ActionEvent e) {
                 logger.debug("forward..." + e.getActionCommand());
 
-                ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
-                actions.forwardButtonActionPerformed(scoringBean);
-                setData(scoringBean);
+                CurrentTravellerBean currentTravellerBean = new CurrentTravellerBean();
+                getData(currentTravellerBean);
+                actions.forwardButtonActionPerformed(currentTravellerBean);
+                setData(currentTravellerBean);
 
                 logger.debug("...repaint forward");
             }
@@ -109,10 +113,10 @@ public class ScoringForm {
             public void actionPerformed(ActionEvent e) {
                 logger.debug("go..." + e.getActionCommand());
 
-                ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
-                actions.goButtonActionPerformed(scoringBean);
-                setData(scoringBean);
+                CurrentTravellerBean currentTravellerBean = new CurrentTravellerBean();
+                getData(currentTravellerBean);
+                actions.goButtonActionPerformed(currentTravellerBean);
+                setData(currentTravellerBean);
 
                 logger.debug("...repaint go");
 
@@ -126,10 +130,10 @@ public class ScoringForm {
                 int firstRow = e.getFirstRow();
                 int column = e.getColumn();
 
-                ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
-                actions.travellerTableChangedAction(scoringBean, travellerTableModel, firstRow, column);
-                setData(scoringBean);
+                CurrentTravellerBean currentTravellerBean = new CurrentTravellerBean();
+                getData(currentTravellerBean);
+                actions.travellerTableChangedAction(currentTravellerBean, travellerTableModel, firstRow, column);
+                setData(currentTravellerBean);
 
                 logger.debug("...repaint after traveller changed");
 
@@ -144,11 +148,7 @@ public class ScoringForm {
                 logger.debug("Pairing table change type "
                         + type + " from " + e.getSource());
 
-                ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
-
                 actions.pairingTableChangedAction(e);
-                setData(scoringBean);
 
                 logger.debug("...repaint after pairings changed");
 
@@ -179,14 +179,14 @@ public class ScoringForm {
                 String selectedCompetitionName = (String) compComboBox.getSelectedItem();
                 logger.debug(selectedCompetitionName + " selected...");
 
-                ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
-                scoringBean.setSelectedCompetitionName(selectedCompetitionName);
+                CurrentCompetitionBean currentCompetitionBean = new CurrentCompetitionBean();
+                getData(currentCompetitionBean);
+                currentCompetitionBean.setSelectedCompetitionName(selectedCompetitionName);
 
-                actions.compComboBoxActionPerformed(scoringBean);
+                actions.compComboBoxActionPerformed(currentCompetitionBean);
 
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
-                setData(scoringBean);
+                setData(currentCompetitionBean);
 
                 logger.debug("...repaint after new competition selected.");
 
@@ -202,20 +202,20 @@ public class ScoringForm {
                         + e.paramString()
                         + " from "
                         + e.getSource());
-                ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
-                String newCompetitionName = scoringBean.getNewCompetitionName();
+
+                NewCompetitionBean newCompetitionBean = new NewCompetitionBean();
+                getData(newCompetitionBean);
+                String newCompetitionName = newCompetitionBean.getNewCompetitionName();
                 logger.debug("Adding: " + newCompetitionName);
 
-                actions.addCompActionPerformed(scoringBean);
+                actions.addCompActionPerformed(newCompetitionBean);
 
-                setData(scoringBean);
+                setData(newCompetitionBean);
 
-                compComboBoxModel.addElement(newCompetitionName);
-                compComboBox.setSelectedIndex(Math.max(compComboBoxModel.getSize() - 1, 0));
+
+                //compComboBox.setSelectedIndex(Math.max(compComboBoxModel.getSize() - 1, 0));
 
                 logger.debug("...repaint after add competition");
-
                 mainPanel.repaint();
 
             }
@@ -229,20 +229,15 @@ public class ScoringForm {
                         + e.paramString()
                         + " from "
                         + e.getSource());
-                String key = (String) compComboBox.getSelectedItem();
+                String selectedCompetitionName = (String) compComboBox.getSelectedItem();
 
-                ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
-                scoringBean.setSelectedCompetitionName(key);
-
-                actions.deleteCompActionPerformed(scoringBean);
+                actions.deleteCompActionPerformed(selectedCompetitionName);
                 //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
-                setData(scoringBean);
 
-                compComboBox.setSelectedIndex(0);
-
+/*                if (compComboBox.getItemCount() > 0) {
+                    compComboBox.setSelectedIndex(0);
+            }*/
                 logger.debug("...repaint after competition deleted");
-
                 mainPanel.repaint();
             }
         });
@@ -255,11 +250,8 @@ public class ScoringForm {
                         + e.paramString()
                         + " from "
                         + e.getSource());
-                ScoringBean scoringBean = new ScoringBean();
-                getData(scoringBean);
-                actions.clearButtonActionPerformed(scoringBean);
 
-                setData(scoringBean);
+                actions.clearButtonActionPerformed(scoringBean);
 
                 logger.debug("...repaint after clear");
 
@@ -278,9 +270,9 @@ public class ScoringForm {
             }
         });
 
-        TableColumnModel travellerTableColumnModel =
-                new TravellerTableColumnModel();
+    }
 
+    private void startUp() {
         try {
             actions.init(travellerTableModel,
                     pairingTableModel, compComboBoxModel);
@@ -288,21 +280,20 @@ public class ScoringForm {
             throw new RuntimeException(e);
         }
 
-        ScoringBean scoringBean = new ScoringBean();
-
         compComboBoxModel.addAll(actions.getCompetitionNames());
 
-        String competitionName = "";
+        CurrentCompetitionBean currentCompetitionBean = new CurrentCompetitionBean();
+        CurrentTravellerBean currentTravellerBean = new CurrentTravellerBean();
+        NewCompetitionBean newCompetitionBean = new NewCompetitionBean();
+
         if (compComboBoxModel.getSize() > 0) {
-            compComboBox.setSelectedIndex(0);
-            competitionName = (String) compComboBox.getSelectedItem();
+            //compComboBox.setSelectedIndex(0);
+            actions.compComboBoxActionPerformed(currentCompetitionBean);
         }
-
-        scoringBean.setSelectedCompetitionName(competitionName);
-
-        setData(scoringBean);
-        mainPanel.repaint();
-
+        actions.goButtonActionPerformed(currentTravellerBean);
+        setData(currentCompetitionBean);
+        setData(newCompetitionBean);
+        setData(currentTravellerBean);
     }
 
     public static void main(String[] args) throws DataStoreException {
@@ -327,11 +318,6 @@ public class ScoringForm {
 
         compComboBox = new JComboBox<>();
         compComboBox.setModel(compComboBoxModel);
-
-        String competitionName;
-        if (compComboBoxModel.getSize() > 0) {
-            compComboBox.setSelectedIndex(0);
-        }
 
         scoreTable = new JTable(travellerTableModel, travellerTableColumnModel);
         pairingTable = new JTable(pairingTableModel);
@@ -438,7 +424,7 @@ public class ScoringForm {
         mainPanel.add(compPanel, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(529, 69), null, 0, false));
         newCompField.setText("");
         compPanel.add(newCompField, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 6, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        compComboBox.setEditable(true);
+        compComboBox.setEditable(false);
         compPanel.add(compComboBox, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 4, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         currentNoPairsField.setEditable(false);
         currentNoPairsField.setText("");
@@ -576,59 +562,44 @@ public class ScoringForm {
         return mainPanel;
     }
 
-    public void setData(ScoringBean data) {
-        setField.setText(data.getNewSet());
-        boardField.setText(data.getNewBoard());
-        completionStatusField.setText(data.getCompletionStatus());
-        progressField.setText(data.getProgress());
-        newCompField.setText(data.getNewCompetitionName());
+    public void setData(CurrentCompetitionBean data) {
         currentNoPairsField.setText(data.getCurrentNoPairs());
-        newSetsField.setText(data.getNewSets());
         currentSetsField.setText(data.getCurrentSets());
         currentBpSField.setText(data.getCurrentBoardsPerSet());
-        newBpSField.setText(data.getNewBoardsPerSet());
-        newNoPairsField.setText(data.getNewNoPairs());
-
     }
 
-    public void getData(ScoringBean data) {
-        data.setNewSet(setField.getText());
-        data.setNewBoard(boardField.getText());
-        data.setCompletionStatus(completionStatusField.getText());
-        data.setProgress(progressField.getText());
-        data.setNewCompetitionName(newCompField.getText());
+    public void getData(CurrentCompetitionBean data) {
         data.setCurrentNoPairs(currentNoPairsField.getText());
-        data.setNewSets(newSetsField.getText());
         data.setCurrentSets(currentSetsField.getText());
         data.setCurrentBoardsPerSet(currentBpSField.getText());
+    }
+
+    public void setData(NewCompetitionBean data) {
+        newCompField.setText(data.getNewCompetitionName());
+        newSetsField.setText(data.getNewSets());
+        newBpSField.setText(data.getNewBoardsPerSet());
+        newNoPairsField.setText(data.getNewNoPairs());
+    }
+
+    public void getData(NewCompetitionBean data) {
+        data.setNewCompetitionName(newCompField.getText());
+        data.setNewSets(newSetsField.getText());
         data.setNewBoardsPerSet(newBpSField.getText());
         data.setNewNoPairs(newNoPairsField.getText());
     }
 
-    public boolean isModified(ScoringBean data) {
-        if (setField.getText() != null ? !setField.getText().equals(data.getNewSet()) : data.getNewSet() != null)
-            return true;
-        if (boardField.getText() != null ? !boardField.getText().equals(data.getNewBoard()) : data.getNewBoard() != null)
-            return true;
-        if (completionStatusField.getText() != null ? !completionStatusField.getText().equals(data.getCompletionStatus()) : data.getCompletionStatus() != null)
-            return true;
-        if (progressField.getText() != null ? !progressField.getText().equals(data.getProgress()) : data.getProgress() != null)
-            return true;
-        if (newCompField.getText() != null ? !newCompField.getText().equals(data.getNewCompetitionName()) : data.getNewCompetitionName() != null)
-            return true;
-        if (currentNoPairsField.getText() != null ? !currentNoPairsField.getText().equals(data.getCurrentNoPairs()) : data.getCurrentNoPairs() != null)
-            return true;
-        if (newSetsField.getText() != null ? !newSetsField.getText().equals(data.getNewSets()) : data.getNewSets() != null)
-            return true;
-        if (currentSetsField.getText() != null ? !currentSetsField.getText().equals(data.getCurrentSets()) : data.getCurrentSets() != null)
-            return true;
-        if (currentBpSField.getText() != null ? !currentBpSField.getText().equals(data.getCurrentBoardsPerSet()) : data.getCurrentBoardsPerSet() != null)
-            return true;
-        if (newBpSField.getText() != null ? !newBpSField.getText().equals(data.getNewBoardsPerSet()) : data.getNewBoardsPerSet() != null)
-            return true;
-        if (newNoPairsField.getText() != null ? !newNoPairsField.getText().equals(data.getNewNoPairs()) : data.getNewNoPairs() != null)
-            return true;
-        return false;
+    public void setData(CurrentTravellerBean data) {
+        setField.setText(data.getSet());
+        boardField.setText(data.getBoard());
+        completionStatusField.setText(data.getCompletionStatus());
+        progressField.setText(data.getProgress());
+    }
+
+    public void getData(CurrentTravellerBean data) {
+        data.setSet(setField.getText());
+        data.setBoard(boardField.getText());
+        data.setCompletionStatus(completionStatusField.getText());
+        data.setProgress(progressField.getText());
     }
 }
 

@@ -61,20 +61,47 @@ public class ScoringFormActions {
         }
     }
 
-    private void displaySelectedCompetition(ScoringBean scoringBean) {
-        String competitionName = scoringBean.getSelectedCompetitionName();
+    private void displaySelectedCompetition(CurrentCompetitionBean currentCompetitionBean) {
+        CurrentTravellerBean currentTravellerBean = new CurrentTravellerBean();
+        displaySelectedCompetition(currentCompetitionBean,currentTravellerBean);
+    }
+    private void displaySelectedCompetition(CurrentCompetitionBean currentCompetitionBean,
+                                            CurrentTravellerBean currentTravellerBean) {
 
+        String competitionName = currentCompetitionBean.getSelectedCompetitionName();
         logger.debug("Fetching " + competitionName);
 
         competition = dataStore.getCompetition(competitionName);
 
-        displayCurrentCompetition(scoringBean);
+        if (competition == null) {
+            competition = new Competition();
+        }
+        displayCurrentCompetition(currentCompetitionBean);
+
+        int noSets = competition.getNoSets();
+        int noBoardsPerSet = competition.getNoBoardsPerSet();
+        BoardId boardId = new BoardId(noSets, noBoardsPerSet);
+
+        displayTraveller(boardId);
+
+        displayPairings();
+
+        String completionStatus = competition.getTraveller(boardId).getCompletionStatus();
+        logger.debug("Completion status: " + completionStatus);
+
+        String progress = competition.getProgress();
+        currentTravellerBean.setProgress(progress);
+
+        logger.debug("Progress: " + progress);
+
+        String logLine = "Selected: " + competition;
+        logger.debug(logLine);
+
     }
 
-
-    private void displayCurrentCompetition(ScoringBean scoringBean) {
+    private void displayCurrentCompetition(CurrentCompetitionBean currentCompetitionBean) {
         if (competition != null) {
-           List<String> pairings = null;
+            List<String> pairings = null;
 
             int noSets = competition.getNoSets();
             int noPairs = competition.getNoPairs();
@@ -82,41 +109,9 @@ public class ScoringFormActions {
 
             logger.debug("Displaying " + competition);
 
-            scoringBean.setCurrentSets(Integer.toString(noSets));
-            scoringBean.setCurrentNoPairs(Integer.toString(noPairs));
-            scoringBean.setCurrentBoardsPerSet(Integer.toString(noBoardsPerSet));
-
-            BoardId boardId = new BoardId(noSets, noBoardsPerSet);
-
-            displayTraveller(boardId);
-            
-            displayPairings();
-
-            scoringBean.setNewSet("1");
-            scoringBean.setNewBoard("1");
-
-            //Blank new Competition fields.
-            scoringBean.setNewCompetitionName("");
-            scoringBean.setNewSets("");
-            scoringBean.setNewBoardsPerSet("");
-            scoringBean.setNewNoPairs("");
-
-            String completionStatus = travellerTableModel.getCompletionStatus();
-            scoringBean.setCompletionStatus(completionStatus);
-
-            logger.debug("Completion status: " + completionStatus);
-
-            String progress = competition.getProgress();
-            scoringBean.setProgress(progress);
-
-            logger.debug("Progress: " + progress);
-
-            String logLine = "Selected: " + competition;
-
-            logger.debug(logLine);
-
-        } else {
-            logger.error("Attempt to display null Competition.");
+            currentCompetitionBean.setCurrentSets(Integer.toString(noSets));
+            currentCompetitionBean.setCurrentNoPairs(Integer.toString(noPairs));
+            currentCompetitionBean.setCurrentBoardsPerSet(Integer.toString(noBoardsPerSet));
         }
 
     }
@@ -129,35 +124,35 @@ public class ScoringFormActions {
         this.pairingTableModel.setPairings(pairings);
     }
 
-    public void backButtonActionPerformed(ScoringBean scoringBean) {
+    public void backButtonActionPerformed(CurrentTravellerBean bean) {
         logger.debug("back");
-        navigateTraveller(scoringBean, BoardId::prev);
+        navigateTraveller(bean, BoardId::prev);
 
     }
 
-    public void forwardButtonActionPerformed(ScoringBean scoringBean) {
+    public void forwardButtonActionPerformed(CurrentTravellerBean bean) {
         logger.debug("fwd");
-        navigateTraveller(scoringBean, BoardId::next);
+        navigateTraveller(bean, BoardId::next);
 
     }
 
 
-    public void goButtonActionPerformed(ScoringBean scoringBean) {
+    public void goButtonActionPerformed(CurrentTravellerBean bean) {
         logger.debug("go");
 
-        navigateTraveller(scoringBean, (bd) -> bd.select(
-                parseInt(scoringBean.getNewSet()),
-                parseInt(scoringBean.getNewBoard())));
+        navigateTraveller(bean, (bd) -> bd.select(
+                parseInt(bean.getSet()),
+                parseInt(bean.getBoard())));
 
     }
 
-    public void travellerTableChangedAction(ScoringBean scoringBean,
+    public void travellerTableChangedAction(CurrentTravellerBean bean,
                                             TravellerTableModel travellerTableModel,
                                             int firstRow, int column) {
         logger.debug("travellerTableChangedAction method: " + travellerTableModel);
 
-        scoringBean.setCompletionStatus(travellerTableModel.getCompletionStatus());
-        scoringBean.setProgress(competition.getProgress());
+        bean.setCompletionStatus(travellerTableModel.getCompletionStatus());
+        bean.setProgress(competition.getProgress());
 
 
     }
@@ -184,37 +179,42 @@ public class ScoringFormActions {
         }
     }
 
-    public void compComboBoxActionPerformed(ScoringBean scoringBean) {
+    public void compComboBoxActionPerformed(CurrentCompetitionBean currentCompetitionBean) {
         logger.debug("compComboBox selection set to " + compComboBoxModel.getSelectedItem());
-        //Get selected Competition name and save key for later...
 
         //String currentCompetitionName;
         String newCompetitionSelection = (String) compComboBoxModel.getSelectedItem();
         logger.debug(newCompetitionSelection + " selected...");
 
-        displaySelectedCompetition(scoringBean);
+        currentCompetitionBean.setSelectedCompetitionName(newCompetitionSelection);
 
-        //Fetch newly chosen Competition.
-        logger.debug("...fetching " + newCompetitionSelection);
-        competition = dataStore.getCompetition(newCompetitionSelection);
-
+        if (newCompetitionSelection==null){
+            competition = new Competition();
+        }
+        /*scoringBean.setCurrentNoPairs(competition.getNoPairs());
+        scoringBean.setCurrentSets(competition.getNoSets());
+        scoringBean.setNewBoardsPerSet(competition.getNoBoardsPerSet());*/
+        displaySelectedCompetition(currentCompetitionBean);
 
     }
 
-    public void addCompActionPerformed(ScoringBean scoringBean) {
+    public void addCompActionPerformed(NewCompetitionBean currentTravellerBean) {
         logger.debug("Add...");
 
-        String newCompetitionName = scoringBean.getNewCompetitionName();
+        String newCompetitionName = currentTravellerBean.getNewCompetitionName();
 
         //Create new empty Competition and save.
         logger.debug("...adding " + newCompetitionName);
 
         Competition newCompetition = new Competition();
-        newCompetition.setCompetitionName(scoringBean.getNewCompetitionName());
-        newCompetition.setNoSets(parseInt(scoringBean.getNewSets()));
-        newCompetition.setNoBoardsPerSet(parseInt(scoringBean.getNewBoardsPerSet()));
-        newCompetition.setNoPairs(parseInt(scoringBean.getNewNoPairs()));
+        newCompetition.setCompetitionName(currentTravellerBean.getNewCompetitionName());
+        newCompetition.setNoSets(parseInt(currentTravellerBean.getNewSets()));
+        newCompetition.setNoBoardsPerSet(parseInt(currentTravellerBean.getNewBoardsPerSet()));
+        newCompetition.setNoPairs(parseInt(currentTravellerBean.getNewNoPairs()));
         newCompetition.initialise();
+
+        //scoringBean.setCurrentSets(newCompetition.getNoSets());
+
 
         dataStore.persist(newCompetition);
 
@@ -229,17 +229,17 @@ public class ScoringFormActions {
         logger.debug(logLine);
     }
 
-    public void deleteCompActionPerformed(ScoringBean scoringBean) {
-        logger.debug("Deleting..." + scoringBean.getSelectedCompetitionName());
+    public void deleteCompActionPerformed(String name) {
+        logger.debug("Deleting..." + name);
 
-        dataStore.delete(scoringBean.getSelectedCompetitionName());
+        dataStore.delete(name);
         competition = new Competition();
 
-        compComboBoxModel.removeElement(scoringBean.getSelectedCompetitionName());
+        compComboBoxModel.removeElement(name);
 
     }
 
-    public void clearButtonActionPerformed(ScoringBean scoringBean) {
+    public void clearButtonActionPerformed(CurrentTravellerBean currentTravellerBean) {
         logger.debug("Clear");
 
         Traveller displayedTraveller = travellerTableModel.getTraveller();
@@ -252,11 +252,11 @@ public class ScoringFormActions {
             dataStore.persist(competition);
         }
         //travellerTableModel.setTraveller(traveller);
-        scoringBean.setCompletionStatus(travellerTableModel.getCompletionStatus());
-        scoringBean.setProgress(competition.getProgress());
+        currentTravellerBean.setCompletionStatus(travellerTableModel.getCompletionStatus());
+        currentTravellerBean.setProgress(competition.getProgress());
     }
 
-    private void navigateTraveller(ScoringBean scoringBean, Function<BoardId, BoardId> navigateTo) {
+    private void navigateTraveller(CurrentTravellerBean currentTravellerBean, Function<BoardId, BoardId> navigateTo) {
         //Save current Traveller.
         saveTraveller();
 
@@ -267,10 +267,10 @@ public class ScoringFormActions {
 
         displayTraveller(newBoardId);
 
-        scoringBean.setNewSet(Integer.toString(newBoardId.getSet()));
-        scoringBean.setNewBoard(Integer.toString(newBoardId.getBoard()));
-        scoringBean.setCompletionStatus(travellerTableModel.getCompletionStatus());
-        scoringBean.setProgress(competition.getProgress());
+        currentTravellerBean.setSet(Integer.toString(newBoardId.getSet()));
+        currentTravellerBean.setBoard(Integer.toString(newBoardId.getBoard()));
+        currentTravellerBean.setCompletionStatus(travellerTableModel.getCompletionStatus());
+        currentTravellerBean.setProgress(competition.getProgress());
 
     }
 
