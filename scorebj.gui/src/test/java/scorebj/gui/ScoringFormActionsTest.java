@@ -48,10 +48,10 @@ class ScoringFormActionsTest {
     @Test
     @Disabled
     void backButtonActionPerformed() {
-        compBean.setNewCompetitionName("Test Competition 1");
-        compBean.setNewSets("5");
-        compBean.setNewBoardsPerSet("16");
-        compBean.setNewNoPairs("10");
+        compBean.setSelectedCompetitionName("Test Competition 1");
+        compBean.setCurrentSets("5");
+        compBean.setCurrentBoardsPerSet("16");
+        compBean.setCurrentNoPairs("10");
         travellerBean.setBoard("3");
         travellerBean.setSet("4");
 
