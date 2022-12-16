@@ -287,7 +287,7 @@ public class ScoringForm {
         NewCompetitionBean newCompetitionBean = new NewCompetitionBean();
 
         if (compComboBoxModel.getSize() > 0) {
-            //compComboBox.setSelectedIndex(0);
+            compComboBox.setSelectedIndex(0);
             actions.compComboBoxActionPerformed(currentCompetitionBean);
         }
         actions.goButtonActionPerformed(currentTravellerBean);
