@@ -40,15 +40,21 @@ public class Results {
 
         try {
             result.printDetails(detailsFile);
+            logger.info(detailsFile.getAbsolutePath());
             result.printSummary(summaryFile);
+            logger.info(summaryFile.getAbsolutePath());
             result.printMatrix(matrixFile);
+            logger.info(matrixFile.getAbsolutePath());
             result.createResultsSpreadsheet(outputXlsxFile);
+            logger.info(outputXlsxFile);
             PrintWriter travellersOutput = new PrintWriter(travellersFile);
+
 
             for (String line : allTravellerLines) {
                 travellersOutput.println(line);
             }
             travellersOutput.close();
+            logger.info(travellersFile.getAbsolutePath());
 
 
         } catch (IOException e) {
