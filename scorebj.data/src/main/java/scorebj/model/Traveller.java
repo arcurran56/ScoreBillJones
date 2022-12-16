@@ -102,7 +102,7 @@ public class Traveller {
 
     public List<String> toStringList(){
         List<String> stringList = new ArrayList<>(5);
-        StringBuilder textLine = new StringBuilder("NS Pair,EW Pair,Contract,By,Tricks,Score NS,Score EW,MP NS,MP EW");
+        StringBuilder textLine = new StringBuilder("NS Pair,EW Pair,Contract,By,Tricks,Score NS,Score EW,MP NS,MP EW,NS MP O/R,EW MP O/R");
         stringList.add(textLine.toString());
         for (ScoreLine scoreLine: scoreLines){
             textLine = new StringBuilder();
@@ -122,7 +122,11 @@ public class Traveller {
                     .append(",")
                     .append(scoreLine.getNsMPs())
                     .append(",")
-                    .append(scoreLine.getEwMPs());
+                    .append(scoreLine.getEwMPs())
+                    .append(",")
+                    .append(scoreLine.getNsOverride())
+                    .append(",")
+                    .append(scoreLine.getEwOverride());
             stringList.add(textLine.toString());
 
         }
