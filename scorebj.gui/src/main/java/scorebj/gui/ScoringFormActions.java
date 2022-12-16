@@ -242,9 +242,8 @@ public class ScoringFormActions {
     public void clearButtonActionPerformed(CurrentTravellerBean currentTravellerBean) {
         logger.debug("Clear");
 
+        travellerTableModel.clear();
         Traveller displayedTraveller = travellerTableModel.getTraveller();
-        displayedTraveller.clear();
-        travellerTableModel.setTraveller(displayedTraveller);
         BoardId board = displayedTraveller.getBoardId();
 
         if (competition != null) {

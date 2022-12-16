@@ -93,12 +93,13 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     public void set(int index, Object value) {
         Object oldVal = entry[index];
         entry[index] = value;
-        if (index == Columns.CONTRACT.ordinal() && "ALL".equals(value.toString())) {
-            entry[Columns.PLAYED_BY.ordinal()] = Direction.PASS;
-            entry[Columns.TRICKS.ordinal()] = 0;
+        if (value!=null) {
+            if (index == Columns.CONTRACT.ordinal() && "ALL".equals(value.toString())) {
+                entry[Columns.PLAYED_BY.ordinal()] = Direction.PASS;
+                entry[Columns.TRICKS.ordinal()] = 0;
+            }
         }
-        if (index <= Columns.TRICKS.ordinal()) ;
-        pcs.firePropertyChange("entry", oldVal, value);
+        if (index <= Columns.TRICKS.ordinal()) pcs.firePropertyChange("entry", oldVal, value);
     }
 
     public Integer getNsPair() {

@@ -85,6 +85,19 @@ public class TravellerTableModel extends AbstractTableModel {
         return boardId.clone();
     }
 
+    public void clear() {
+        for (ScoreLine sl: travellerTable) {
+            for (int i=0; i<editableColumns.length; i++){
+                if (editableColumns[i]){
+                    sl.set(i,null);
+                }
+            }
+        }
+
+        TableModelEvent event = new TableModelEvent(this);
+        fireTableChanged(event);
+    }
+
     private static class Matchup {
         Integer nsPair;
         Integer ewPair;

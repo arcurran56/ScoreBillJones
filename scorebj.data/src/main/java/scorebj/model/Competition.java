@@ -133,10 +133,12 @@ public class Competition {
         for (Traveller t : travellers) {
             if (t.isComplete()) completionCount++;
         }
-        return " " + completionCount +
+        String msg = " " + completionCount +
                 "/" +
                 travellers.size() +
                 " complete";
+        logger.debug(msg);
+        return msg;
     }
     public String toString(){
         return "Competition: " + competitionName

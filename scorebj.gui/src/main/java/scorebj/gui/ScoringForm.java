@@ -26,8 +26,6 @@ public class ScoringForm {
     private final JFrame frame = new JFrame("Scoring Bill Jones");
     private final DefaultComboBoxModel<String> compComboBoxModel = new DefaultComboBoxModel<>();
 
-    private final CurrentTravellerBean scoringBean = new CurrentTravellerBean();
-
     private JPanel mainPanel;
     private JPanel buttonPanel;
     private JPanel infoPanel;
@@ -232,11 +230,7 @@ public class ScoringForm {
                 String selectedCompetitionName = (String) compComboBox.getSelectedItem();
 
                 actions.deleteCompActionPerformed(selectedCompetitionName);
-                //travellerTableModel.setRowCount(savedTraveller.getScoreLines().size());
 
-/*                if (compComboBox.getItemCount() > 0) {
-                    compComboBox.setSelectedIndex(0);
-            }*/
                 logger.debug("...repaint after competition deleted");
                 mainPanel.repaint();
             }
@@ -251,7 +245,10 @@ public class ScoringForm {
                         + " from "
                         + e.getSource());
 
-                actions.clearButtonActionPerformed(scoringBean);
+                CurrentTravellerBean currentTravellerBean = new CurrentTravellerBean();
+                getData(currentTravellerBean);
+                actions.clearButtonActionPerformed(currentTravellerBean);
+                setData(currentTravellerBean);
 
                 logger.debug("...repaint after clear");
 
