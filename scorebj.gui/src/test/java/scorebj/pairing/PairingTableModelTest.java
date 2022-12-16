@@ -45,6 +45,7 @@ class PairingTableModelTest {
     @Test
     void setValueAt() {
         ptm.setValueAt("I&J",3,1);
+        ptm.setValueAt("G&H",4,1);
         assertEquals("I&J", ptm.getValueAt(3,1));
     }
 
@@ -79,7 +80,11 @@ class PairingTableModelTest {
     @Test
     void getValueAt() {
         assertEquals(3, ptm.getValueAt(2,0));
-
         assertEquals("C&D", ptm.getValueAt(1,1));
+        assertEquals("", ptm.getValueAt(4,1));
+    }
+    @Test
+    public void testToString(){
+        assertEquals("PairingTableModel: 5 (1 blanks).", ptm.toString());
     }
 }

@@ -56,23 +56,25 @@ public class PairingTableModel extends AbstractTableModel {
     }
 
     public void setNoPairs(int noPairs) {
+        logger.debug("Initialising pairings...");
         this.noPairs = noPairs;
         pairings = new ArrayList<>(noPairs);
         for (int i = 0; i<noPairs; i++) {
             pairings.add("");
         }
-        fireTableDataChanged();
+        logger.debug("..done.");
     }
 
     public void setPairings(List<String> pairings) {
-        logger.debug("Setting pairings...");
+        logger.debug("Setting " + noPairs + " pairings from " + pairings.size() + "...");
         for (int i=0; i<noPairs; i++){
             if (i< pairings.size()) {
                 this.pairings.set(i, pairings.get(i));
             }
             else { this.pairings.set(i, "");}
         }
-        fireTableDataChanged();
+
+        //fireTableDataChanged();
     }
 
     @Override
@@ -97,5 +99,21 @@ public class PairingTableModel extends AbstractTableModel {
 
     public List<String> getPairings() {
         return pairings;
+    }
+
+    public String toString(){
+        int blankCount = 0;
+        for (String p: pairings){
+            if ( p==null || "".equals(p)){
+                blankCount++;
+            }
+        }
+        StringBuilder builder = new StringBuilder("PairingTableModel: " )
+                .append(noPairs)
+                .append(" (")
+                .append(blankCount)
+                .append(" blanks).");
+        logger.debug(builder);
+        return builder.toString();
     }
 }
