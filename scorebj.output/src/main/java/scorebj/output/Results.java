@@ -17,7 +17,7 @@ public class Results {
     }
 
     public void save(Competition competition) throws DataStoreException {
-        logger.debug("Producing results...");
+        logger.debug("Publishing results...");
         int noPairs = competition.getNoPairs();
         int noSets = competition.getNoSets();
         int noBoardsPerSet = competition.getNoBoardsPerSet();

@@ -50,6 +50,7 @@ public class Result {
         int ewPair;
         int nsMPs;
         int ewMPs;
+
         BoardId boardId = new BoardId(noSets, noBoardsPerSet);
 
         StringBuilder logBuilder = new StringBuilder()
@@ -70,8 +71,9 @@ public class Result {
                             && scoreLine.getEwMPs() != null) {
                         nsPair = scoreLine.getNsPair();
                         ewPair = scoreLine.getEwPair();
-                        nsMPs = scoreLine.getNsMPs();
-                        ewMPs = scoreLine.getEwMPs();
+
+                        nsMPs = scoreLine.getNsOverride()==null?scoreLine.getNsMPs():scoreLine.getNsOverride();
+                        ewMPs = scoreLine.getEwOverride()==null?scoreLine.getEwMPs():scoreLine.getEwOverride();
 
                         logBuilder = new StringBuilder()
                                 .append(nsPair)
@@ -80,7 +82,8 @@ public class Result {
                                 .append(" ")
                                 .append(nsMPs)
                                 .append(" ")
-                                .append(ewMPs);
+                                .append(ewMPs)
+                                .append(" ");
 
                         logger.debug(logBuilder);
 
