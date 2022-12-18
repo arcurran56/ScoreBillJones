@@ -27,8 +27,8 @@ public class Traveller {
     }
 
      public Traveller(){
-        throw new RuntimeException();
-    }
+        this(new BoardId(1,1),1);
+     }
     public Traveller(BoardId boardId, int size) {
         this.size = size;
         this.boardId = boardId;

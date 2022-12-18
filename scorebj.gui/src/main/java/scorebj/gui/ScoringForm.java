@@ -287,6 +287,8 @@ public class ScoringForm {
             compComboBox.setSelectedIndex(0);
             actions.compComboBoxActionPerformed(currentCompetitionBean);
         }
+
+
         actions.goButtonActionPerformed(currentTravellerBean);
         setData(currentCompetitionBean);
         setData(newCompetitionBean);

@@ -20,9 +20,9 @@ public class Competition {
     private final List<Traveller> travellers = new ArrayList<>(100);
 
     public Competition() {
-        //Traveller defaultTraveller = new Traveller(0);
+        Traveller defaultTraveller = new Traveller();
         //defaultTraveller.setBoardId(new BoardId(1, 1));
-        //travellers.add(0, defaultTraveller);
+        travellers.add(0, defaultTraveller);
     }
 
     public String getCompetitionName() {

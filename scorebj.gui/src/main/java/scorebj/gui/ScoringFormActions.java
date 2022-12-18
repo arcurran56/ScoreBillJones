@@ -48,6 +48,8 @@ public class ScoringFormActions {
         this.pairingTableModel = pairingTableModel;
         this.compComboBoxModel = compComboBoxModel;
 
+        competition = new Competition();
+
         createDataStore();
 
     }
