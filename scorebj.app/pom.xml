@@ -109,12 +109,12 @@
                             </opts>
                         </jre>
                         <versionInfo>
-                            <fileVersion>2.1.0.0</fileVersion>
-                            <txtFileVersion>2.1.0.0</txtFileVersion>
+                            <fileVersion>3.0.0.0</fileVersion>
+                            <txtFileVersion>3.0.0.0</txtFileVersion>
                             <fileDescription>Score Bill Jones</fileDescription>
                             <copyright>Alan Curran</copyright>
-                            <productVersion>2.1.0.0</productVersion>
-                            <txtProductVersion>2.1.0.0</txtProductVersion>
+                            <productVersion>3.0.0.0</productVersion>
+                            <txtProductVersion>3.0.0.0</txtProductVersion>
                             <productName>ScoreBillJones</productName>
                             <companyName/>
                             <internalName>ScoreBillJones</internalName>
