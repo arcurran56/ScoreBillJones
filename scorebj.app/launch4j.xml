@@ -2,18 +2,22 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
-  <jar>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\scorebj.app-2.1-SNAPSHOT-jar-with-dependencies.jar</jar>
+  <jar>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\scorebj.app-3.0-SNAPSHOT-jar-with-dependencies.jar</jar>
   <outfile>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\ScoreBillJones.exe</outfile>
   <errTitle>ScoreBillJones - Error</errTitle>
-  <cmdLine/>
+  <cmdLine>--l4j-debug</cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download </downloadUrl>
-  <supportUrl/>
+  <supportUrl></supportUrl>
   <stayAlive>true</stayAlive>
   <restartOnCrash>false</restartOnCrash>
-  <manifest>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\ScoreBillJones.exe.manifest</manifest>
+  <manifest>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\ScoreBillJones.exe.manifest</manifest>
   <icon>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\Google-Noto-Emoji-Activities-52775-club-suit.ico</icon>
+  <classPath>
+    <mainClass>scorebj.gui.ScoringForm</mainClass>
+    <cp>scorebj.app-3.0-SNAPSHOT-jar-with-dependencies</cp>
+  </classPath>
   <jre>
     <path>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.jre\target\maven-jlink\classifiers\jre</path>
     <bundledJre64Bit>true</bundledJre64Bit>
@@ -27,12 +31,12 @@
     <opt>-Dlaunch4j.exedir=%EXEDIR% --add-opens java.base/java.io=ALL-UNNAMED</opt>
   </jre>
   <versionInfo>
-    <fileVersion>2.1.0.0</fileVersion>
-    <txtFileVersion>2.1.0.0</txtFileVersion>
+    <fileVersion>3.0.0.0</fileVersion>
+    <txtFileVersion>3.0.0.0</txtFileVersion>
     <fileDescription>Score Bill Jones</fileDescription>
     <copyright>Alan Curran</copyright>
-    <productVersion>2.1.0.0</productVersion>
-    <txtProductVersion>2.1.0.0</txtProductVersion>
+    <productVersion>3.0.0.0</productVersion>
+    <txtProductVersion>3.0.0.0</txtProductVersion>
     <productName>ScoreBillJones</productName>
     <companyName/>
     <internalName>ScoreBillJones</internalName>

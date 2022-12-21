@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <File name="LogFile" fileName="${env:userprofile}\scorebj\scorebj-app.log">
-            <PatternLayout pattern="%d [%t] %-5level %logger{36} - %msg%n"/>
+        <File name="LogFile" fileName="scorebj-app.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </File>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
     </Appenders>
     <Loggers>
+        <Logger name="scorebj.model" level="info" additivity="false">
+            <AppenderRef ref="LogFile"/>
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
         <Root level="debug">
             <AppenderRef ref="LogFile"/>
+            <AppenderRef ref="STDOUT"/>
         </Root>
     </Loggers>
 </Configuration>

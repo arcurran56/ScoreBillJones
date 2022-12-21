@@ -2,23 +2,19 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1 https://maven.apache.org/xsd/assembly-2.1.1.xsd">
     <!-- TODO: a jarjar format would be better -->
-    <id>jar-with-dependencies</id>
+    <id>distrib</id>
     <formats>
-        <format>jar</format>
+        <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
         <dependencySet>
-            <outputDirectory>/</outputDirectory>
-            <useProjectArtifact>true</useProjectArtifact>
-            <unpack>true</unpack>
-            <scope>runtime</scope>
-        </dependencySet>
-        <dependencySet>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>jre</outputDirectory>
+            <includes>
+                <include>*:*:*:jre</include>
+            </includes>
             <useProjectArtifact>false</useProjectArtifact>
             <unpack>true</unpack>
-            <scope>system</scope>
         </dependencySet>
     </dependencySets>
 </assembly>
