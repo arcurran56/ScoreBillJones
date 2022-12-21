@@ -5,7 +5,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.table.TableColumnModel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -63,7 +62,6 @@ class TravellerTest {
                 }
             });
         }
-        ;
 
         list.get(0).setNsPair(7);
         list.get(0).setEwPair(8);
@@ -115,7 +113,6 @@ class TravellerTest {
                 }
             });
         }
-        ;
 
         list.get(0).setNsPair(7);
         list.get(0).setEwPair(8);

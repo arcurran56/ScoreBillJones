@@ -9,7 +9,6 @@ import scorebj.traveller.TravellerTableModel;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import java.util.List;
 import java.util.*;
 import java.util.function.Function;
 
@@ -41,7 +40,7 @@ public class ScoringFormActions {
 
     public void init(TravellerTableModel travellerTableModel,
                      PairingTableModel pairingTableModel,
-                     DefaultComboBoxModel<String> compComboBoxModel) throws DataStoreException {
+                     DefaultComboBoxModel<String> compComboBoxModel) {
 
         logger.debug("Initialisation...");
         this.travellerTableModel = travellerTableModel;
@@ -193,9 +192,6 @@ public class ScoringFormActions {
         if (newCompetitionSelection==null){
             competition = new Competition();
         }
-        /*scoringBean.setCurrentNoPairs(competition.getNoPairs());
-        scoringBean.setCurrentSets(competition.getNoSets());
-        scoringBean.setNewBoardsPerSet(competition.getNoBoardsPerSet());*/
         displaySelectedCompetition(currentCompetitionBean);
 
     }

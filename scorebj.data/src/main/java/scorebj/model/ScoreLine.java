@@ -75,8 +75,6 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         NS_OVERRIDE, EW_OVERRIDE
     }
 
-    ;
-
     private final Object[] entry = new Object[NO_COLUMNS];
 
     public enum Direction {N, S, E, W, PASS}

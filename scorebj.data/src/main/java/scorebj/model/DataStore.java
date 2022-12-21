@@ -1,7 +1,6 @@
 package scorebj.model;
 
 import java.io.*;
-import java.net.URISyntaxException;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.persistence.FilePersistenceStrategy;

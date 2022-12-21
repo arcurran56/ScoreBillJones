@@ -3,11 +3,9 @@ package scorebj.output;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import scorebj.model.Competition;
 import scorebj.model.DataStoreException;
-import scorebj.output.DataStore;
 
 import java.io.File;
 import java.io.FileNotFoundException;
