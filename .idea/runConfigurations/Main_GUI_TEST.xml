@@ -5,7 +5,7 @@
     <option name="MAIN_CLASS_NAME" value="scorebj.gui.ScoringForm" />
     <module name="scorebj.gui" />
     <option name="PROGRAM_PARAMETERS" value="test" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/target/classes" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scorebj.gui/target" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
