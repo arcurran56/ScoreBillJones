@@ -70,77 +70,25 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.8</version>
+                <executions>
+                    <execution>
+                        <id>fetch-guidesigner</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <goal>unpack</goal>
-                    <artifactItems>
-                        <artifactItem>com.intellij:forms_rt:2022.1.3</artifactItem>
-                    </artifactItems>
+                    <artifact>com.intellij:forms_rt:2022.1.3:jar</artifact>
                     <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                    <excludes>**/*Form.*</excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <configuration>
-                            <target name="compile-gui">
-                                <property name="idea.home"
-                                          value="C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2019.2"/>
-                                <property name="compile.classpath" refid="maven.compile.classpath"/>
-                                <path id="javac2.classpath">
-                                    <!--pathelement location="${idea.home}/plugins/java/lib/*"/-->
-                                    <fileset dir="${idea.home}/lib">
-                                        <include name="*.jar"/>
-                                    </fileset>
-                                    <fileset dir="${idea.home}/plugins/java/lib">
-                                        <include name="*.jar"/>
-                                    </fileset>
-                                </path>
-                                <path id="javac2.compile.classpath">
-                                    <!--suppress UnresolvedMavenProperty -->
-                                    <pathelement path="${compile.classpath}"/>
-                                    <pathelement location="${idea.home}/plugins/java/lib/javac2.jar"/>
-                                    <pathelement location="${idea.home}/lib/"/>
-                                </path>
-                                <property name="javac2.classpath.text" refid="javac2.classpath"/>
-                                <property name="javac2.compile.classpath.text" refid="javac2.compile.classpath"/>
-                                <!--suppress UnresolvedMavenProperty -->
-                                <echo>Javac2 task classpath: ${javac2.classpath.text}</echo>
-                                <!--suppress UnresolvedMavenProperty -->
-                                <echo>Javac2 compile classpath: ${javac2.compile.classpath.text}</echo>
-                                <taskdef name="javac2" classname="com.intellij.ant.Javac2"
-                                         classpathref="javac2.classpath"/>
-                                <!--taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/-->
-                                <mkdir dir="${project.build.outputDirectory}"/>
-                                <javac2 srcdir="${project.build.sourceDirectory}"
-                                        destdir="${project.build.outputDirectory}"
-                                        source="17"
-                                        target="17"
-                                        includes="**/*Form.form,**/*Form.java"
-                                        classpathref="javac2.compile.classpath"
-                                        includeAntRuntime="false"
-                                        verbose="true"
-                                        fork="true"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -157,6 +105,16 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <main-class>
+                                scorebj.gui.ScoringForm
+                            </main-class>
+                        </manifest>
+                        <manifestEntries>
+                            <Multi-Release>true</Multi-Release>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>
