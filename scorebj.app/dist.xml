@@ -2,11 +2,22 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1 https://maven.apache.org/xsd/assembly-2.1.1.xsd">
     <!-- TODO: a jarjar format would be better -->
-    <id>distrib</id>
+    <id>dist</id>
     <formats>
         <format>zip</format>
     </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>ScoreBillJones</baseDirectory>
+    <fileSets>
+        <fileSet>
+            <useDefaultExcludes>false</useDefaultExcludes>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**/ScoreBillJones.exe</include>
+            </includes>
+        </fileSet>
+    </fileSets>
     <dependencySets>
         <dependencySet>
             <outputDirectory>jre</outputDirectory>
