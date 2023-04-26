@@ -45,7 +45,7 @@ class TravellerTest {
         boardId3.setSet(2);
         boardId3.setBoard(2);
 
-        completeTraveller = new Traveller(boardId1cv, 5);
+        completeTraveller = new Traveller(boardId1cv, 6);
 
         List<ScoreLine> list = completeTraveller.getScoreLines();
         for (ScoreLine sl : list) {
@@ -68,38 +68,42 @@ class TravellerTest {
         list.get(0).setContract(new Contract("3H*"));
         list.get(0).setPlayedBy(ScoreLine.Direction.E);
         list.get(0).setTricks(8);
-        //NS 200; MP 7-1
+        //NS 200; MP 9-1
 
         list.get(1).setNsPair(1);
         list.get(1).setEwPair(2);
         list.get(1).setContract(new Contract("3H*"));
         list.get(1).setPlayedBy(ScoreLine.Direction.E);
         list.get(1).setTricks(8);
-        //NS 200; MP 7-1
+        //NS 200; MP 9-1
 
         list.get(2).setNsPair(3);
         list.get(2).setEwPair(4);
         list.get(2).setContract(new Contract("3H"));
         list.get(2).setPlayedBy(ScoreLine.Direction.E);
         list.get(2).setTricks(8);
-        //NS 100; MP 4-4
+        //NS 100; MP 6-4
 
         list.get(3).setNsPair(5);
         list.get(3).setEwPair(6);
         list.get(3).setContract(new Contract("3H*"));
         list.get(3).setPlayedBy(ScoreLine.Direction.E);
         list.get(3).setTricks(9);
-        //EW 730 MP: 0-8
+        //EW 730 MP: 0-10
 
         list.get(4).setNsPair(3);
         list.get(4).setEwPair(4);
         list.get(4).setContract(new Contract("3S"));
         list.get(4).setPlayedBy(ScoreLine.Direction.N);
         list.get(4).setTricks(8);
-        //EW 50, MP: 2-6
+        //EW 50, MP: 4-6
 
+        list.get(5).setNsPair(5);
+        list.get(5).setEwPair(6);
+        list.get(5).setContract(new Contract("X"));
+        //EW 56 MP: 2-8
 
-        incompleteTraveller = new Traveller(boardId1inv, 5);
+        incompleteTraveller = new Traveller(boardId1inv, 4);
 
         list = incompleteTraveller.getScoreLines();
         for (ScoreLine sl : list) {

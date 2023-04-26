@@ -47,29 +47,47 @@ public class Contract {
 
     private boolean passedOut = false;
 
+    private boolean skipped = false;
+
+    public boolean isSkipped() {
+        return skipped;
+    }
+
+    public boolean isPassedOut() {
+        return passedOut;
+    }
+
     public Contract(){
         this("");
     }
     public Contract(String contractString) {
         this.contractString = contractString;
         int length = contractString.length();
-        if (length<2 || "ALL".equals(contractString) ) {
+        if ("AP".equals(contractString) ) {
             contractedTricks = 0;
             trumpSuit = null;
             doubledStatus = DoubledStatus.UNDOUBLED;
             passedOut = true;
         }
         else {
-            contractedTricks = Integer.parseUnsignedInt(String.valueOf(contractString.charAt(0))) + 6;
-            trumpSuit = Suit.lookUp(String.valueOf(contractString.charAt(1)));
+            if ("X".equals(contractString) ) {
+                contractedTricks = 0;
+                trumpSuit = null;
+                doubledStatus = DoubledStatus.UNDOUBLED;
+                skipped = true;
+            }
+            else {
+                contractedTricks = Integer.parseUnsignedInt(String.valueOf(contractString.charAt(0))) + 6;
+                trumpSuit = Suit.lookUp(String.valueOf(contractString.charAt(1)));
 
-            doubledStatus = DoubledStatus.UNDOUBLED;
-            if (length == 3 && "*".equals(String.valueOf(contractString.charAt(2))))
-                doubledStatus = DoubledStatus.DOUBLED;
-            if (length == 4 && "*".equals(String.valueOf(contractString.charAt(2)))
-                    && "*".equals(String.valueOf(contractString.charAt(3)))) doubledStatus = DoubledStatus.REDOUBLED;
-
-        }
+                doubledStatus = DoubledStatus.UNDOUBLED;
+                if (length == 3 && "*".equals(String.valueOf(contractString.charAt(2))))
+                    doubledStatus = DoubledStatus.DOUBLED;
+                if (length == 4 && "*".equals(String.valueOf(contractString.charAt(2)))
+                        && "*".equals(String.valueOf(contractString.charAt(3))))
+                    doubledStatus = DoubledStatus.REDOUBLED;
+                }
+            }
     }
 
 
@@ -81,6 +99,7 @@ public class Contract {
         int score = 0;
 
         if (passedOut) return score;
+        if (skipped) return score;
 
         if (tricksWon>=contractedTricks) {
 

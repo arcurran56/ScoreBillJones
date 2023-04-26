@@ -319,6 +319,29 @@ public class TravellerTableModel extends AbstractTableModel {
         int netScore2;
 
         logger.debug("Traveller completed:");
+
+        //Check for averaging and apply as required.
+        int playedCount = 0;
+        for (ScoreLine scoreLine1 : travellerTable) {
+            if(scoreLine1.isSkipped()) {
+                int aveNS = 0;
+                int aveEW = 0;
+                for (ScoreLine scoreLine2 : travellerTable) {
+                        if(!scoreLine2.isSkipped()){
+                            aveNS += scoreLine2.getNSScore();
+                            aveEW += scoreLine2.getEWScore();
+                            playedCount++;                        }
+                }
+                if (playedCount>0){
+                    aveNS = aveNS / playedCount;
+                    aveEW = aveEW / playedCount;
+                }
+                scoreLine1.setNSScore(aveNS);
+                scoreLine1.setEWScore(aveEW);
+            }
+        }
+
+            //Compare scores to get MPs
         for (ScoreLine scoreLine1 : travellerTable) {
             int nsMPs = 0;
             int ewMPs = 0;

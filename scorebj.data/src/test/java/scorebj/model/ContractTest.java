@@ -90,4 +90,21 @@ public class ContractTest {
         assertEquals(-200, score);
 
     }
+    @Test
+    public void scoreAllPass(){
+        Contract contract = new Contract("AP");
+        int score =contract.getScore(9,true);
+        assertEquals(0, score);
+        assertTrue(contract.isPassedOut());
+
+    }
+    @Test
+    public void scoreSkipped(){
+        Contract contract = new Contract("X");
+        int score =contract.getScore(9,true);
+        assertEquals(0, score);
+        assertTrue(contract.isSkipped());
+
+    }
+
 }

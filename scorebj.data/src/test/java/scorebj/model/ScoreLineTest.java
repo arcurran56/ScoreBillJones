@@ -13,7 +13,9 @@ class ScoreLineTest {
     PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-
+            if ("blank".equals(evt.getPropertyName()) || "score".equals(evt.getPropertyName())) {
+                ((ScoreLine) evt.getSource()).setEwMPs(null);
+            }
         }
     };
     private Logger logger = LogManager.getLogger();
@@ -147,23 +149,39 @@ class ScoreLineTest {
     }
 
     @Test
-    void setOverrides() {
+    void allPass() {
         ScoreLine scoreLine = new ScoreLine();
         scoreLine.activate(propertyChangeListener);
         scoreLine.setVulnerability(BoardId.Vulnerability.NONE);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
-        scoreLine.setContract(new Contract("3H"));
+        scoreLine.setContract(new Contract("AP"));
         scoreLine.setPlayedBy(ScoreLine.Direction.E);
         scoreLine.setTricks(11);
         scoreLine.setNsMPs(2);
         scoreLine.setEwMPs(6);
-        scoreLine.setNsOverride(1);
-        scoreLine.setEwOverride(7);
 
         logger.debug(scoreLine);
-        assertEquals(1,scoreLine.getNsOverride());
-        assertEquals(7,scoreLine.getEwOverride());
+        assertEquals(0,scoreLine.getNSScore());
+        assertEquals(0,scoreLine.getEWScore());
+        assertEquals(6,scoreLine.getEwMPs());
+
+
+    }
+
+    @Test
+    void skipped() {
+        ScoreLine scoreLine = new ScoreLine();
+        scoreLine.activate(propertyChangeListener);
+        scoreLine.setVulnerability(BoardId.Vulnerability.NONE);
+        scoreLine.setNsPair(2);
+        scoreLine.setEwPair(3);
+        scoreLine.setContract(new Contract("X"));
+        scoreLine.setTricks(11);
+
+        logger.debug(scoreLine);
+        assertEquals(0,scoreLine.getNSScore());
+        assertEquals(0,scoreLine.getEWScore());
 
 
     }
