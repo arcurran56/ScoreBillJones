@@ -322,14 +322,20 @@ public class TravellerTableModel extends AbstractTableModel {
 
         //Check for averaging and apply as required.
         int playedCount = 0;
+        Integer nsScore;
+        Integer ewScore;
+
         for (ScoreLine scoreLine1 : travellerTable) {
             if(scoreLine1.isSkipped()) {
                 int aveNS = 0;
                 int aveEW = 0;
                 for (ScoreLine scoreLine2 : travellerTable) {
-                        if(!scoreLine2.isSkipped()){
-                            aveNS += scoreLine2.getNSScore();
-                            aveEW += scoreLine2.getEWScore();
+                    nsScore = scoreLine2.getNSScore();
+                    ewScore = scoreLine2.getEWScore();
+
+                        if(!scoreLine2.isSkipped() && nsScore != null && ewScore != null){
+                            aveNS += nsScore;
+                            aveEW += ewScore;
                             playedCount++;                        }
                 }
                 if (playedCount>0){
