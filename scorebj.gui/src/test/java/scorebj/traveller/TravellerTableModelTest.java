@@ -328,35 +328,35 @@ class TravellerTableModelTest {
         list.get(0).setContract(new Contract("3H*"));
         list.get(0).setPlayedBy(ScoreLine.Direction.E);
         list.get(0).setTricks(8);
-        //NS 200; MP 7-1
+        //NS 100; MP 6-2
 
         list.get(1).setNsPair(1);
         list.get(1).setEwPair(2);
         list.get(1).setContract(new Contract("3H*"));
         list.get(1).setPlayedBy(ScoreLine.Direction.E);
         list.get(1).setTricks(8);
-        //NS 200; MP 7-1
+        //NS 100; MP 6-2
 
         list.get(2).setNsPair(3);
         list.get(2).setEwPair(4);
         list.get(2).setContract(new Contract("3H"));
         list.get(2).setPlayedBy(ScoreLine.Direction.E);
         list.get(2).setTricks(8);
-        //NS 100; MP 4-4
+        //NS 50; MP 3-5
 
         list.get(3).setNsPair(5);
         list.get(3).setEwPair(6);
         list.get(3).setContract(new Contract("3H*"));
         list.get(3).setPlayedBy(ScoreLine.Direction.E);
         list.get(3).setTricks(9);
-        //EW 730 MP: 0-8
+        //EW 530 MP: 1-7
 
-        list.get(4).setNsPair(3);
-        list.get(4).setEwPair(4);
-        list.get(4).setContract(new Contract("3S"));
+        list.get(4).setNsPair(9);
+        list.get(4).setEwPair(10);
+        list.get(4).setContract(new Contract("X"));
         list.get(4).setPlayedBy(ScoreLine.Direction.N);
         list.get(4).setTricks(8);
-        //EW 50, MP: 2-6
+        //EW 0, MP: 4-4
 
 
         incompleteTraveller = new Traveller(boardIds1b1, 5);
@@ -387,7 +387,7 @@ class TravellerTableModelTest {
 
         list.get(3).setNsPair(5);
         list.get(3).setEwPair(6);
-        list.get(3).setContract(new Contract("3H*"));
+        list.get(3).setContract(new Contract("3H"));
         list.get(3).setPlayedBy(ScoreLine.Direction.E);
         list.get(3).setTricks(9);
 
@@ -407,5 +407,22 @@ class TravellerTableModelTest {
 
    @Test
     void testGetColumnClass() {
+    }
+
+    @Test
+    void allocateMPs(){
+        List<ScoreLine> list = completeTraveller.getScoreLines();
+        assertAll("Check results", () -> {
+            assertEquals(100, list.get(0).getNSScore());
+            assertEquals(6, list.get(0).getNsMPs());
+            assertEquals(2, list.get(0).getEwMPs());
+
+            assertEquals(530, list.get(3).getEWScore());
+            assertEquals(1, list.get(3).getNsMPs());
+            assertEquals(7, list.get(3).getEwMPs());
+
+            assertEquals(4, list.get(4).getNsMPs());
+            assertEquals(4, list.get(4).getEwMPs());
+        } );
     }
 }

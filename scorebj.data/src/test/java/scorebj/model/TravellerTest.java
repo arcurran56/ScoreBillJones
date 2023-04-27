@@ -101,7 +101,7 @@ class TravellerTest {
         list.get(5).setNsPair(5);
         list.get(5).setEwPair(6);
         list.get(5).setContract(new Contract("X"));
-        //EW 56 MP: 2-8
+        //EW 56 MP: 4-4
 
         incompleteTraveller = new Traveller(boardId1inv, 4);
 
@@ -144,6 +144,7 @@ class TravellerTest {
         list.get(3).setContract(new Contract("3H*"));
         list.get(3).setPlayedBy(ScoreLine.Direction.E);
         list.get(3).setTricks(9);
+        //NS 630
 
     }
 

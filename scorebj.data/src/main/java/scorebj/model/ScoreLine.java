@@ -305,11 +305,11 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
             builder.append(o);
             builder.append("-");
         }
-        builder.append(isComplete());
+        builder.append(isComplete()?"complete":"incomplete");
         builder.append("-");
-        builder.append(isPassedOut());
+        builder.append(isPassedOut()?"passed":"contracted");
         builder.append("-");
-        builder.append(isSkipped());
+        builder.append(isSkipped()?"skipped":"played");
 
         return builder.toString();
     }
