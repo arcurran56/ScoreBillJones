@@ -16,7 +16,7 @@
   <icon>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\Google-Noto-Emoji-Activities-52775-club-suit.ico</icon>
   <classPath>
     <mainClass>scorebj.gui.ScoringForm</mainClass>
-    <cp>scorebj.app-3.0-SNAPSHOT-jar-with-dependencies</cp>
+    <cp>scorebj.app-3.2-SNAPSHOT-jar-with-dependencies</cp>
   </classPath>
   <jre>
     <path>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.jre\target\maven-jlink\classifiers\jre</path>
@@ -31,12 +31,12 @@
     <opt>-Dlaunch4j.exedir=%EXEDIR% --add-opens java.base/java.io=ALL-UNNAMED</opt>
   </jre>
   <versionInfo>
-    <fileVersion>3.0.0.0</fileVersion>
-    <txtFileVersion>3.0.0.0</txtFileVersion>
+    <fileVersion>3.2.0.0</fileVersion>
+    <txtFileVersion>3.2.0.0</txtFileVersion>
     <fileDescription>Score Bill Jones</fileDescription>
     <copyright>Alan Curran</copyright>
-    <productVersion>3.0.0.0</productVersion>
-    <txtProductVersion>3.0.0.0</txtProductVersion>
+    <productVersion>3.2.0.0</productVersion>
+    <txtProductVersion>3.2.0.0</txtProductVersion>
     <productName>ScoreBillJones</productName>
     <companyName/>
     <internalName>ScoreBillJones</internalName>

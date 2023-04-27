@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ScoreBillJones</artifactId>
         <groupId>score-bill-jones</groupId>
-        <version>3.0-SNAPSHOT</version>
+        <version>3.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

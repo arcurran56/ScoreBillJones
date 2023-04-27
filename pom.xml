@@ -7,7 +7,7 @@
     <groupId>score-bill-jones</groupId>
     <artifactId>ScoreBillJones</artifactId>
     <packaging>pom</packaging>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.2-SNAPSHOT</version>
     <modules>
         <module>scorebj.gui</module>
         <module>scorebj.data</module>
