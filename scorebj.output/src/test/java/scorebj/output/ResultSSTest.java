@@ -73,6 +73,13 @@ class ResultSSTest {
 
         List<SSRow> ssRows = resultSS.getSsRows();
 
+        List<String> ssHeaders = resultSS.getSsHeaderRow();
+
+        assertEquals("Rank", ssHeaders.get(0));
+        assertEquals("Pair", ssHeaders.get(1));
+        assertEquals("Set 1", ssHeaders.get(2));
+        assertEquals("TOTAL", ssHeaders.get(5));
+
         assertEquals("1)", ssRows.get(0).getRank());
         assertEquals("2)", ssRows.get(1).getRank());
         assertEquals("2=", ssRows.get(2).getRank());

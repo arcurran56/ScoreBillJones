@@ -282,6 +282,9 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         pcs.addPropertyChangeListener(pcl);
     }
 
+    public void recalculate() {
+        pcs.firePropertyChange("recalculate", 0, 1);
+    }
     public void removePropertyChangeListener(PropertyChangeListener pcl) {
         pcs.removePropertyChangeListener(pcl);
     }

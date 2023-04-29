@@ -278,6 +278,7 @@ public class TravellerTableModel extends AbstractTableModel {
 
             if (sl != null) {
                 sl.activate(this.propertyChangeListener);
+                sl.recalculate();
             }
         }
         rowCount = travellerTable.size();
@@ -314,7 +315,10 @@ public class TravellerTableModel extends AbstractTableModel {
         return traveller;
     }
 
-    private void allocateMPs() {
+    private void allocateMPs(){
+        allocateMPs_alg1();
+    }
+    private void allocateMPs_alg1() {
         int netScore1;
         int netScore2;
 
@@ -374,6 +378,76 @@ public class TravellerTableModel extends AbstractTableModel {
                     }
                     nsMPs += skippedCount;
                     ewMPs += skippedCount;
+                }
+
+                //scoreLine1.setComplete(true);
+            }
+            scoreLine1.setNsMPs(nsMPs);
+            scoreLine1.setEwMPs(ewMPs);
+            //scoreLine1.setComplete(true);
+            logger.debug(scoreLine1);
+        }
+        logger.debug("..done.");
+
+    }
+    private void allocateMPs_alg2() {
+        int netScore1;
+        int netScore2;
+
+        logger.debug("Traveller completed:");
+
+        //Check for averaging and apply as required.
+        int skippedCount = 0;
+        int lineCount = 0;
+
+        Integer nsScore;
+        Integer ewScore;
+
+        for (ScoreLine scoreLine : travellerTable) {
+            lineCount++;
+            if (scoreLine.isSkipped()) {
+                skippedCount++;
+            }
+        }
+
+        //Compare scores to get MPs
+        for (ScoreLine scoreLine1 : travellerTable) {
+            int nsMPs = 0;
+            int ewMPs = 0;
+            if (scoreLine1 != null) {
+                //Hand not played: apply average.
+                if (scoreLine1.isSkipped()) {
+                    nsMPs = lineCount - skippedCount - 1;
+                    ewMPs = lineCount - skippedCount - 1;
+                } else {
+                    //Hand played but check not null.
+                    if (scoreLine1.getNSScore() != null && scoreLine1.getEWScore() != null) {
+                        netScore1 = scoreLine1.getNSScore() - scoreLine1.getEWScore();
+
+                        for (ScoreLine scoreLine2 : travellerTable) {
+                            if (scoreLine2 != null) {
+                                if (scoreLine2.getNSScore() != null && scoreLine2.getEWScore() != null) {
+                                    if (scoreLine1 != scoreLine2 && !scoreLine2.isSkipped()) {
+                                        netScore2 = scoreLine2.getNSScore() - scoreLine2.getEWScore();
+                                        switch (Integer.compare(netScore1, netScore2)) {
+                                            case -1:
+                                                ewMPs = ewMPs + 2;
+                                                break;
+                                            case 0:
+                                                nsMPs++;
+                                                ewMPs++;
+                                                break;
+                                            case 1:
+                                                nsMPs = nsMPs + 2;
+                                                break;
+
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
                 }
 
               //scoreLine1.setComplete(true);

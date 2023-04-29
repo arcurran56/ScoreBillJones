@@ -2,6 +2,7 @@ package scorebj.traveller;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -410,7 +411,8 @@ class TravellerTableModelTest {
     }
 
     @Test
-    void allocateMPs(){
+    @Disabled
+    void allocateMPs1(){
         List<ScoreLine> list = completeTraveller.getScoreLines();
         assertAll("Check results", () -> {
             assertEquals(100, list.get(0).getNSScore());
@@ -423,6 +425,23 @@ class TravellerTableModelTest {
 
             assertEquals(4, list.get(4).getNsMPs());
             assertEquals(4, list.get(4).getEwMPs());
+        } );
+    }
+
+    @Test
+    void allocateMPs2(){
+        List<ScoreLine> list = completeTraveller.getScoreLines();
+        assertAll("Check results", () -> {
+            assertEquals(100, list.get(0).getNSScore());
+            assertEquals(5, list.get(0).getNsMPs());
+            assertEquals(1, list.get(0).getEwMPs());
+
+            assertEquals(530, list.get(3).getEWScore());
+            assertEquals(0, list.get(3).getNsMPs());
+            assertEquals(6, list.get(3).getEwMPs());
+
+            assertEquals(3, list.get(4).getNsMPs());
+            assertEquals(3, list.get(4).getEwMPs());
         } );
     }
 }
