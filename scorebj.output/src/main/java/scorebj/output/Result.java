@@ -300,7 +300,6 @@ public class Result {
             ssRow.setTotal(grandTotals[pair - 1]);
             resultSS.getSsRows().add(ssRow);
         }
-        resultSS.getSsHeaderRow().sort(null);
         logger.debug(resultSS.getSsRows().size() + " lines in table.");
 
         //Log debug lines.
