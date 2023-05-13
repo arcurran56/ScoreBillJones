@@ -91,6 +91,14 @@ public class ContractTest {
 
     }
     @Test
+    public void score5SV2offLC(){
+        Contract contract = new Contract("5s*");
+        int score =contract.getScore(9,true);
+        assertEquals(-500, score);
+        assertEquals("5S*", contract.toString());
+
+    }
+    @Test
     public void scoreAllPass(){
         Contract contract = new Contract("AP");
         int score =contract.getScore(9,true);
@@ -99,6 +107,13 @@ public class ContractTest {
 
     }
     @Test
+    public void scoreAllPassLC(){
+        Contract contract = new Contract("aP");
+        int score =contract.getScore(9,true);
+        assertEquals(0, score);
+        assertTrue(contract.isPassedOut());
+
+    }    @Test
     public void scoreSkipped(){
         Contract contract = new Contract("X");
         int score =contract.getScore(9,true);

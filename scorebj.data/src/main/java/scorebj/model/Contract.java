@@ -61,16 +61,16 @@ public class Contract {
         this("");
     }
     public Contract(String contractString) {
-        this.contractString = contractString;
+        this.contractString = contractString.toUpperCase();
         int length = contractString.length();
-        if ("AP".equals(contractString) ) {
+        if ("AP".equals(this.contractString) ) {
             contractedTricks = 0;
             trumpSuit = null;
             doubledStatus = DoubledStatus.UNDOUBLED;
             passedOut = true;
         }
         else {
-            if ("X".equals(contractString) ) {
+            if ("X".equals(this.contractString) ) {
                 contractedTricks = 0;
                 trumpSuit = null;
                 doubledStatus = DoubledStatus.UNDOUBLED;

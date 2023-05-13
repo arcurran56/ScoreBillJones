@@ -107,7 +107,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         Object oldVal = entry[index];
         entry[index] = value;
         if (value != null) {
-            if (index == Columns.CONTRACT.ordinal() && "ALL".equals(value.toString())) {
+            if (index == Columns.CONTRACT.ordinal() && "ALL".equals(value.toString().toUpperCase())) {
                 entry[Columns.PLAYED_BY.ordinal()] = Direction.PASS;
                 entry[Columns.TRICKS.ordinal()] = 0;
             }
