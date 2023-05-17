@@ -5,7 +5,9 @@ public class Contract {
         DIAMONDS("D",20,20),
         HEARTS("H",30,30),
         SPADES("S",30,30),
-        NO_TRUMPS("N",40,30);
+        NO_TRUMPS("N",40,30),
+        VOID("X", 0, 0);
+
         final String abbreviation;
         final int firstTrick;
         final int subsequentTricks;
