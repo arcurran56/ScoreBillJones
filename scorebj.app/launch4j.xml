@@ -2,7 +2,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
-  <jar>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\scorebj.app-3.0-SNAPSHOT-jar-with-dependencies.jar</jar>
+  <jar>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\scorebj.gui-3.2-SNAPSHOT-jar-with-dependencies.jar</jar>
   <outfile>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\ScoreBillJones.exe</outfile>
   <errTitle>ScoreBillJones - Error</errTitle>
   <cmdLine>--l4j-debug</cmdLine>
@@ -16,10 +16,10 @@
   <icon>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\Google-Noto-Emoji-Activities-52775-club-suit.ico</icon>
   <classPath>
     <mainClass>scorebj.gui.ScoringForm</mainClass>
-    <cp>scorebj.app-3.2-SNAPSHOT-jar-with-dependencies</cp>
+    <cp>scorebj.gui-3.2-SNAPSHOT-jar-with-dependencies</cp>
   </classPath>
   <jre>
-    <path>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.jre\target\maven-jlink\classifiers\jre</path>
+    <path>jre</path>
     <bundledJre64Bit>true</bundledJre64Bit>
     <bundledJreAsFallback>false</bundledJreAsFallback>
     <minVersion>12</minVersion>
@@ -38,10 +38,10 @@
     <productVersion>3.2.0.0</productVersion>
     <txtProductVersion>3.2.0.0</txtProductVersion>
     <productName>ScoreBillJones</productName>
-    <companyName/>
+    <companyName></companyName>
     <internalName>ScoreBillJones</internalName>
     <originalFilename>ScoreBillJones.exe</originalFilename>
-    <trademarks/>
+    <trademarks></trademarks>
     <language>ENGLISH_UK</language>
   </versionInfo>
 </launch4jConfig>

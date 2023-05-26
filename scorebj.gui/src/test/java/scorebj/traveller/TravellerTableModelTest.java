@@ -1,5 +1,7 @@
 package scorebj.traveller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -15,6 +17,9 @@ import scorebj.model.Traveller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
+
 
 class TravellerTableModelTest {
     Traveller emptyTravellerFill1;
@@ -322,6 +327,7 @@ class TravellerTableModelTest {
         completeTraveller = new Traveller(boardIds1b1, 5);
         travellerTableModelComplete.setTraveller(completeTraveller);
 
+        logger.debug("Complete traveller...");
         List<ScoreLine> list = completeTraveller.getScoreLines();
 
         list.get(0).setNsPair(7);
@@ -359,7 +365,7 @@ class TravellerTableModelTest {
         list.get(4).setTricks(8);
         //EW 0, MP: 4-4
 
-
+    logger.debug("Incomplete traveller...");
         incompleteTraveller = new Traveller(boardIds1b1, 5);
         travellerTableModelIncomplete.setTraveller(incompleteTraveller);
 
@@ -391,6 +397,8 @@ class TravellerTableModelTest {
         list.get(3).setContract(new Contract("3H"));
         list.get(3).setPlayedBy(ScoreLine.Direction.E);
         list.get(3).setTricks(9);
+
+        logger.debug("\n---End setUp----\n");
 
     }
 
@@ -433,15 +441,17 @@ class TravellerTableModelTest {
         List<ScoreLine> list = completeTraveller.getScoreLines();
         assertAll("Check results", () -> {
             assertEquals(100, list.get(0).getNSScore());
-            assertEquals(5, list.get(0).getNsMPs());
-            assertEquals(1, list.get(0).getEwMPs());
+            assertEquals(6, list.get(0).getNsMPs());
+            assertEquals(2, list.get(0).getEwMPs());
 
             assertEquals(530, list.get(3).getEWScore());
-            assertEquals(0, list.get(3).getNsMPs());
-            assertEquals(6, list.get(3).getEwMPs());
+            assertEquals(1, list.get(3).getNsMPs());
+            assertEquals(7, list.get(3).getEwMPs());
 
-            assertEquals(3, list.get(4).getNsMPs());
-            assertEquals(3, list.get(4).getEwMPs());
+            assertEquals(4, list.get(4).getNsMPs());
+            assertEquals(4, list.get(4).getEwMPs());
         } );
     }
+
+    private static final Logger logger = LogManager.getLogger();
 }

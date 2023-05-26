@@ -180,8 +180,9 @@ class ScoreLineTest {
         scoreLine.setTricks(11);
 
         logger.debug(scoreLine);
-        assertEquals(0,scoreLine.getNSScore());
-        assertEquals(0,scoreLine.getEWScore());
+        assertEquals(null, scoreLine.getNSScore());
+        assertEquals(null, scoreLine.getEWScore());
+        assertTrue(scoreLine.isSkipped());
 
 
     }

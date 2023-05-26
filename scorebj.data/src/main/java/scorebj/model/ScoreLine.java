@@ -22,6 +22,10 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     private boolean complete = false;
 
     public boolean isEmpty() {
+        boolean empty = true;
+        for (Object e : entry) {
+            empty = (e == null) && empty;
+        }
         return empty;
     }
 
@@ -34,19 +38,28 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         logger.debug("Property change event for, " + evt.getPropertyName() + " from " + evt.getSource().toString());
-        if (!"score".equals(evt.getPropertyName()) && !"blank".equals(evt.getPropertyName())) {
-            if (entry[Columns.CONTRACT.ordinal()] != null) {
+
+        String command = evt.getPropertyName();
+
+        switch (command) {
+            case "score":
+                break;
+
+            case "blank":
+                break;
+
+            case "CONTRACT", "PLAYED_BY", "TRICKS":
                 scoreHand();
                 pcs.firePropertyChange("score", 0, 1);
-            } else {
-                entry[Columns.NS_SCORE.ordinal()] = null;
-                entry[Columns.EW_SCORE.ordinal()] = null;
-                entry[Columns.NS_MPS.ordinal()] = null;
-                entry[Columns.EW_MPS.ordinal()] = null;
-                pcs.firePropertyChange("blank", 0, 1);
-            }
+                break;
+
+            case "recalculate":
+                break;
+
+            default: break;
         }
-        empty = false;
+
+
     }
 
     private BoardId.Vulnerability vulnerability = BoardId.Vulnerability.NONE;
@@ -72,16 +85,14 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         Contract contract = getContract();
         if (contract != null) {
             return getContract().isSkipped();
-        }
-        else return false;
+        } else return false;
     }
 
     public boolean isPassedOut() {
         Contract contract = getContract();
         if (contract != null) {
             return getContract().isPassedOut();
-        }
-        else return false;
+        } else return false;
     }
 
     enum Columns {
@@ -112,7 +123,9 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
                 entry[Columns.TRICKS.ordinal()] = 0;
             }
         }
-        if (index <= Columns.TRICKS.ordinal()) pcs.firePropertyChange("entry", oldVal, value);
+        String propertyName;
+        propertyName = Columns.values()[index].toString();
+        if (index <= Columns.TRICKS.ordinal()) pcs.firePropertyChange(propertyName, oldVal, value);
     }
 
     public Integer getNsPair() {
@@ -138,7 +151,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     public void setContract(Contract contract) {
         Contract oldVal = (Contract) entry[Columns.CONTRACT.ordinal()];
         entry[Columns.CONTRACT.ordinal()] = contract;
-        pcs.firePropertyChange("contract", oldVal, contract);
+        pcs.firePropertyChange(Columns.CONTRACT.toString(), oldVal, contract);
     }
 
     public Direction getPlayedBy() {
@@ -148,7 +161,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     public void setPlayedBy(Direction playedBy) {
         Direction oldVal = (Direction) entry[Columns.PLAYED_BY.ordinal()];
         entry[Columns.PLAYED_BY.ordinal()] = playedBy;
-        pcs.firePropertyChange("playedBy", oldVal, playedBy);
+        pcs.firePropertyChange(Columns.PLAYED_BY.toString(), oldVal, playedBy);
     }
 
     public Integer getTricks() {
@@ -158,7 +171,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     public void setTricks(Integer tricks) {
         Integer oldVal = (Integer) entry[Columns.TRICKS.ordinal()];
         entry[Columns.TRICKS.ordinal()] = tricks;
-        pcs.firePropertyChange("tricks", oldVal, tricks);
+        pcs.firePropertyChange(Columns.TRICKS.toString(), oldVal, tricks);
     }
 
     public Integer getNSScore() {
@@ -229,8 +242,10 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
                 && contract != null) {
 
             if (isPassedOut() || isSkipped()) {
-                NSScore = 0;
-                EWScore = 0;
+                if (isPassedOut()) {
+                    NSScore = 0;
+                    EWScore = 0;
+                }
             } else {
                 if (playedBy != null
                         && tricks != null) {
@@ -285,6 +300,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
     public void recalculate() {
         pcs.firePropertyChange("recalculate", 0, 1);
     }
+
     public void removePropertyChangeListener(PropertyChangeListener pcl) {
         pcs.removePropertyChangeListener(pcl);
     }
@@ -294,7 +310,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         complete = getNsPair() != null
                 && getEwPair() != null
                 && getContract() != null
-                && ( (getTricks() != null && getPlayedBy() != null ) || isSkipped() || isPassedOut() )
+                && ((getTricks() != null && getPlayedBy() != null) || isSkipped() || isPassedOut())
                 && getNsMPs() != null
                 && getEwMPs() != null;
 
@@ -308,11 +324,11 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
             builder.append(o);
             builder.append("-");
         }
-        builder.append(isComplete()?"complete":"incomplete");
+        builder.append(isComplete() ? "complete" : "incomplete");
         builder.append("-");
-        builder.append(isPassedOut()?"passed":"contracted");
+        builder.append(isPassedOut() ? "passed" : "contracted");
         builder.append("-");
-        builder.append(isSkipped()?"skipped":"played");
+        builder.append(isSkipped() ? "skipped" : "played");
 
         return builder.toString();
     }

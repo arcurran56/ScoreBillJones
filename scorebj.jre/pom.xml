@@ -30,7 +30,7 @@
                 <configuration>
                     <classifier>jre</classifier>
                     <modulePaths>
-                        <modulePath>${java.home}/jmods</modulePath>
+                        <modulePath>${jdk.home}/jmods</modulePath>
                     </modulePaths>
                     <addModules>
                         <addModule>java.desktop</addModule>
