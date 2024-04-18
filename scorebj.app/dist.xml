@@ -4,7 +4,7 @@
     <!-- TODO: a jarjar format would be better -->
     <id>dist</id>
     <formats>
-        <format>zip</format>
+        <format>dir</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
     <baseDirectory>ScoreBillJones</baseDirectory>

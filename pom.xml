@@ -25,6 +25,19 @@
         <jdk.home>C:\Program Files\Java\jdk-17.0.2</jdk.home>
         <idea.home>C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2019.2</idea.home>
     </properties>
+    <repositories>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <name>Jetbrains Repository</name>
+            <id>jetbrains-repo</id>
+            <url>https://www.jetbrains.com/intellij-repository/releases</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
     <!-- ... -->
     <!--dependencies>
         <dependency>

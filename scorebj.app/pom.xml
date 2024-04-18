@@ -98,7 +98,7 @@
                             <stayAlive>true</stayAlive>
                             <restartOnCrash>false</restartOnCrash>
                             <manifest>${project.build.directory}/ScoreBillJones.exe.manifest</manifest>
-                            <icon>${project.basedir}/Google-Noto-Emoji-Activities-52775-club-suit.ico</icon>
+                            <icon>${project.basedir}/src/resources/Club.ico</icon>
                             <jre>
                                 <path>jre</path>
                                 <bundledJre64Bit>true</bundledJre64Bit>
@@ -110,7 +110,7 @@
                                 <initialHeapPercent>10</initialHeapPercent>
                                 <maxHeapPercent>50</maxHeapPercent>
                                 <opts>
-                                    <opt>-Dlaunch4j.exedir=%EXEDIR% --add-opens java.base/java.io=ALL-UNNAMED</opt>
+                                    <opt>-Dlaunch4j.exedir=&quot;%EXEDIR%&quot; --add-opens java.base/java.io=ALL-UNNAMED</opt>
                                 </opts>
                             </jre>
                             <versionInfo>
@@ -144,6 +144,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <finalName>scorebj.app</finalName>
                     <descriptors>
                         <descriptor>.\dist.xml</descriptor>
                     </descriptors>
