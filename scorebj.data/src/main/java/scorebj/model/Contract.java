@@ -1,5 +1,7 @@
 package scorebj.model;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+
 public class Contract {
     enum Suit {CLUBS("C",20,20),
         DIAMONDS("D",20,20),
@@ -47,8 +49,10 @@ public class Contract {
     private final Suit trumpSuit;
     private DoubledStatus doubledStatus;
 
+    @XStreamOmitField
     private boolean passedOut = false;
 
+    @XStreamOmitField
     private boolean skipped = false;
 
     public boolean isSkipped() {
