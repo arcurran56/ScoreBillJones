@@ -33,10 +33,14 @@
                         <modulePath>${jdk.home}/jmods</modulePath>
                     </modulePaths>
                     <addModules>
+                        <addModule>java.base</addModule>
+                        <addModule>java.compiler</addModule>
                         <addModule>java.desktop</addModule>
                         <addModule>java.logging</addModule>
-                        <addModule>java.management</addModule>
                         <addModule>java.naming</addModule>
+                        <addModule>java.prefs</addModule>
+                        <addModule>java.se</addModule>
+                        <addModule>java.xml</addModule>
                     </addModules>
                     <noHeaderFiles>true</noHeaderFiles>
                     <noManPages>true</noManPages>

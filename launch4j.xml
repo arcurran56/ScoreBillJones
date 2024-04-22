@@ -2,26 +2,24 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>target\ScoreBillJones-2.1-SNAPSHOT-jar-with-dependencies.jar</jar>
-  <outfile>D:\Users\arcur\IntelliJProjects\ScoreBillJones\out\exe\ScoreBillJones.exe</outfile>
+  <jar>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\scorebj.gui-3.2-SNAPSHOT-jar-with-dependencies.jar</jar>
+  <outfile>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\scorebj.app-dist\ScoreBillJones\ScoreBillJones.exe</outfile>
   <errTitle>ScoreBillJones - Error</errTitle>
-  <cmdLine/>
+  <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
-  <supportUrl/>
+  <supportUrl></supportUrl>
   <stayAlive>true</stayAlive>
   <restartOnCrash>true</restartOnCrash>
-  <manifest>D:\Users\arcur\IntelliJProjects\ScoreBillJones\ScoreBillJones.exe.manifest</manifest>
-  <icon>D:\Users\arcur\IntelliJProjects\ScoreBillJones\Google-Noto-Emoji-Activities-52775-club-suit.ico</icon>
+  <manifest>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\ScoreBillJones.exe.manifest</manifest>
+  <icon>D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\Club.ico</icon>
   <jre>
-    <path>target\jre</path>
-    <bundledJre64Bit>true</bundledJre64Bit>
-    <bundledJreAsFallback>false</bundledJreAsFallback>
-    <minVersion>12</minVersion>
-    <maxVersion>13</maxVersion>
-    <jdkPreference>preferJre</jdkPreference>
-    <runtimeBits>64/32</runtimeBits>
+    <path>C:\&quot;Program Files\Java\jdk-17.0.2\bin&quot;</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>true</requires64Bit>
+    <minVersion>17</minVersion>
+    <maxVersion>20</maxVersion>
     <initialHeapPercent>10</initialHeapPercent>
     <maxHeapPercent>50</maxHeapPercent>
     <opt>-Dlaunch4j.exedir=%EXEDIR%</opt>
@@ -34,10 +32,10 @@
     <productVersion>2.1.0.0</productVersion>
     <txtProductVersion>2.1.0.0</txtProductVersion>
     <productName>ScoreBillJones</productName>
-    <companyName/>
+    <companyName></companyName>
     <internalName>ScoreBillJones</internalName>
     <originalFilename>ScoreBillJones.exe</originalFilename>
-    <trademarks/>
+    <trademarks></trademarks>
     <language>ENGLISH_UK</language>
   </versionInfo>
 </launch4jConfig>
