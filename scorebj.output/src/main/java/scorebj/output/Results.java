@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import scorebj.model.DataStore;
+
 public class Results {
     Logger logger = LogManager.getLogger();
 
