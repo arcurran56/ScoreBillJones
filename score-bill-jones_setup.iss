@@ -36,7 +36,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\scorebj.app-dist\ScoreBillJones\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\scorebj.app-dist\ScoreBillJones\jre\*"; DestDir: "{app}\jre"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Users\arcur\IntelliJProjects\ScoreBillJones\scorebj.app\target\scorebj.app-dist\ScoreBillJones\jre\*"; DestDir: "{app}\jre"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
