@@ -41,14 +41,16 @@ public class Results {
 
         try {
             result.printDetails(detailsFile);
-            logger.info(detailsFile.getAbsolutePath());
+            logger.info(detailsFile.getAbsolutePath() + " created.");
             result.printSummary(summaryFile);
-            logger.info(summaryFile.getAbsolutePath());
+            logger.info(summaryFile.getAbsolutePath() + " created.");
             result.printMatrix(matrixFile);
-            logger.info(matrixFile.getAbsolutePath());
+            logger.info(matrixFile.getAbsolutePath() + " created.");
             result.createResultsSpreadsheet(outputXlsxFile);
-            logger.info(outputXlsxFile);
+            logger.info(outputXlsxFile + " created.");
             PrintWriter travellersOutput = new PrintWriter(travellersFile);
+            logger.info(travellersFile + " created.");
+
 
 
             for (String line : allTravellerLines) {
