@@ -247,7 +247,7 @@ public class TravellerTableModel extends AbstractTableModel {
                     convertedValue = new Contract((String) aValue);
                     break;
                 case DIRECTION:
-                    convertedValue = ScoreLine.Direction.valueOf((String) aValue);
+                    convertedValue = ScoreLine.Direction.valueOf(((String) aValue).toUpperCase());
             }
         } catch (Exception e) {
             logger.warn(e.toString());
