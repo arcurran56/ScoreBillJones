@@ -49,8 +49,7 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
                 break;
 
             case "CONTRACT", "PLAYED_BY", "TRICKS":
-                scoreHand();
-                pcs.firePropertyChange("score", 0, 1);
+                    scoreHand();
                 break;
 
             case "recalculate":
@@ -226,9 +225,11 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         entry[Columns.EW_OVERRIDE.ordinal()] = ewOverride;
     }
 
+    /**
+     *
+     * Calculate score for hand if all necessary fields are completed.
+     */
     private void scoreHand() {
-        Integer nsPair = getNsPair();
-        Integer ewPair = getEwPair();
         Contract contract = getContract();
         Direction playedBy = getPlayedBy();
         Integer tricks = getTricks();
@@ -237,19 +238,18 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         Integer EWScore = null;
         int score;
 
-        if (nsPair != null
-                && ewPair != null
-                && contract != null) {
+        if (isComplete()) {
 
             if (isPassedOut() || isSkipped()) {
                 if (isPassedOut()) {
                     NSScore = 0;
                     EWScore = 0;
+                } else {
+                    NSScore = null;
+                    EWScore = null;
                 }
             } else {
-                if (playedBy != null
-                        && tricks != null) {
-                    switch (playedBy) {
+                     switch (playedBy) {
                         case N, S:
                             if (vulnerability == BoardId.Vulnerability.NS || vulnerability == BoardId.Vulnerability.ALL) {
                                 score = contract.getScore(tricks, true);
@@ -286,10 +286,14 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
                         default:
                     }
                 }
-            }
-            entry[Columns.NS_SCORE.ordinal()] = NSScore;
-            entry[Columns.EW_SCORE.ordinal()] = EWScore;
+
         }
+
+        entry[Columns.NS_SCORE.ordinal()] = NSScore;
+        entry[Columns.EW_SCORE.ordinal()] = EWScore;
+
+        pcs.firePropertyChange("score", 0, 1);
+
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
@@ -310,9 +314,9 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         complete = getNsPair() != null
                 && getEwPair() != null
                 && getContract() != null
-                && ((getTricks() != null && getPlayedBy() != null) || isSkipped() || isPassedOut())
-                && getNsMPs() != null
-                && getEwMPs() != null;
+                && ((getTricks() != null && getPlayedBy() != null) || isSkipped() || isPassedOut());
+                //&& getNsMPs() != null
+                //&& getEwMPs() != null;
 
         return complete;
     }
@@ -343,5 +347,12 @@ public class ScoreLine implements PropertyChangeListener, TableModelListener, Cl
         sl.setTricks(this.getTricks());
 
         return sl;
+    }
+    public void clear() {
+        setNsPair(null);
+        setEwPair(null);
+        setContract(null);
+        setPlayedBy(null);
+        setTricks(null);
     }
 }

@@ -143,7 +143,7 @@ class TravellerTest {
         list.get(3).setEwPair(6);
         list.get(3).setContract(new Contract("3H*"));
         list.get(3).setPlayedBy(ScoreLine.Direction.E);
-        list.get(3).setTricks(9);
+        //list.get(3).setTricks(9);
         //NS 630
 
     }

@@ -141,6 +141,11 @@ public class TravellerTableModel extends AbstractTableModel {
             }
             if ("blank".equals(evt.getPropertyName())) {
                 for (ScoreLine sl : travellerTable) {
+                    sl.setNsPair(null);
+                    sl.setEwPair(null);
+                    sl.setContract(null);
+                    sl.setTricks(null);
+                    sl.setPlayedBy(null);
                     sl.setNsMPs(null);
                     sl.setEwMPs(null);
                 }

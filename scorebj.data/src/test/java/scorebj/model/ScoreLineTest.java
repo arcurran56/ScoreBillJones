@@ -10,11 +10,18 @@ import java.beans.PropertyChangeListener;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ScoreLineTest {
-    PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
+
+    private class ScoreLineChangeListener implements PropertyChangeListener {
+        public boolean isChangeDetected() {
+            return changeDetected;
+        }
+
+        private boolean changeDetected = false;
+
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if ("blank".equals(evt.getPropertyName()) || "score".equals(evt.getPropertyName())) {
-                ((ScoreLine) evt.getSource()).setEwMPs(null);
+            if ("score".equals(evt.getPropertyName())) {
+                changeDetected = true;
             }
         }
     };
@@ -23,7 +30,8 @@ class ScoreLineTest {
     @Test
     void scoreHand1() {
         ScoreLine scoreLine = new ScoreLine();
-        scoreLine.activate(propertyChangeListener);
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
         scoreLine.setVulnerability(BoardId.Vulnerability.NONE);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
@@ -33,13 +41,15 @@ class ScoreLineTest {
 
         assertEquals(0, scoreLine.getNSScore());
         assertEquals(200, scoreLine.getEWScore());
+        assertTrue( scl.isChangeDetected() );
 
     }
 
     @Test
     void scoreHand2() {
         ScoreLine scoreLine = new ScoreLine();
-        scoreLine.activate(propertyChangeListener);
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
         scoreLine.setVulnerability(BoardId.Vulnerability.NS);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
@@ -54,7 +64,8 @@ class ScoreLineTest {
     @Test
     void scoreHand3() {
         ScoreLine scoreLine = new ScoreLine();
-        scoreLine.activate(propertyChangeListener);
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
         scoreLine.setVulnerability(BoardId.Vulnerability.NS);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
@@ -69,7 +80,8 @@ class ScoreLineTest {
     @Test
     void isEmpty() {
         ScoreLine scoreLine = new ScoreLine();
-        scoreLine.activate(propertyChangeListener);
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
         scoreLine.setVulnerability(BoardId.Vulnerability.NS);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
@@ -94,23 +106,42 @@ class ScoreLineTest {
     }
 
     @Test
-    void isComplete() {
+    void isComplete_normal() {
         ScoreLine scoreLine = new ScoreLine();
-        scoreLine.activate(propertyChangeListener);
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
         scoreLine.setVulnerability(BoardId.Vulnerability.NS);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
         scoreLine.setContract(new Contract("3H"));
         scoreLine.setPlayedBy(ScoreLine.Direction.W);
         scoreLine.setTricks(8);
+        boolean resultComplete = scoreLine.isComplete();
+
+
+
+        assertAll("isComplete", () -> {
+            assertEquals(50, scoreLine.getNSScore());
+            assertTrue((resultComplete));
+        });
+
+        scoreLine.setTricks(null);
         boolean resultNotComplete = scoreLine.isComplete();
-        scoreLine.setNsMPs(6);
-        scoreLine.setEwMPs(2);
+
+        assertFalse(resultNotComplete);
+    }
+    void isComplete_AllPass() {
+        ScoreLine scoreLine = new ScoreLine();
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
+        scoreLine.setVulnerability(BoardId.Vulnerability.EW);
+        scoreLine.setNsPair(2);
+        scoreLine.setEwPair(3);
+        scoreLine.setContract(new Contract("AP"));
         boolean resultComplete = scoreLine.isComplete();
 
         assertAll("isComplete", () -> {
             assertEquals(50, scoreLine.getNSScore());
-            assertFalse(resultNotComplete);
             assertTrue((resultComplete));
         });
 
@@ -119,31 +150,28 @@ class ScoreLineTest {
 
         assertFalse(resultNotComplete2);
     }
-
     @Test
     void blankScores() {
         ScoreLine scoreLine = new ScoreLine();
-        scoreLine.activate(propertyChangeListener);
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
         scoreLine.setVulnerability(BoardId.Vulnerability.NONE);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
         scoreLine.setContract(new Contract("3H"));
         scoreLine.setPlayedBy(ScoreLine.Direction.E);
         scoreLine.setTricks(11);
-        scoreLine.setNsMPs(2);
-        scoreLine.setEwMPs(6);
+
 
         assertAll(() -> {
             assertEquals(0, scoreLine.getNSScore());
             assertEquals(200, scoreLine.getEWScore());
-            assertEquals(6, scoreLine.getEwMPs());
         });
         scoreLine.setTricks(null);
 
         assertAll(() -> {
             assertNull(scoreLine.getNSScore());
             assertNull(scoreLine.getEWScore());
-            assertNull(scoreLine.getEwMPs());
         });
 
     }
@@ -151,7 +179,8 @@ class ScoreLineTest {
     @Test
     void allPass() {
         ScoreLine scoreLine = new ScoreLine();
-        scoreLine.activate(propertyChangeListener);
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
         scoreLine.setVulnerability(BoardId.Vulnerability.NONE);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
@@ -172,7 +201,8 @@ class ScoreLineTest {
     @Test
     void skipped() {
         ScoreLine scoreLine = new ScoreLine();
-        scoreLine.activate(propertyChangeListener);
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
         scoreLine.setVulnerability(BoardId.Vulnerability.NONE);
         scoreLine.setNsPair(2);
         scoreLine.setEwPair(3);
@@ -187,4 +217,24 @@ class ScoreLineTest {
 
     }
 
+    @Test
+    void clear() {
+        ScoreLine scoreLine = new ScoreLine();
+        ScoreLineChangeListener scl = new ScoreLineChangeListener();
+        scoreLine.activate(scl);
+        scoreLine.setVulnerability(BoardId.Vulnerability.NS);
+        scoreLine.setNsPair(2);
+        scoreLine.setEwPair(3);
+        scoreLine.setContract(new Contract("3H"));
+        scoreLine.setPlayedBy(ScoreLine.Direction.W);
+        scoreLine.setTricks(8);
+
+        scoreLine.clear();
+
+        assertAll(() -> {
+            assertNull(scoreLine.getNSScore());
+            assertNull(scoreLine.getEWScore());
+            assertNull(scoreLine.getEwMPs());
+        });
+    }
 }
