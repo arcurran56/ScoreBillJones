@@ -6,6 +6,16 @@ public class CurrentTravellerBean {
     private String completionStatus = "Incomplete";
     private String progress = "";
 
+    public String getVulnerability() {
+        return vulnerability;
+    }
+
+    public void setVulnerability(String vulnerability) {
+        this.vulnerability = vulnerability;
+    }
+
+    private String vulnerability ="None";
+
     public String getBoard() {
         return board;
     }

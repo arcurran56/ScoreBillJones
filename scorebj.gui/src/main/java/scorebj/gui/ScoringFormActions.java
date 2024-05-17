@@ -268,6 +268,7 @@ public class ScoringFormActions {
         currentTravellerBean.setBoard(Integer.toString(newBoardId.getBoard()));
         currentTravellerBean.setCompletionStatus(travellerTableModel.getCompletionStatus());
         currentTravellerBean.setProgress(competition.getProgress());
+        currentTravellerBean.setVulnerability(newBoardId.getVulnerabilityStatus().toString());
 
     }
 

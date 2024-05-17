@@ -104,6 +104,7 @@ class BoardIdTest {
 
             selection = boardId.select(5, 17);
             assertEquals(BoardId.Vulnerability.NONE, selection.getVulnerabilityStatus());
+            assertEquals("NONE", selection.getVulnerabilityStatus().toString());
 
             boardId = new BoardId(0, 0);
             selection = boardId.select(0, 0);

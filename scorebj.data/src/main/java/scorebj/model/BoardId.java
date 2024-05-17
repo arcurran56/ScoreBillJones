@@ -1,7 +1,7 @@
 package scorebj.model;
 
 public class BoardId implements Cloneable{
-    enum Vulnerability{NONE, NS, EW, ALL}
+    public enum Vulnerability{NONE, NS, EW, ALL}
     private Vulnerability vulnerabilityStatus = Vulnerability.NONE;
     private final int noOfBoards;
     private final int noOfSets;
