@@ -159,8 +159,9 @@ import java.util.*;
 
         public Competition getCompetition(String name) {
             logger.debug("Fetching competition " + name);
-
-            return persistentCompetitions.get(name);
+            Competition competition = persistentCompetitions.get(name);
+            competition.setCompetitionName(name);
+            return competition;
         }
 
         /**
