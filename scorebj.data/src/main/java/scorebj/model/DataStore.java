@@ -160,6 +160,8 @@ import java.util.*;
         public Competition getCompetition(String name) {
             logger.debug("Fetching competition " + name);
             Competition competition = persistentCompetitions.get(name);
+
+            //Make sure competition name field equals the name in the XML filename.
             competition.setCompetitionName(name);
             return competition;
         }

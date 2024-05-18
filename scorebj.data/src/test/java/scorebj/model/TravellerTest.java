@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TravellerTest {
     Logger logger = org.apache.logging.log4j.LogManager.getLogger();
     Traveller completeTraveller;
+    Traveller completeTraveller2;
     Traveller incompleteTraveller;
 
     BoardId boardId1;
@@ -146,6 +147,60 @@ class TravellerTest {
         //list.get(3).setTricks(9);
         //NS 630
 
+        completeTraveller2 = new Traveller(boardId1cv, 6);
+        list = completeTraveller2.getScoreLines();
+        for (ScoreLine sl : list) {
+            sl.activate(new PropertyChangeListener() {
+                String msg;
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    msg = "Property, " + evt.getPropertyName()
+                            + " changed in " + evt.getSource().toString();
+                    logger.debug(msg);
+                    ScoreLine scoreLine = (ScoreLine) evt.getSource();
+                    scoreLine.setNsMPs(6);
+                    scoreLine.setEwMPs(2);
+                }
+            });
+        }
+
+        list.get(0).setNsPair(7);
+        list.get(0).setEwPair(8);
+        list.get(0).setContract(new Contract("3H*"));
+        list.get(0).setPlayedBy(ScoreLine.Direction.E);
+        list.get(0).setTricks(8);
+        //NS 200; MP 9-1
+
+        list.get(1).setNsPair(1);
+        list.get(1).setEwPair(2);
+        list.get(1).setContract(new Contract("3H*"));
+        list.get(1).setPlayedBy(ScoreLine.Direction.E);
+        list.get(1).setTricks(8);
+        //NS 200; MP 9-1
+
+        list.get(2).setNsPair(3);
+        list.get(2).setEwPair(4);
+        list.get(2).setContract(new Contract("X"));
+        //NS 100; MP 6-4
+
+        list.get(3).setNsPair(5);
+        list.get(3).setEwPair(6);
+        list.get(3).setContract(new Contract("3H*"));
+        list.get(3).setPlayedBy(ScoreLine.Direction.E);
+        list.get(3).setTricks(9);
+        //EW 730 MP: 0-10
+
+        list.get(4).setNsPair(3);
+        list.get(4).setEwPair(4);
+        list.get(4).setContract(new Contract("3S"));
+        list.get(4).setPlayedBy(ScoreLine.Direction.N);
+        list.get(4).setTricks(8);
+        //EW 50, MP: 4-6
+
+        list.get(5).setNsPair(5);
+        list.get(5).setEwPair(6);
+        list.get(5).setContract(new Contract("X"));
+        //EW 56 MP: 4-4
     }
 
     @AfterEach
@@ -153,6 +208,8 @@ class TravellerTest {
 
         completeTraveller = null;
         incompleteTraveller = null;
+        completeTraveller2 = null;
+
     }
 
     @Test
@@ -189,7 +246,8 @@ class TravellerTest {
     void getCompletionStatus() {
         assertAll( "Completion Status", () -> {
         assertEquals("Done",completeTraveller.getCompletionStatus());
-        assertEquals("Incomplete", incompleteTraveller.getCompletionStatus());
+        assertEquals("Done",completeTraveller2.getCompletionStatus());
+            assertEquals("Incomplete", incompleteTraveller.getCompletionStatus());
         });
     }
 }

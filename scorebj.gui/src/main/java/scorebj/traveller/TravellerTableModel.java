@@ -64,9 +64,19 @@ public class TravellerTableModel extends AbstractTableModel {
     private boolean autoFillEnabled = true;
 
     public boolean isComplete() {
+        logger.debug("...checking complete...");
         boolean complete = true;
-        for (ScoreLine scoreLine : travellerTable) {
-            complete = complete && scoreLine.isComplete();
+        ScoreLine scoreLine;
+        for (int i = 0; i < travellerTable.size(); i++) {
+            scoreLine = travellerTable.get(i);
+            if (scoreLine != null) {
+                if (!scoreLine.isComplete()) {
+                    complete = false;
+                }
+            }
+            else {
+                complete = false;
+            }
         }
         return complete;
     }

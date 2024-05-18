@@ -24,6 +24,7 @@ import java.util.List;
 class TravellerTableModelTest {
     Traveller emptyTravellerFill1;
     Traveller completeTraveller;
+    Traveller completeTraveller2;
     Traveller incompleteTraveller;
     private Traveller emptyTravellerFill2;
 
@@ -34,6 +35,8 @@ class TravellerTableModelTest {
     TravellerTableModel travellerTableModelEmpty;
     TravellerTableModel travellerTableModelIncomplete;
     TravellerTableModel travellerTableModelComplete;
+    TravellerTableModel travellerTableModelComplete2;
+
     private BoardId boardIds1b3;
     private BoardId boardIds1b1;
 
@@ -248,9 +251,10 @@ class TravellerTableModelTest {
         assertFalse(travellerTableModel.isComplete());
 
         travellerTableModel.setTraveller(completeTraveller);
-
         assertTrue(travellerTableModel.isComplete());
-    }
+
+        travellerTableModel.setTraveller(completeTraveller2);
+        assertTrue(travellerTableModel.isComplete());    }
 
     @Test
     void isEmpty() {
@@ -303,6 +307,7 @@ class TravellerTableModelTest {
         travellerTableModelEmpty = new TravellerTableModel();
         travellerTableModelIncomplete = new TravellerTableModel();
         travellerTableModelComplete = new TravellerTableModel();
+        travellerTableModelComplete2 = new TravellerTableModel();
 
         boardIds1b3 = new BoardId(7, 3);
         boardIds1b3.setBoard(3); //Set 1, Board 3, EW Vuln
@@ -342,6 +347,45 @@ class TravellerTableModelTest {
         list.get(1).setContract(new Contract("3H*"));
         list.get(1).setPlayedBy(ScoreLine.Direction.E);
         list.get(1).setTricks(8);
+        //NS 100; MP 6-2
+
+        list.get(2).setNsPair(3);
+        list.get(2).setEwPair(4);
+        list.get(2).setContract(new Contract("3H"));
+        list.get(2).setPlayedBy(ScoreLine.Direction.E);
+        list.get(2).setTricks(8);
+        //NS 50; MP 3-5
+
+        list.get(3).setNsPair(5);
+        list.get(3).setEwPair(6);
+        list.get(3).setContract(new Contract("3H*"));
+        list.get(3).setPlayedBy(ScoreLine.Direction.E);
+        list.get(3).setTricks(9);
+        //EW 530 MP: 1-7
+
+        list.get(4).setNsPair(9);
+        list.get(4).setEwPair(10);
+        list.get(4).setContract(new Contract("X"));
+        list.get(4).setPlayedBy(ScoreLine.Direction.N);
+        list.get(4).setTricks(8);
+        //EW 0, MP: 4-4
+
+        completeTraveller2 = new Traveller(boardIds1b2, 5);
+        travellerTableModelComplete2.setTraveller(completeTraveller2);
+
+        logger.debug("Complete traveller #2...");
+        list = completeTraveller2.getScoreLines();
+
+        list.get(0).setNsPair(7);
+        list.get(0).setEwPair(8);
+        list.get(0).setContract(new Contract("3H*"));
+        list.get(0).setPlayedBy(ScoreLine.Direction.E);
+        list.get(0).setTricks(8);
+        //NS 100; MP 6-2
+
+        list.get(1).setNsPair(1);
+        list.get(1).setEwPair(2);
+        list.get(1).setContract(new Contract("X"));
         //NS 100; MP 6-2
 
         list.get(2).setNsPair(3);
