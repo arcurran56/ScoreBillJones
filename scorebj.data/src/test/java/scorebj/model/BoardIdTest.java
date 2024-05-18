@@ -156,9 +156,9 @@ class BoardIdTest {
         BoardId nextBoardId = boardId;
         for (int i = 1; i <= 20; i++) {
             boardId = nextBoardId;
-            assertEquals((i-1)%16+1,boardId.getBoard(),"Iteration " + Integer.toString(i));
-            assertEquals(expectationN[i-1], isNSvulnerable(boardId.getVulnerabilityStatus()),Integer.toString(i)+"N");
-            assertEquals(expectationE[i-1], isEWvulnerable(boardId.getVulnerabilityStatus()),Integer.toString(i)+"E");
+            assertEquals((i-1)%16+1,boardId.getBoard(),"Iteration " + i);
+            assertEquals(expectationN[i-1], isNSvulnerable(boardId.getVulnerabilityStatus()), i +"N");
+            assertEquals(expectationE[i-1], isEWvulnerable(boardId.getVulnerabilityStatus()), i +"E");
             nextBoardId = boardId.next();
         }
     }
